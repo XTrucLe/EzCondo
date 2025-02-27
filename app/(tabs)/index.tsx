@@ -1,12 +1,12 @@
 import ExtensionsUI from "@/components/ui/ExtensionsUI";
 import { SlideShow } from "@/components/ui/SlideShow";
+import { userInformation } from "@/constants/BackgroundImage";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useRef } from "react";
 import {
   Animated,
-  ScrollView,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -16,19 +16,17 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MAX_HEADER_HEIGHT = 200;
-const MIN_HEADER_HEIGHT = 60;
+const MIN_HEADER_HEIGHT = 130;
 
 const Header = ({
-  title,
-  onMenuPress,
+  onImagePress,
   scrollY,
 }: {
-  title: string;
-  onMenuPress: () => void;
+  onImagePress: () => void;
   scrollY: Animated.Value;
 }) => {
   const theme = useColorScheme();
-  const backgroundColor = theme === "dark" ? "#222" : "#fff";
+  const backgroundColor = useThemeColor({}, "surface");
   const textColor = theme === "dark" ? "#fff" : "#000";
 
   // Header thu nhỏ theo scroll
@@ -38,31 +36,99 @@ const Header = ({
     extrapolate: "clamp",
   });
 
+  const panelTranslateY = scrollY.interpolate({
+    inputRange: [0, 100], // Khi scroll từ 0 -> 100px
+    outputRange: [0, 0], // Panel di chuyển lên 50px
+    extrapolate: "clamp",
+  });
+
+  const userInfoTranslateY = scrollY.interpolate({
+    inputRange: [0, 90], // Scroll từ 0 -> 200px
+    outputRange: [0, -50], // Di chuyển tối đa 100px lên trên
+    extrapolate: "clamp",
+  });
+
   return (
     <Animated.View
       style={[styles.header, { height: headerHeight, backgroundColor }]}
     >
-      <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
-        <Ionicons name="menu" size={28} color={textColor} />
-      </TouchableOpacity>
-      <Text style={[styles.title, { color: textColor }]}>{title}</Text>
+      <Animated.View
+        style={[
+          styles.userInfoContainer,
+          { transform: [{ translateY: userInfoTranslateY }] },
+        ]}
+      >
+        {/* Ảnh người dùng */}
+        <TouchableOpacity
+          onPress={onImagePress}
+          style={styles.userImageContainer}
+        >
+          <Image source={userInformation.image} style={styles.userImage} />
+        </TouchableOpacity>
+
+        {/* Thông tin người dùng */}
+        <View style={styles.userInfo}>
+          <Text style={[styles.userName, { color: textColor }]}>
+            {userInformation.name}
+          </Text>
+          <Text style={[styles.apartment, { color: textColor }]}>
+            Căn hộ: {userInformation.apartment}
+          </Text>
+        </View>
+      </Animated.View>
+      {/* Panel thanh toán (nằm dưới cùng) */}
+      <Animated.View
+        style={[
+          styles.paymentPanel,
+          { transform: [{ translateY: panelTranslateY }] },
+        ]}
+      >
+        <PaymentPanel serviceAmount={250000} walletBalance={500000} />
+      </Animated.View>{" "}
     </Animated.View>
   );
 };
 
+const PaymentPanel = ({
+  serviceAmount,
+  walletBalance,
+}: {
+  serviceAmount: number;
+  walletBalance: number;
+}) => {
+  return (
+    <View style={styles.panel}>
+      {/* Phần bên trái - Số tiền dịch vụ cần thanh toán */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Cần thanh toán</Text>
+        <Text style={styles.amount}>₫{serviceAmount.toLocaleString()}</Text>
+      </View>
+      {/* Phần bên phải - Số tiền trong ví */}
+      <View
+        style={[
+          styles.section,
+          { borderLeftWidth: 1, borderLeftColor: "#ddd" },
+        ]}
+      >
+        <Text style={styles.label}>Số dư ví</Text>
+        <Text style={styles.amount}>₫{walletBalance.toLocaleString()}</Text>
+      </View>
+    </View>
+  );
+};
+
 export default function HomeScreen() {
-  const color = useThemeColor({ light: "black", dark: "white" }, "background");
+  const bgColor = useThemeColor({}, "background");
   const textTime = isLightTime(new Date().getHours()) ? "sáng! 🌞" : "tối! 🌙";
   const scrollY = useRef(new Animated.Value(0)).current;
   const route = useRouter();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: color }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: bgColor }}>
       <View style={styles.headerContainer}>
         {/* Header cố định */}
         <Header
-          title="Hsome"
-          onMenuPress={() => {
+          onImagePress={() => {
             route.navigate("/login");
           }}
           scrollY={scrollY}
@@ -113,14 +179,78 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
   },
-  menuButton: {
+  userInfoContainer: {
+    position: "absolute",
+    top: 50,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  userImageContainer: {
     position: "absolute",
     left: 20,
     top: 20,
   },
+  userImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  userInfo: {
+    position: "absolute",
+    left: 70,
+    top: 20,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  apartment: {
+    fontSize: 14,
+  },
   title: {
     fontSize: 26,
     fontWeight: "bold",
+  },
+  paymentPanel: {
+    position: "absolute",
+    bottom: -30, // Lúc đầu hơi chìa ra
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  panel: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 15,
+    height: 80,
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+    marginVertical: 10,
+    zIndex: 10,
+  },
+  section: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label: {
+    fontSize: 14,
+    color: "#555",
+  },
+  amount: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
   },
   smallTitleContainer: {
     position: "absolute",

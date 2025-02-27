@@ -1,47 +1,110 @@
-import React, { useState } from "react";
+import { loginBackgroundImage } from "@/constants/BackgroundImage";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import React, { useEffect, useState } from "react";
+import * as SecureStore from "expo-secure-store";
 import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   TouchableWithoutFeedback,
-  View,
   Keyboard,
   Image,
+  ImageBackground,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Text, TextInput, Button } from "react-native-paper";
+import { Text, TextInput, Button, Checkbox } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "@/hooks/AuthContext";
+import { useNavigation } from "expo-router";
 
 const LoginScreen = () => {
+  const { login } = useAuth();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const backgroundColor = useThemeColor({}, "buttonPrimary");
+  const textColor = useThemeColor({}, "buttonPrimaryText");
+  const inputBorderColor = useThemeColor({}, "inputBorder");
+
+  useEffect(() => {
+    const loadRememberedUser = async () => {
+      // Load user data from storage
+      // If user data exists, set email and rememberMe to the stored values
+      const hasRememberedUser = await SecureStore.getItem("REMEMBER_KEY");
+      if (hasRememberedUser) {
+        const storedEmail = await SecureStore.getItem("EMAIL_KEY");
+        if (storedEmail) {
+          setEmail(storedEmail);
+          setRememberMe(true);
+        }
+      }
+    };
+    loadRememberedUser();
+  }, []);
 
   // Kiểm tra email hợp lệ
   const validateEmail = (text: string) => {
     setEmail(text);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(text)) {
+    if (!text) {
+      setEmailError("Email is required");
+    } else if (!emailRegex.test(text)) {
       setEmailError("Invalid email format");
     } else {
       setEmailError("");
     }
   };
 
-  const handleLogin = () => {
+  const validateInput = (text: string) => {
+    setPassword(text);
+    if (!text) {
+      setPasswordError("Password is required");
+    } else {
+      setPasswordError("");
+    }
+  };
+
+  const handleLogin = async () => {
     if (!email || emailError) {
       alert("Please enter a valid email");
+      validateEmail(email);
+      return;
+    }
+    if (!password || passwordError) {
+      alert("Please enter a password");
+      validateInput(password);
       return;
     }
     console.log("Email:", email, "Password:", password);
+    try {
+      const result = await login(email, password, rememberMe);
+      console.log("Result:", result);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "(tabs)" as never }],
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Login failed. Please try again.");
+    }
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <ImageBackground
+        source={loginBackgroundImage}
+        style={[styles.container, { paddingTop: insets.top }]}
+        resizeMode="cover"
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "position" : undefined}
+          // behavior={Platform.OS === "ios" ? "position" : undefined}
           keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
         >
           <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -72,38 +135,50 @@ const LoginScreen = () => {
             <TextInput
               label="Password"
               value={password}
+              onEndEditing={() => validateInput(password)}
               onChangeText={setPassword}
               mode="outlined"
               secureTextEntry
               style={styles.input}
+              error={!!passwordError}
+              theme={{ colors: { primary: inputBorderColor } }}
             />
+            {passwordError ? (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            ) : null}
 
+            {/* Remember Me */}
+            <View style={styles.rememberForgotContainer}>
+              {/* Remember Me */}
+              <TouchableOpacity
+                style={styles.rememberMeContainer}
+                onPress={() => setRememberMe(!rememberMe)}
+              >
+                <Checkbox
+                  status={rememberMe ? "checked" : "unchecked"}
+                  onPress={() => setRememberMe(!rememberMe)}
+                />
+                <Text style={styles.rememberMeText}>Remember me</Text>
+              </TouchableOpacity>
+
+              {/* Forgot Password */}
+              <TouchableOpacity onPress={() => alert("Forgot password?")}>
+                <Text style={styles.forgetPassword}>Forgot password?</Text>
+              </TouchableOpacity>
+            </View>
             {/* Login Button */}
             <Button
               mode="contained"
               onPress={handleLogin}
-              style={styles.button}
+              style={[styles.button, { backgroundColor }]}
+              labelStyle={[styles.buttonLabel, { color: textColor }]}
             >
               Login
             </Button>
-
-            {/* Social Login */}
-            <Text style={styles.orText}>OR</Text>
-            <Button icon="google" mode="outlined" style={styles.socialButton}>
-              Sign in with Google
-            </Button>
-            <Button icon="facebook" mode="outlined" style={styles.socialButton}>
-              Sign in with Facebook
-            </Button>
-
-            {/* Sign Up Link */}
-            <Text style={styles.signUpText}>
-              Don't have an account?{" "}
-              <Text style={styles.signUpLink}>Sign Up</Text>
-            </Text>
+            {/* Forgot Password Link */}
           </ScrollView>
         </KeyboardAvoidingView>
-      </View>
+      </ImageBackground>
     </TouchableWithoutFeedback>
   );
 };
@@ -112,7 +187,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    justifyContent: "center",
   },
   scrollContainer: {
     flexGrow: 1,
@@ -120,10 +194,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     alignSelf: "center",
     marginBottom: 20,
+    marginTop: 30,
   },
   title: {
     fontSize: 28,
@@ -141,25 +216,31 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    padding: 5,
   },
-  orText: {
-    textAlign: "center",
-    marginVertical: 15,
+  buttonLabel: {
     fontSize: 16,
-    fontWeight: "bold",
+    paddingVertical: 5,
   },
-  socialButton: {
-    marginBottom: 10,
+  rememberForgotContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Đẩy Remember Me sang trái, Forgot Password sang phải
+    alignItems: "center",
+    marginTop: 10,
+    paddingHorizontal: 10, // Thêm khoảng cách ngang
   },
-  signUpText: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 16,
+  rememberMeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  signUpLink: {
-    color: "#007bff",
-    fontWeight: "bold",
+  rememberMeText: {
+    marginLeft: 8, // Khoảng cách giữa checkbox và text
+    fontSize: 14,
+  },
+  forgetPassword: {
+    color: "#007AFF",
+    fontWeight: "500",
+    textDecorationLine: "underline",
+    fontSize: 14,
   },
 });
 

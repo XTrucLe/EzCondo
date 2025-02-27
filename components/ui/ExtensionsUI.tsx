@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { ThemedText } from "../ThemedText";
 
 const utilities = [
   { id: "1", name: "Bãi đậu xe", icon: "car" }, // Quản lý đăng ký chỗ đỗ xe
@@ -29,6 +31,7 @@ const UtilityItem: React.FC<UtilityItemProps> = ({ name, icon }) => {
   const theme = useColorScheme();
   const textColor = theme === "dark" ? "blue" : "#000";
   const backgroundColor = theme === "dark" ? "#000" : "#fff";
+  const iconColor = useThemeColor({}, "icon");
 
   return (
     <TouchableOpacity style={styles.item}>
@@ -36,7 +39,7 @@ const UtilityItem: React.FC<UtilityItemProps> = ({ name, icon }) => {
         <Ionicons
           name={icon}
           size={30}
-          color={textColor}
+          color={"#000"}
           style={{ backgroundColor: "transparent" }}
         />
       </View>
@@ -49,6 +52,7 @@ const ExtensionsUI = () => {
   const itemSize = 100;
   return (
     <View style={styles.container}>
+      <ThemedText type="subtitle">Tiện ích và dịch vụ</ThemedText>
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={true}
