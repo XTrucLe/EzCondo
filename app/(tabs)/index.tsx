@@ -1,74 +1,153 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import ExtensionsUI from "@/components/ui/ExtensionsUI";
+import { SlideShow } from "@/components/ui/SlideShow";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useRef } from "react";
+import {
+  Animated,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const MAX_HEADER_HEIGHT = 200;
+const MIN_HEADER_HEIGHT = 60;
+
+const Header = ({
+  title,
+  onMenuPress,
+  scrollY,
+}: {
+  title: string;
+  onMenuPress: () => void;
+  scrollY: Animated.Value;
+}) => {
+  const theme = useColorScheme();
+  const backgroundColor = theme === "dark" ? "#222" : "#fff";
+  const textColor = theme === "dark" ? "#fff" : "#000";
+
+  // Header thu nhỏ theo scroll
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
+    outputRange: [MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT],
+    extrapolate: "clamp",
+  });
+
+  return (
+    <Animated.View
+      style={[styles.header, { height: headerHeight, backgroundColor }]}
+    >
+      <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
+        <Ionicons name="menu" size={28} color={textColor} />
+      </TouchableOpacity>
+      <Text style={[styles.title, { color: textColor }]}>{title}</Text>
+    </Animated.View>
+  );
+};
 
 export default function HomeScreen() {
+  const color = useThemeColor({ light: "black", dark: "white" }, "background");
+  const textTime = isLightTime(new Date().getHours()) ? "sáng! 🌞" : "tối! 🌙";
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const route = useRouter();
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <SafeAreaView style={{ flex: 1, backgroundColor: color }}>
+      <View style={styles.headerContainer}>
+        {/* Header cố định */}
+        <Header
+          title="Hsome"
+          onMenuPress={() => {
+            route.navigate("/login");
+          }}
+          scrollY={scrollY}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+
+      {/* Nội dung cuộn */}
+      <Animated.ScrollView
+        contentContainerStyle={{
+          paddingTop: MAX_HEADER_HEIGHT,
+          position: "relative",
+        }}
+        stickyHeaderIndices={[0]}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+      >
+        {/* Header luôn cố định trên màn hình */}
+        <Text style={{ marginLeft: 10 }}>Chào buổi {textTime}</Text>
+        <ExtensionsUI />
+        <SlideShow />
+        <SlideShow />
+        <SlideShow />
+        <SlideShow />
+        <SlideShow />
+      </Animated.ScrollView>
+    </SafeAreaView>
   );
 }
 
+const isLightTime = (hour: number) => hour >= 6 && hour < 18;
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  headerContainer: {
+    position: "relative",
+    flex: 1,
+    marginBottom: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
+  header: {
+    position: "absolute",
+    top: 0,
     left: 0,
-    position: 'absolute',
+    right: 0,
+    zIndex: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+  menuButton: {
+    position: "absolute",
+    left: 20,
+    top: 20,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+  },
+  smallTitleContainer: {
+    position: "absolute",
+    top: 20,
+    left: 60,
+    zIndex: 20,
+  },
+  smallTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  slide: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
+  },
+  text: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
