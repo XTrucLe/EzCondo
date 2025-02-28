@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRootNavigationState, useSegments } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
 
@@ -7,24 +7,41 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const segment = useSegments();
+  const navigationState = useRootNavigationState();
+
+  const hiddenScreens = ["profile", "chatbot", "support"];
+
+  const isTabHidden =
+    !navigationState?.key ||
+    hiddenScreens.includes(segment[segment.length - 1]);
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
+        animation: "shift",
+
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: "absolute",
-          },
-          default: {},
-        }),
+        tabBarStyle: [
+          isTabHidden
+            ? { display: "none" }
+            : {
+                ...Platform.select({
+                  ios: {
+                    // Use a transparent background on iOS to show the blur effect
+                    position: "absolute",
+                  },
+                  default: {},
+                }),
+              },
+        ],
       }}
     >
       <Tabs.Screen
@@ -45,21 +62,22 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="notifications"
         options={{
           title: "Notifications",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="bell.fill" color={color} />
+            <Ionicons size={28} name="notifications" color={color} />
           ),
+          headerShown: true,
         }}
-      /> */}
+      />
       <Tabs.Screen
-        name="profile"
+        name="me"
         options={{
-          title: "Profile",
+          title: "Me",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="person" color={color} />
+            <Ionicons size={28} name="person" color={color} />
           ),
         }}
       />

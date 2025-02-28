@@ -28,7 +28,8 @@ const Header = ({
   const theme = useColorScheme();
   const backgroundColor = useThemeColor({}, "surface");
   const textColor = theme === "dark" ? "#fff" : "#000";
-
+  const textTime = isLightTime(new Date().getHours()) ? "sáng! 🌞" : "tối! 🌙";
+  const wellcomeTextColor = theme == "light" ? "#FF9800" : "121212";
   // Header thu nhỏ theo scroll
   const headerHeight = scrollY.interpolate({
     inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
@@ -52,13 +53,15 @@ const Header = ({
     <Animated.View
       style={[styles.header, { height: headerHeight, backgroundColor }]}
     >
+      <Text style={[styles.wellcomeText, { color: wellcomeTextColor }]}>
+        Chào buổi {textTime}
+      </Text>
       <Animated.View
         style={[
           styles.userInfoContainer,
           { transform: [{ translateY: userInfoTranslateY }] },
         ]}
       >
-        {/* Ảnh người dùng */}
         <TouchableOpacity
           onPress={onImagePress}
           style={styles.userImageContainer}
@@ -66,17 +69,16 @@ const Header = ({
           <Image source={userInformation.image} style={styles.userImage} />
         </TouchableOpacity>
 
-        {/* Thông tin người dùng */}
         <View style={styles.userInfo}>
           <Text style={[styles.userName, { color: textColor }]}>
             {userInformation.name}
           </Text>
           <Text style={[styles.apartment, { color: textColor }]}>
-            Căn hộ: {userInformation.apartment}
+            Căn hộ: {userInformation.apartment_number}
           </Text>
         </View>
       </Animated.View>
-      {/* Panel thanh toán (nằm dưới cùng) */}
+
       <Animated.View
         style={[
           styles.paymentPanel,
@@ -84,7 +86,7 @@ const Header = ({
         ]}
       >
         <PaymentPanel serviceAmount={250000} walletBalance={500000} />
-      </Animated.View>{" "}
+      </Animated.View>
     </Animated.View>
   );
 };
@@ -98,12 +100,10 @@ const PaymentPanel = ({
 }) => {
   return (
     <View style={styles.panel}>
-      {/* Phần bên trái - Số tiền dịch vụ cần thanh toán */}
       <View style={styles.section}>
         <Text style={styles.label}>Cần thanh toán</Text>
-        <Text style={styles.amount}>₫{serviceAmount.toLocaleString()}</Text>
+        <Text style={styles.amount}>{serviceAmount.toLocaleString()} vnđ</Text>
       </View>
-      {/* Phần bên phải - Số tiền trong ví */}
       <View
         style={[
           styles.section,
@@ -111,7 +111,7 @@ const PaymentPanel = ({
         ]}
       >
         <Text style={styles.label}>Số dư ví</Text>
-        <Text style={styles.amount}>₫{walletBalance.toLocaleString()}</Text>
+        <Text style={styles.amount}>{walletBalance.toLocaleString()} vnđ</Text>
       </View>
     </View>
   );
@@ -119,14 +119,12 @@ const PaymentPanel = ({
 
 export default function HomeScreen() {
   const bgColor = useThemeColor({}, "background");
-  const textTime = isLightTime(new Date().getHours()) ? "sáng! 🌞" : "tối! 🌙";
   const scrollY = useRef(new Animated.Value(0)).current;
   const route = useRouter();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bgColor }}>
       <View style={styles.headerContainer}>
-        {/* Header cố định */}
         <Header
           onImagePress={() => {
             route.navigate("/login");
@@ -135,21 +133,17 @@ export default function HomeScreen() {
         />
       </View>
 
-      {/* Nội dung cuộn */}
       <Animated.ScrollView
         contentContainerStyle={{
           paddingTop: MAX_HEADER_HEIGHT,
           position: "relative",
         }}
-        stickyHeaderIndices={[0]}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
         )}
         scrollEventThrottle={16}
       >
-        {/* Header luôn cố định trên màn hình */}
-        <Text style={{ marginLeft: 10 }}>Chào buổi {textTime}</Text>
         <ExtensionsUI />
         <SlideShow />
         <SlideShow />
@@ -178,6 +172,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
+  },
+  wellcomeText: {
+    position: "absolute",
+    top: 20,
+    right: 10,
+    fontSize: 14,
+    fontWeight: "500",
   },
   userInfoContainer: {
     position: "absolute",
