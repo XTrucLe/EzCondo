@@ -1,13 +1,30 @@
 import { userInformation } from "@/constants/BackgroundImage";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Card } from "react-native-paper";
 
-const ProfileScreen = ({ user, onEditPress, onLogout }: any) => {
+const ProfileScreen = ({ user }: any) => {
+  const backgroundColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
+  const cardColor = useThemeColor({}, "cardBackground");
+  const UserInfoRow = ({ label, value }: { label: string; value: string }) => (
+    <View style={styles.infoRow}>
+      <Text style={styles.label}>{label}</Text>
+      <Text
+        style={[styles.info, { color: textColor }]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
+        {value}
+      </Text>
+    </View>
+  );
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor }]}>
       {/* Ảnh đại diện */}
-      <TouchableOpacity style={styles.avatarContainer} onPress={onEditPress}>
+      <TouchableOpacity style={styles.avatarContainer}>
         <Image source={user.image} style={styles.avatar} />
       </TouchableOpacity>
 
@@ -16,41 +33,35 @@ const ProfileScreen = ({ user, onEditPress, onLogout }: any) => {
       <Text style={styles.role}>{user.role_name}</Text>
 
       {/* Card hiển thị thông tin */}
-      <Card style={styles.card}>
+      <Card style={[styles.card, { backgroundColor: cardColor }]}>
         <Card.Content>
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>📄 CMND/CCCD:</Text>
-            <Text style={styles.info}>{user.citizen_identity ?? "N/A"}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>⚧ Giới tính:</Text>
-            <Text style={styles.info}>
-              {user.gender === "male"
+          <UserInfoRow
+            label="📄 CMND/CCCD:"
+            value={user.citizen_identity ?? "N/A"}
+          />
+          <UserInfoRow
+            label=" ⚧  Giới tính:"
+            value={
+              user.gender === "male"
                 ? "Nam"
                 : user.gender === "female"
                 ? "Nữ"
-                : "Chưa cập nhật"}
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>📅 Ngày sinh:</Text>
-            <Text style={styles.info}>
-              {user.date_of_birth ?? "Chưa cập nhật"}
-            </Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>✉️ Email:</Text>
-            <Text style={styles.info}>{user.email ?? "N/A"}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>📞 Số điện thoại:</Text>
-            <Text style={styles.info}>{user.phone_number ?? "N/A"}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>🏠 Căn hộ:</Text>
-            <Text style={styles.info}>{user.apartment_number ?? "N/A"}</Text>
-          </View>
+                : "Chưa cập nhật"
+            }
+          />
+          <UserInfoRow
+            label="📅 Ngày sinh:"
+            value={user.date_of_birth ?? "Chưa cập nhật"}
+          />
+          <UserInfoRow label="✉️ Email:" value={user.email ?? "N/A"} />
+          <UserInfoRow
+            label="📞 Số điện thoại:"
+            value={user.phone_number ?? "N/A"}
+          />
+          <UserInfoRow
+            label="🏠 Căn hộ:"
+            value={user.apartment_number ?? "N/A"}
+          />
         </Card.Content>
       </Card>
     </View>
@@ -99,13 +110,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
+    paddingVertical: 10,
+    paddingTop: 5,
+    paddingHorizontal: 5,
+    borderBottomColor: "#ddd",
+    borderBottomWidth: 1,
   },
   label: {
     fontWeight: "bold",
     color: "#555",
+    fontSize: 16,
   },
   info: {
     color: "#333",
+    maxWidth: "60%",
+    textOverflow: "ellipsis",
+    fontSize: 16,
   },
   button: {
     marginTop: 15,
@@ -123,6 +143,5 @@ export default () => (
   <ProfileScreen
     user={userInformation}
     onEditPress={() => alert("Chỉnh sửa")}
-    onLogout={() => alert("Đăng xuất")}
   />
 );

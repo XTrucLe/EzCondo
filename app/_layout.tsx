@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { AuthProvider, useAuth } from "@/hooks/AuthContext";
+import { AuthProvider } from "@/hooks/AuthContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -21,18 +21,6 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
-  const { isAuthenticating, token } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (!isAuthenticating) {
-        router.replace("/login"); // Chuyển về login nếu chưa đăng nhập
-      } else {
-        router.replace("/(tabs)"); // Nếu đã đăng nhập, chuyển vào tabs
-      }
-    }, 1000);
-  }, [token]);
 
   useEffect(() => {
     if (loaded) {

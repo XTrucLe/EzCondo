@@ -29,19 +29,14 @@ interface UtilityItemProps {
 
 const UtilityItem: React.FC<UtilityItemProps> = ({ name, icon }) => {
   const theme = useColorScheme();
-  const textColor = theme === "dark" ? "blue" : "#000";
-  const backgroundColor = theme === "dark" ? "#000" : "#fff";
+  const textColor = useThemeColor({}, "text");
+  const backgroundColor = useThemeColor({}, "cardBackground");
   const iconColor = useThemeColor({}, "icon");
 
   return (
     <TouchableOpacity style={styles.item}>
-      <View style={styles.iconContainer}>
-        <Ionicons
-          name={icon}
-          size={30}
-          color={"#000"}
-          style={{ backgroundColor: "transparent" }}
-        />
+      <View style={[styles.iconContainer, { backgroundColor }]}>
+        <Ionicons name={icon} size={30} color={iconColor} />
       </View>
       <Text style={[styles.text, { color: textColor }]}>{name}</Text>
     </TouchableOpacity>
@@ -50,6 +45,7 @@ const UtilityItem: React.FC<UtilityItemProps> = ({ name, icon }) => {
 
 const ExtensionsUI = () => {
   const itemSize = 100;
+  const theme = useColorScheme();
   return (
     <View style={styles.container}>
       <ThemedText type="subtitle">Tiện ích và dịch vụ</ThemedText>
@@ -112,7 +108,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.1)",
   },
   text: {
     marginTop: 6,

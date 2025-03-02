@@ -72,6 +72,8 @@ export const AuthProvider = ({ children }: any) => {
       // });
       // const { token } = response.data;
       const token = "your-token";
+      //Set header token
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       await SecureStore.setItemAsync(TOKEN_KEY, token);
       setToken(token);
 
@@ -93,6 +95,9 @@ export const AuthProvider = ({ children }: any) => {
       await axios.post(`${API_URL}/logout`);
       await SecureStore.deleteItemAsync(TOKEN_KEY);
       setToken(null);
+      // Remove header token
+      delete axios.defaults.headers.common["Authorization"];
+      // Redirect to login screen
       navigate.reset({
         index: 0,
         routes: [{ name: "login" as never }],

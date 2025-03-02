@@ -1,20 +1,35 @@
-import { Tabs, useRootNavigationState, useSegments } from "expo-router";
-import React from "react";
+import {
+  Tabs,
+  useRootNavigationState,
+  useRouter,
+  useSegments,
+} from "expo-router";
+import React, { useEffect } from "react";
 import { Platform } from "react-native";
-
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "@/hooks/AuthContext";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const theme = useColorScheme();
   const segment = useSegments();
   const navigationState = useRootNavigationState();
+  const router = useRouter();
+  const { isAuthenticating } = useAuth();
 
-  const hiddenScreens = ["profile", "chatbot", "support"];
+  useEffect(() => {
+    // Redirect to login screen if not authenticated
+    if (!navigationState?.key) return;
+    if (!isAuthenticating) {
+      router.replace("login" as never);
+    }
+  }, [isAuthenticating, navigationState]);
+
+  const hiddenScreens = ["profile", "profile_edit", "chatbot", "support"];
 
   const isTabHidden =
     !navigationState?.key ||
@@ -23,7 +38,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: Colors[theme ?? "light"].bottomTabActive,
+        tabBarInactiveTintColor: Colors[theme ?? "light"].tabIconDefault,
         headerShown: false,
         animation: "shift",
 
@@ -50,6 +66,15 @@ export default function TabLayout() {
           title: "Home",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="services"
+        options={{
+          title: "Services",
+          tabBarIcon: ({ color }) => (
+            <Ionicons size={28} name="star" color={color} />
           ),
         }}
       />

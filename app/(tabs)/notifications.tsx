@@ -1,83 +1,162 @@
-import React, { useState } from "react";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
-  FlatList,
   Text,
+  useWindowDimensions,
   StyleSheet,
+  Animated,
   TouchableOpacity,
-  Alert,
 } from "react-native";
-import { List, IconButton } from "react-native-paper";
+import { TabView, SceneMap } from "react-native-tab-view";
 
-const initialNotifications = [
-  { id: "1", text: "Bạn có một tin nhắn mới!", read: false },
-  { id: "2", text: "Cập nhật hệ thống vào 10:00 tối nay.", read: true },
-  { id: "3", text: "Khuyến mãi đặc biệt chỉ dành cho bạn!", read: false },
-];
+const NotificationsScreen = () => (
+  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <Text>📢 Thông báo</Text>
+  </View>
+);
 
-export default function NotificationsScreen() {
-  const [notifications, setNotifications] = useState(initialNotifications);
+const FeesScreen = () => (
+  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <Text>💰 Phí</Text>
+  </View>
+);
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, read: true } : item))
-    );
-  };
+const NewsScreen = () => (
+  <View
+    style={{
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "red",
+    }}
+  >
+    <Text>📰 Tin tức</Text>
+  </View>
+);
+interface Route {
+  key: string;
+  title: string;
+}
 
-  const deleteNotification = (id: string) => {
-    Alert.alert("Xóa thông báo", "Bạn có chắc muốn xóa thông báo này?", [
-      { text: "Hủy", style: "cancel" },
-      {
-        text: "Xóa",
-        onPress: () =>
-          setNotifications((prev) => prev.filter((item) => item.id !== id)),
-        style: "destructive",
-      },
-    ]);
-  };
+interface NavigationState {
+  index: number;
+  routes: Route[];
+}
+
+const CustomTabBar = ({
+  navigationState,
+  position,
+  setIndex,
+}: {
+  navigationState: NavigationState;
+  position: Animated.Value;
+  setIndex: any;
+}) => {
+  const inputRange = useMemo(
+    () => navigationState.routes.map((_, i) => i),
+    [navigationState.routes]
+  );
+  const activeColor = useThemeColor({}, "bottomTabActive");
+  const layout = useWindowDimensions();
+  const tabWidth = layout.width / navigationState.routes.length;
+  const translateX = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.spring(translateX, {
+      toValue: navigationState.index * tabWidth * 0.9,
+      useNativeDriver: true,
+      speed: 10,
+      bounciness: 10,
+    }).start();
+  }, [navigationState.index]);
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[styles.notificationItem, item.read && styles.read]}
-            onPress={() => markAsRead(item.id)}
-          >
-            <List.Item
-              title={item.text}
-              left={() => (
-                <List.Icon icon={item.read ? "bell-outline" : "bell-ring"} />
-              )}
-              right={() => (
-                <IconButton
-                  icon="delete"
-                  onPress={() => deleteNotification(item.id)}
-                />
-              )}
-            />
-          </TouchableOpacity>
-        )}
+    <View style={styles.tabContainer}>
+      {/* Vòng tròn active di chuyển qua lại */}
+      <Animated.View
+        style={[
+          styles.activeCircle,
+          { transform: [{ translateX }], backgroundColor: activeColor },
+        ]}
       />
+      {navigationState.routes.map((route, index) => {
+        const activeOpacity = position.interpolate({
+          inputRange,
+          outputRange: inputRange.map((i) => (i === index ? 1 : 0.3)), // Fix lỗi opacity
+        });
+
+        return (
+          <TouchableOpacity
+            key={route.key}
+            style={styles.tab}
+            onPress={() => {
+              setIndex(index);
+            }}
+          >
+            <Animated.View style={[styles.item, { opacity: activeOpacity }]}>
+              <Ionicons name="document" size={24} style={styles.active} />
+              <Text style={[styles.label, styles.active]}>{route.title}</Text>
+            </Animated.View>
+          </TouchableOpacity>
+        );
+      })}
     </View>
+  );
+};
+
+export default function TabViewScreen() {
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "notifications", title: "Thông báo" },
+    { key: "fees", title: "Phí" },
+    { key: "news", title: "Tin tức" },
+  ]);
+  const position = new Animated.Value(index);
+
+  return (
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={SceneMap({
+        notifications: NotificationsScreen,
+        fees: FeesScreen,
+        news: NewsScreen,
+      })}
+      onIndexChange={setIndex}
+      initialLayout={{ width: layout.width }}
+      renderTabBar={(props) => (
+        <CustomTabBar {...props} position={position} setIndex={setIndex} />
+      )}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f4f4f4",
-    padding: 10,
-  },
-  notificationItem: {
-    backgroundColor: "#fff",
-    marginVertical: 5,
+  tabContainer: {
+    flexDirection: "row",
+    width: "90%",
+    alignSelf: "center",
     borderRadius: 10,
-    paddingVertical: 10,
+    borderColor: "black",
+    borderWidth: 1,
+    overflow: "hidden",
+    height: 50,
   },
-  read: {
-    opacity: 0.6,
+  activeCircle: {
+    position: "absolute",
+    width: "33.33%",
+    height: "100%",
+    borderRadius: 9,
+    zIndex: -1,
   },
+  tab: { flex: 1 },
+  item: {
+    flexGrow: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  label: { fontSize: 16, marginLeft: 5 },
+  active: { color: "black" },
 });

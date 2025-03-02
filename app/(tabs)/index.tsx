@@ -26,10 +26,10 @@ const Header = ({
   scrollY: Animated.Value;
 }) => {
   const theme = useColorScheme();
-  const backgroundColor = useThemeColor({}, "surface");
-  const textColor = theme === "dark" ? "#fff" : "#000";
+  const backgroundColor = useThemeColor({}, "header");
+  const textColor = useThemeColor({}, "text");
   const textTime = isLightTime(new Date().getHours()) ? "sáng! 🌞" : "tối! 🌙";
-  const wellcomeTextColor = theme == "light" ? "#FF9800" : "121212";
+  const wellcomeTextColor = theme == "light" ? "#FF9800" : "#121212";
   // Header thu nhỏ theo scroll
   const headerHeight = scrollY.interpolate({
     inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
@@ -98,8 +98,10 @@ const PaymentPanel = ({
   serviceAmount: number;
   walletBalance: number;
 }) => {
+  const panelBgColor = useThemeColor({}, "panelBackground");
+
   return (
-    <View style={styles.panel}>
+    <View style={[styles.panel, { backgroundColor: panelBgColor }]}>
       <View style={styles.section}>
         <Text style={styles.label}>Cần thanh toán</Text>
         <Text style={styles.amount}>{serviceAmount.toLocaleString()} vnđ</Text>
