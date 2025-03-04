@@ -1,8 +1,8 @@
 import ExtensionsUI from "@/components/ui/ExtensionsUI";
 import { SlideShow } from "@/components/ui/SlideShow";
-import { userInformation } from "@/constants/BackgroundImage";
+import { userInformation } from "@/constants/FakeDatabase";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useRef } from "react";
 import {
   Animated,
@@ -13,6 +13,7 @@ import {
   useColorScheme,
   View,
 } from "react-native";
+import { FAB } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MAX_HEADER_HEIGHT = 200;
@@ -122,17 +123,11 @@ const PaymentPanel = ({
 export default function HomeScreen() {
   const bgColor = useThemeColor({}, "background");
   const scrollY = useRef(new Animated.Value(0)).current;
-  const route = useRouter();
-
+  const navigation = useNavigation<any>();
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bgColor }}>
       <View style={styles.headerContainer}>
-        <Header
-          onImagePress={() => {
-            route.navigate("/login");
-          }}
-          scrollY={scrollY}
-        />
+        <Header onImagePress={() => {}} scrollY={scrollY} />
       </View>
 
       <Animated.ScrollView
@@ -153,6 +148,18 @@ export default function HomeScreen() {
         <SlideShow />
         <SlideShow />
       </Animated.ScrollView>
+      {/* Nút FAB để mở màn hình "incident" */}
+      <FAB
+        icon="plus"
+        label="Báo sự cố"
+        style={styles.fab}
+        onPress={() =>
+          navigation.navigate("me", {
+            screen: "support",
+            params: { screen: "incident" },
+          })
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -282,5 +289,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontWeight: "bold",
+  },
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 20,
+    backgroundColor: "#007AFF",
   },
 });

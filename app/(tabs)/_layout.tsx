@@ -25,11 +25,21 @@ export default function TabLayout() {
     // Redirect to login screen if not authenticated
     if (!navigationState?.key) return;
     if (!isAuthenticating) {
-      router.replace("login" as never);
+      router.replace("auth" as never);
     }
   }, [isAuthenticating, navigationState]);
 
-  const hiddenScreens = ["profile", "profile_edit", "chatbot", "support"];
+  const hiddenScreens = [
+    "profile",
+    "profile_edit",
+    "chatbot",
+    "incident",
+    "incident_detail",
+    "incident_create",
+    "support",
+    "swimming",
+    "booking",
+  ];
 
   const isTabHidden =
     !navigationState?.key ||

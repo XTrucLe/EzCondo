@@ -14,34 +14,14 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Card } from "react-native-paper";
-import { userInformation } from "@/constants/BackgroundImage";
+import {
+  updateUserInformation,
+  userInformation,
+} from "@/constants/FakeDatabase";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
+import { profileFields } from "@/constants/profile_form";
 
-const profileFields = [
-  { label: "🧑 Họ và tên:", name: "name", isEdit: true },
-  { label: "📄 CMND/CCCD:", name: "citizen_identity", isEdit: true },
-  { label: "📅 Ngày sinh:", name: "date_of_birth", isEdit: true },
-  {
-    label: "✉️ Email:",
-    name: "email",
-    keyboardType: "email-address",
-    isEdit: false,
-  },
-  {
-    label: " ⚧ Giới tính:",
-    name: "gender",
-    keyboardType: "gender",
-    isEdit: true,
-  },
-  {
-    label: "📞 Số điện thoại:",
-    name: "phone_number",
-    keyboardType: "phone-pad",
-    isEdit: true,
-  },
-  { label: "🏠 Căn hộ:", name: "apartment_number", isEdit: false },
-];
 interface ProfileForm {
   name: string;
   email: string;
@@ -109,8 +89,14 @@ const EditProfileScreen = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+      try {
+        updateUserInformation(form);
+      } catch (error) {
+        console.error(error);
+        Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại sau.");
+      }
       Alert.alert("Cập nhật thành công", "Thông tin của bạn đã được lưu lại.");
-      navigation.goBack();
+      navigation.reset({ index: 0, routes: [{ name: "index" as never }] });
     }, 1000);
   };
 

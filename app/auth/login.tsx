@@ -1,4 +1,4 @@
-import { loginBackgroundImage } from "@/constants/BackgroundImage";
+import { loginBackgroundImage } from "@/constants/FakeDatabase";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
@@ -71,6 +71,10 @@ const LoginScreen = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    navigation.navigate("forgot_password" as never);
+  };
+
   const handleLogin = async () => {
     if (!email || emailError) {
       alert("Please enter a valid email");
@@ -109,7 +113,7 @@ const LoginScreen = () => {
         >
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             <Image
-              source={require("../assets/images/EzCondoIcon.png")}
+              source={require("../../assets/images/EzCondoIcon.png")}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -162,7 +166,7 @@ const LoginScreen = () => {
               </TouchableOpacity>
 
               {/* Forgot Password */}
-              <TouchableOpacity onPress={() => alert("Forgot password?")}>
+              <TouchableOpacity onPress={handleForgotPassword}>
                 <Text style={styles.forgetPassword}>Forgot password?</Text>
               </TouchableOpacity>
             </View>

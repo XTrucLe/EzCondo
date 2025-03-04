@@ -1,6 +1,7 @@
-import { userInformation } from "@/constants/BackgroundImage";
+import { userInformation } from "@/constants/FakeDatabase";
+import { profileFields } from "@/constants/profile_form";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Card } from "react-native-paper";
 
@@ -8,6 +9,11 @@ const ProfileScreen = ({ user }: any) => {
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
   const cardColor = useThemeColor({}, "cardBackground");
+
+  useEffect(() => {
+    console.log("User information", user);
+  }, []);
+
   const UserInfoRow = ({ label, value }: { label: string; value: string }) => (
     <View style={styles.infoRow}>
       <Text style={styles.label}>{label}</Text>
@@ -35,33 +41,15 @@ const ProfileScreen = ({ user }: any) => {
       {/* Card hiển thị thông tin */}
       <Card style={[styles.card, { backgroundColor: cardColor }]}>
         <Card.Content>
-          <UserInfoRow
-            label="📄 CMND/CCCD:"
-            value={user.citizen_identity ?? "N/A"}
-          />
-          <UserInfoRow
-            label=" ⚧  Giới tính:"
-            value={
-              user.gender === "male"
-                ? "Nam"
-                : user.gender === "female"
-                ? "Nữ"
-                : "Chưa cập nhật"
-            }
-          />
-          <UserInfoRow
-            label="📅 Ngày sinh:"
-            value={user.date_of_birth ?? "Chưa cập nhật"}
-          />
-          <UserInfoRow label="✉️ Email:" value={user.email ?? "N/A"} />
-          <UserInfoRow
-            label="📞 Số điện thoại:"
-            value={user.phone_number ?? "N/A"}
-          />
-          <UserInfoRow
-            label="🏠 Căn hộ:"
-            value={user.apartment_number ?? "N/A"}
-          />
+          {profileFields
+            .filter(({ name }) => name != "name")
+            .map(({ label, name }) => (
+              <UserInfoRow
+                key={name}
+                label={label}
+                value={user[name] ?? "N/A"}
+              />
+            ))}
         </Card.Content>
       </Card>
     </View>

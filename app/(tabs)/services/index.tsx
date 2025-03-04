@@ -5,12 +5,15 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { SERVICES } from "@/constants/AppServices";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
 
 const ServiceOverview = () => {
+  const navigation = useNavigation();
   const [recentServices, setRecentServices] = useState<
     { id: number; name: string; category: string; icon: any }[]
   >([]);
@@ -32,6 +35,7 @@ const ServiceOverview = () => {
       ...recentServices.filter((s) => s.id !== service.id),
     ].slice(0, 3);
     setRecentServices(updatedRecent);
+    service?.onPress?.(navigation);
     await SecureStore.setItemAsync(
       "recentServices",
       JSON.stringify(updatedRecent)
@@ -39,52 +43,49 @@ const ServiceOverview = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Danh sách dịch vụ vừa xem */}
       {recentServices.length > 0 && (
         <>
           <Text style={styles.title}>Dịch vụ vừa xem</Text>
-          <FlatList
-            data={recentServices}
+          <ScrollView
             horizontal
-            keyExtractor={(item) => item.id.toString()}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.recentList}
-            renderItem={({ item }) => (
+          >
+            {recentServices.map((item) => (
               <TouchableOpacity
+                key={item.id}
                 style={styles.recentItem}
                 onPress={() => handleServicePress(item)}
               >
                 <Ionicons name={item.icon} size={24} color="#007AFF" />
                 <Text style={styles.recentText}>{item.name}</Text>
               </TouchableOpacity>
-            )}
-          />
+            ))}
+          </ScrollView>
         </>
       )}
 
       {/* Danh mục dịch vụ */}
       <Text style={styles.title}>Danh mục dịch vụ</Text>
-      <FlatList
-        data={SERVICES}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            activeOpacity={0.7}
-            onPress={() => handleServicePress(item)}
-          >
-            <View style={styles.iconContainer}>
-              <Ionicons name={item.icon} size={28} color="white" />
-            </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.cardTitle}>{item.name}</Text>
-              <Text style={styles.cardCategory}>{item.category}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+      {SERVICES.map((item) => (
+        <TouchableOpacity
+          key={item.id}
+          style={styles.card}
+          activeOpacity={0.7}
+          onPress={() => handleServicePress(item)}
+        >
+          <View style={styles.iconContainer}>
+            <Ionicons name={item.icon} size={28} color="white" />
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.cardTitle}>{item.name}</Text>
+            <Text style={styles.cardCategory}>{item.category}</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
 };
 
@@ -111,8 +112,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   recentList: {
+    width: "100%",
     flexDirection: "row",
     paddingVertical: 10,
+    justifyContent: "space-between",
   },
   recentItem: {
     width: 100,

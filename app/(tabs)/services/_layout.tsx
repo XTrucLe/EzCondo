@@ -8,6 +8,7 @@ export default function _layout() {
         options={{ headerShown: true, headerTitle: "Dịch vụ và tiện ích" }}
       />
       <Stack.Screen name="swimming" options={{ headerShown: true }} />
+      <Stack.Screen name="booking" options={{ headerShown: true }} />
     </Stack>
   );
 }

@@ -13,7 +13,7 @@ import { useAuth } from "@/hooks/AuthContext";
 import { useNavigation } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { Avatar, Button, Card, List } from "react-native-paper";
-import { userInformation } from "@/constants/BackgroundImage";
+import { userInformation } from "@/constants/FakeDatabase";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 const ProfileScreen = () => {
@@ -63,7 +63,7 @@ const ProfileScreen = () => {
         onPress: async () => {
           navigation.reset({
             index: 0,
-            routes: [{ name: "login" as never }],
+            routes: [{ name: "auth" as never }],
           });
         },
         style: "destructive",
