@@ -19,10 +19,6 @@ export default function SupportLayout() {
         name="chatbot"
         options={{ headerShown: true, headerTitle: "Trung tâm hỗ trợ" }}
       />
-      <Stack.Screen
-        name="incident"
-        options={{ headerShown: true, headerTitle: "Báo cáo sự cố" }}
-      />
     </Stack>
   );
 }

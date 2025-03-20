@@ -1,3 +1,4 @@
+import HeaderLeftIcon from "@/components/ui/HeaderLeftIcon";
 import { Stack } from "expo-router";
 
 export default function _layout() {
@@ -9,6 +10,20 @@ export default function _layout() {
       />
       <Stack.Screen name="swimming" options={{ headerShown: true }} />
       <Stack.Screen name="booking" options={{ headerShown: true }} />
+      <Stack.Screen
+        name="incident"
+        options={{
+          headerShown: true,
+          headerTitle: "Báo cáo sự cố",
+          headerLeft: () => (
+            <HeaderLeftIcon
+              iconName="chevron-back"
+              navigationScreen="goBack"
+              firstScreen="services"
+            />
+          ),
+        }}
+      />
     </Stack>
   );
 }

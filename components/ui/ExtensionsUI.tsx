@@ -15,7 +15,7 @@ import { useNavigation } from "expo-router";
 const utilities = [
   { id: "1", name: "Bãi đậu xe", icon: "car" }, // Quản lý đăng ký chỗ đỗ xe
   { id: "2", name: "Điện - Nước", icon: "flash" }, // Xem và thanh toán hóa đơn điện, nước
-  { id: "3", name: "Hồ bơi", icon: "walk", navigatePage: "swimming" }, // Đặt lịch sử dụng hồ bơi
+  { id: "3", name: "Hồ bơi", icon: "walk", navigatePage: "index" }, // Đặt lịch sử dụng hồ bơi
   { id: "4", name: "Phòng Gym", icon: "barbell" }, // Đặt lịch và sử dụng phòng tập gym
   {
     id: "5",
@@ -24,7 +24,7 @@ const utilities = [
   }, // Gửi yêu cầu sửa chữa, báo cáo sự cố
   { id: "6", name: "Thanh toán dịch vụ", icon: "cash" }, // Thanh toán các khoản phí chung cư
   { id: "7", name: "Thông báo", icon: "notifications" }, // Nhận thông báo từ ban quản lý
-  { id: "8", name: "Hỗ trợ", icon: "help-circle" }, // Liên hệ ban quản lý để được hỗ trợ
+  { id: "8", name: "Hỗ trợ", icon: "help-circle", navigatePage: "members" }, // Liên hệ ban quản lý để được hỗ trợ
 ];
 
 interface UtilityItemProps {
@@ -42,12 +42,12 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
   const textColor = useThemeColor({}, "text");
   const backgroundColor = useThemeColor({}, "cardBackground");
   const iconColor = useThemeColor({}, "icon");
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   return (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation?.navigate(navigatePage as never)}
+      onPress={() => navigation.navigate(navigatePage)}
     >
       <View style={[styles.iconContainer, { backgroundColor }]}>
         <Ionicons name={icon} size={30} color={iconColor} />
@@ -78,6 +78,7 @@ const ExtensionsUI = () => {
                     key={item.id}
                     name={item.name}
                     icon={item.icon}
+                    navigatePage={item.navigatePage}
                   />
                 ))}
             </View>

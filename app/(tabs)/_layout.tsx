@@ -12,22 +12,22 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@/hooks/AuthContext";
+import useAuthStore from "@/hooks/useAuth";
 
 export default function TabLayout() {
   const theme = useColorScheme();
   const segment = useSegments();
   const navigationState = useRootNavigationState();
   const router = useRouter();
-  const { isAuthenticating } = useAuth();
+  const { verified, loading } = useAuthStore();
 
   useEffect(() => {
-    // Redirect to login screen if not authenticated
-    if (!navigationState?.key) return;
-    if (!isAuthenticating) {
+    if (!navigationState?.key || loading) return;
+
+    if (!verified) {
       router.replace("auth" as never);
     }
-  }, [isAuthenticating, navigationState]);
+  }, [verified, loading, navigationState]);
 
   const hiddenScreens = [
     "profile",
@@ -39,12 +39,16 @@ export default function TabLayout() {
     "support",
     "swimming",
     "booking",
+    "members",
+    "payment",
+    "add_member",
   ];
 
   const isTabHidden =
     !navigationState?.key ||
     hiddenScreens.includes(segment[segment.length - 1]);
 
+  const handleTabPress = (index: number) => {};
   return (
     <Tabs
       screenOptions={{
@@ -88,15 +92,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
-          ),
-        }}
-      />
+
       <Tabs.Screen
         name="notifications"
         options={{

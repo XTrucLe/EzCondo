@@ -1,18 +1,31 @@
-import { userInformation } from "@/constants/FakeDatabase";
+import { userDefaultImage } from "@/constants/ImageLink";
 import { profileFields } from "@/constants/profile_form";
+import useAuthStore from "@/hooks/useAuth";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { UserProps as OriginalUserProps } from "@/services/UserService";
 import React, { useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Card } from "react-native-paper";
 
-const ProfileScreen = ({ user }: any) => {
+interface UserProps extends OriginalUserProps {
+  [key: string]: any;
+}
+
+const ProfileScreen = () => {
+  const { user } = useAuthStore();
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
   const cardColor = useThemeColor({}, "cardBackground");
+  const [userInfo, setUserInfo] = React.useState<UserProps>();
 
   useEffect(() => {
-    console.log("User information", user);
-  }, []);
+    const fetchUserInfo = async () => {
+      if (user) {
+        setUserInfo(user);
+      }
+    };
+    fetchUserInfo();
+  }, [user]);
 
   const UserInfoRow = ({ label, value }: { label: string; value: string }) => (
     <View style={styles.infoRow}>
@@ -31,23 +44,26 @@ const ProfileScreen = ({ user }: any) => {
     <View style={[styles.container, { backgroundColor }]}>
       {/* Ảnh đại diện */}
       <TouchableOpacity style={styles.avatarContainer}>
-        <Image source={user.image} style={styles.avatar} />
+        <Image
+          source={userInfo?.image ? { uri: userInfo.image } : userDefaultImage}
+          style={styles.avatar}
+        />
       </TouchableOpacity>
 
       {/* Thông tin người dùng */}
-      <Text style={styles.name}>{user.name}</Text>
-      <Text style={styles.role}>{user.role_name}</Text>
+      <Text style={styles.name}>{user?.fullName}</Text>
+      <Text style={styles.role}>{user?.roleName}</Text>
 
       {/* Card hiển thị thông tin */}
       <Card style={[styles.card, { backgroundColor: cardColor }]}>
         <Card.Content>
           {profileFields
-            .filter(({ name }) => name != "name")
+            .filter(({ name }) => name != "fullName")
             .map(({ label, name }) => (
               <UserInfoRow
                 key={name}
                 label={label}
-                value={user[name] ?? "N/A"}
+                value={userInfo?.[name] ?? "N/A"}
               />
             ))}
         </Card.Content>
@@ -127,9 +143,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default () => (
-  <ProfileScreen
-    user={userInformation}
-    onEditPress={() => alert("Chỉnh sửa")}
-  />
-);
+export default () => <ProfileScreen />;

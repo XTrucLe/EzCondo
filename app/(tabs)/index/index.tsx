@@ -1,9 +1,10 @@
 import ExtensionsUI from "@/components/ui/ExtensionsUI";
 import { SlideShow } from "@/components/ui/SlideShow";
 import { userInformation } from "@/constants/FakeDatabase";
+import useAuthStore from "@/hooks/useAuth";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation, useRouter } from "expo-router";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
@@ -19,6 +20,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const MAX_HEADER_HEIGHT = 200;
 const MIN_HEADER_HEIGHT = 130;
 
+type UserHomeProps = {
+  fullName: string;
+  apartmentNumber?: string;
+  image?: string;
+};
+
 const Header = ({
   onImagePress,
   scrollY,
@@ -27,10 +34,28 @@ const Header = ({
   scrollY: Animated.Value;
 }) => {
   const theme = useColorScheme();
+  const { user } = useAuthStore();
   const backgroundColor = useThemeColor({}, "header");
   const textColor = useThemeColor({}, "text");
   const textTime = isLightTime(new Date().getHours()) ? "sáng! 🌞" : "tối! 🌙";
   const wellcomeTextColor = theme == "light" ? "#FF9800" : "#121212";
+  const [userInfo, setUserInfo] = useState<UserHomeProps>({
+    fullName: "Người dùng",
+    apartmentNumber: "Chưa cập nhật",
+    // image: userInformation.image,
+  });
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      setUserInfo({
+        fullName: user?.fullName || "Người dùng",
+        apartmentNumber: user?.apartmentNumber || "Chưa cập nhật",
+        // image: user?.image || userInformation.image,
+      });
+    };
+    fetchUserInfo();
+  }, [user]);
+
   // Header thu nhỏ theo scroll
   const headerHeight = scrollY.interpolate({
     inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
@@ -72,10 +97,10 @@ const Header = ({
 
         <View style={styles.userInfo}>
           <Text style={[styles.userName, { color: textColor }]}>
-            {userInformation.name}
+            {userInfo?.fullName}
           </Text>
           <Text style={[styles.apartment, { color: textColor }]}>
-            Căn hộ: {userInformation.apartment_number}
+            Căn hộ: {userInfo?.apartmentNumber}
           </Text>
         </View>
       </Animated.View>
@@ -143,22 +168,13 @@ export default function HomeScreen() {
       >
         <ExtensionsUI />
         <SlideShow />
-        <SlideShow />
-        <SlideShow />
-        <SlideShow />
-        <SlideShow />
       </Animated.ScrollView>
       {/* Nút FAB để mở màn hình "incident" */}
       <FAB
         icon="plus"
         label="Báo sự cố"
         style={styles.fab}
-        onPress={() =>
-          navigation.navigate("me", {
-            screen: "support",
-            params: { screen: "incident" },
-          })
-        }
+        onPress={() => navigation.navigate("incident")}
       />
     </SafeAreaView>
   );

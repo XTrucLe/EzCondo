@@ -11,6 +11,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { Button } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
 
 const MAX_MEDIA = 6;
 const NUM_COLUMNS = 3;
@@ -19,6 +20,7 @@ const ReportIssueScreen = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [mediaList, setMediaList] = useState([]);
+  const navigation = useNavigation();
 
   const pickMedia = async () => {
     if (mediaList.length >= MAX_MEDIA) return;
@@ -30,7 +32,7 @@ const ReportIssueScreen = () => {
 
     if (!result.canceled) {
       setMediaList(
-        (prev) => [result.assets[0].uri, ...prev].slice(0, MAX_MEDIA) as never
+        (prev) => [...prev, result.assets[0].uri].slice(0, MAX_MEDIA) as never
       );
     }
   };
@@ -38,6 +40,7 @@ const ReportIssueScreen = () => {
   const handleSubmit = () => {
     console.log({ title, description, mediaList });
     alert("Báo cáo đã được gửi!");
+    navigation.goBack();
   };
 
   return (
@@ -101,14 +104,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   mediaPicker: {
-    width: 100,
-    height: 100,
+    width: 105,
+    height: 105,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
     margin: 5,
+    marginVertical: 10,
     backgroundColor: "#fff",
   },
   mediaPreview: {

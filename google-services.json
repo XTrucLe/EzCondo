@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "899090682451",
+    "project_id": "ezcondo-73fc4",
+    "storage_bucket": "ezcondo-73fc4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899090682451:android:574820db7e2eb543666ca6",
+        "android_client_info": {
+          "package_name": "com.ezcondo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-iYN80njr4b82uBnYCxDygpVEMPLI2yU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

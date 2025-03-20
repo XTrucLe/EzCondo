@@ -16,11 +16,11 @@ import {
 } from "react-native";
 import { Text, TextInput, Button, Checkbox } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "@/hooks/AuthContext";
 import { useNavigation } from "expo-router";
+import useAuthStore from "@/hooks/useAuth";
 
 const LoginScreen = () => {
-  const { login } = useAuth();
+  const { login } = useAuthStore();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState("");
@@ -28,7 +28,7 @@ const LoginScreen = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const backgroundColor = useThemeColor({}, "buttonPrimary");
   const textColor = useThemeColor({}, "buttonPrimaryText");
   const inputBorderColor = useThemeColor({}, "inputBorder");
@@ -48,6 +48,12 @@ const LoginScreen = () => {
     };
     loadRememberedUser();
   }, []);
+
+  // Hiển thị và ẩn mật khẩu sau 1s
+  const togglePasswordVisibility = () => {
+    setShowPassword(true);
+    setTimeout(() => setShowPassword(false), 1000); // Ẩn sau 3 giây
+  };
 
   // Kiểm tra email hợp lệ
   const validateEmail = (text: string) => {
@@ -88,15 +94,14 @@ const LoginScreen = () => {
     }
     console.log("Email:", email, "Password:", password);
     try {
-      const result = await login(email, password, rememberMe);
-      console.log("Result:", result);
+      await login(email, password, rememberMe);
       navigation.reset({
         index: 0,
         routes: [{ name: "(tabs)" as never }],
       });
     } catch (error) {
       console.error(error);
-      alert("Login failed. Please try again.");
+      alert(error);
     }
   };
 
@@ -135,21 +140,28 @@ const LoginScreen = () => {
               <Text style={styles.errorText}>{emailError}</Text>
             ) : null}
 
-            {/* Password Input */}
-            <TextInput
-              label="Password"
-              value={password}
-              onEndEditing={() => validateInput(password)}
-              onChangeText={setPassword}
-              mode="outlined"
-              secureTextEntry
-              style={styles.input}
-              error={!!passwordError}
-              theme={{ colors: { primary: inputBorderColor } }}
-            />
-            {passwordError ? (
-              <Text style={styles.errorText}>{passwordError}</Text>
-            ) : null}
+            <View style={styles.container}>
+              <TextInput
+                label="Password"
+                value={password}
+                onEndEditing={() => validateInput(password)}
+                onChangeText={setPassword}
+                mode="outlined"
+                secureTextEntry={!showPassword} // Ẩn/hiện mật khẩu
+                style={styles.input}
+                error={!!passwordError}
+                theme={{ colors: { primary: inputBorderColor } }}
+                right={
+                  <TextInput.Icon
+                    icon={showPassword ? "eye-off" : "eye"} // Icon mắt mở/tắt
+                    onPress={togglePasswordVisibility}
+                  />
+                }
+              />
+              {passwordError ? (
+                <Text style={styles.errorText}>{passwordError}</Text>
+              ) : null}
+            </View>
 
             {/* Remember Me */}
             <View style={styles.rememberForgotContainer}>

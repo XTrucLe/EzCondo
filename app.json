@@ -16,11 +16,12 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.trucle0505.apartment"
+      "package": "com.trucle0505.EzCondo"
     },
     "web": {
       "bundler": "metro",
@@ -48,7 +49,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "8548dc77-9c3f-447d-9c67-2d8b6695a405"
+        "projectId": "75530e5f-d06d-4b43-9402-6eea7da304d7"
       }
     }
   }

@@ -9,22 +9,21 @@ import {
   useColorScheme,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/AuthContext";
+import useAuthStore from "@/hooks/useAuth";
 import { useNavigation } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { Avatar, Button, Card, List } from "react-native-paper";
-import { userInformation } from "@/constants/FakeDatabase";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { userDefaultImage } from "@/constants/ImageLink";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const { logout } = useAuth();
-  const userInfo = userInformation;
+  const { logout } = useAuthStore();
+  const { user: userInfo } = useAuthStore();
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState("English");
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
 
-  const colorScheme = useColorScheme();
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
   const cardColor = useThemeColor({}, "cardBackground");
@@ -61,6 +60,7 @@ const ProfileScreen = () => {
       {
         text: "Logout",
         onPress: async () => {
+          logout();
           navigation.reset({
             index: 0,
             routes: [{ name: "auth" as never }],
@@ -76,16 +76,25 @@ const ProfileScreen = () => {
       <TouchableOpacity onPress={() => navigation.navigate("profile" as never)}>
         <Card style={[styles.profileCard, { backgroundColor: cardColor }]}>
           <View style={styles.profileInfo}>
-            <Avatar.Image size={60} source={userInfo.image} />
+            <Avatar.Image
+              size={60}
+              source={
+                userInfo?.avatar ? { uri: userInfo.avatar } : userDefaultImage
+              }
+            />
             <View style={{ marginLeft: 15 }}>
               <Text style={[styles.name, { color: textColor }]}>
-                {userInfo.name}
+                {userInfo?.fullName}
               </Text>
               <Text style={{ color: textColor }}>
-                Căn hộ: {userInfo.apartment_number}
+                Căn hộ: {userInfo?.apartmentNumber}
               </Text>
             </View>
-            <List.Icon icon="chevron-right" color={iconColor} />
+            <List.Icon
+              icon="chevron-right"
+              color={iconColor}
+              style={{ position: "absolute", right: 10 }}
+            />
           </View>
         </Card>
       </TouchableOpacity>

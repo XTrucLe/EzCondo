@@ -10,45 +10,51 @@ import {
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
-  useColorScheme,
+  KeyboardTypeOptions,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Card } from "react-native-paper";
-import {
-  updateUserInformation,
-  userInformation,
-} from "@/constants/FakeDatabase";
+import { updateUserInformation } from "@/constants/FakeDatabase";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
 import { profileFields } from "@/constants/profile_form";
+import { UserProps } from "@/services/UserService";
+import useAuthStore from "@/hooks/useAuth";
+import { Picker } from "@react-native-picker/picker";
+import { userDefaultImage } from "@/constants/ImageLink";
+import CustomeDatePicker from "@/components/ui/Custome.DatePicker";
 
-interface ProfileForm {
-  name: string;
+type ProfileForm = {
+  fullName: string;
   email: string;
-  phone_number: string;
-  gender: string;
-  citizen_identity: string;
-  date_of_birth: string;
-  apartment_number: string;
-}
+  citizenIdentity: string;
+  phoneNumber: string;
+  dateOfBirth: string;
+};
 
 const EditProfileScreen = () => {
-  const user = userInformation;
+  const { user } = useAuthStore();
   const navigation = useNavigation();
   const backgroundColor = useThemeColor({}, "background");
-  const [avatar, setAvatar] = useState(user.image);
+
+  // State cho avatar
+  const [avatar, setAvatar] = useState(user?.avatar);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<ProfileForm>({
-    name: user.name || "",
-    email: user.email || "",
-    phone_number: user.phone_number || "",
-    gender: user.gender || "",
-    citizen_identity: user.citizen_identity || "",
-    date_of_birth: user.date_of_birth || "",
-    apartment_number: user.apartment_number || "",
+
+  // State form
+  const [form, setForm] = useState<UserProps>({
+    fullName: user?.fullName || "",
+    email: user?.email || "",
+    citizenIdentity: user?.citizenIdentity || "",
+    phoneNumber: user?.phoneNumber || "",
+    dateOfBirth: user?.dateOfBirth || "",
   });
 
+  // State lỗi validate
   const [errors, setErrors] = useState<Partial<ProfileForm>>({});
+
+  // State để hiển thị DatePicker (lưu tên field đang chọn)
+  const [showDatePicker, setShowDatePicker] = useState<string | null>(null);
 
   // Chọn ảnh từ thư viện
   const pickImage = async () => {
@@ -66,17 +72,14 @@ const EditProfileScreen = () => {
 
   // Kiểm tra dữ liệu trước khi lưu
   const validateForm = () => {
+    // Nếu cần kiểm tra cụ thể từng trường, thêm logic vào đây
     let newErrors: Partial<ProfileForm> = {};
-    if (!form.name.trim()) newErrors.name = "Tên không được để trống";
-    if (!form.email.includes("@")) newErrors.email = "Email không hợp lệ";
-    if (form.phone_number && !/^[0-9]{10,11}$/.test(form.phone_number))
-      newErrors.phone_number = "Số điện thoại không hợp lệ";
-    if (!form.citizen_identity.trim())
-      newErrors.citizen_identity = "Vui lòng nhập số CMND/CCCD";
-    if (!form.date_of_birth.trim())
-      newErrors.date_of_birth = "Vui lòng nhập ngày sinh";
-    if (!form.apartment_number.trim())
-      newErrors.apartment_number = "Vui lòng nhập số căn hộ";
+
+    // Ví dụ: nếu fullName trống
+    if (!form.fullName) {
+      newErrors.fullName = "Họ và tên không được để trống!";
+    }
+    // Thêm các kiểm tra khác...
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -85,18 +88,22 @@ const EditProfileScreen = () => {
   // Xử lý lưu thông tin
   const onSubmit = () => {
     if (!validateForm()) return;
-
     setLoading(true);
+
+    // Giả lập delay và gọi update
     setTimeout(() => {
-      setLoading(false);
       try {
         updateUserInformation(form);
+        Alert.alert(
+          "Cập nhật thành công",
+          "Thông tin của bạn đã được lưu lại."
+        );
+        navigation.reset({ index: 0, routes: [{ name: "index" as never }] });
       } catch (error) {
         console.error(error);
         Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại sau.");
       }
-      Alert.alert("Cập nhật thành công", "Thông tin của bạn đã được lưu lại.");
-      navigation.reset({ index: 0, routes: [{ name: "index" as never }] });
+      setLoading(false);
     }, 1000);
   };
 
@@ -106,7 +113,7 @@ const EditProfileScreen = () => {
         {/* Ảnh đại diện */}
         <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
           <Image
-            source={require("../../../assets/images/Avata_user.png")}
+            source={avatar ? { uri: avatar } : userDefaultImage}
             style={styles.avatar}
           />
           <Text style={styles.changeText}>Thay đổi ảnh</Text>
@@ -114,26 +121,78 @@ const EditProfileScreen = () => {
 
         <Card style={styles.card}>
           <Card.Content>
-            {profileFields.map(({ label, name, keyboardType, isEdit }) => (
-              <View
-                key={name}
-                style={[styles.inputContainer, { opacity: loading ? 0.5 : 1 }]}
-              >
-                <Text style={styles.label}>{label}</Text>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={(text) => setForm({ ...form, [name]: text })}
-                  value={form[name as keyof ProfileForm]}
-                  keyboardType={keyboardType as any}
-                  editable={isEdit && !loading}
-                />
-                {errors[name as keyof ProfileForm] && (
-                  <Text style={styles.errorText}>
-                    {errors[name as keyof ProfileForm]}
-                  </Text>
-                )}
-              </View>
-            ))}
+            {profileFields.map(
+              ({ label, name, keyboardType, isEdit, type, options }) => {
+                const value = form[name as keyof UserProps] || "N/A";
+                const error = errors[name as keyof ProfileForm];
+                const inputKeyboardType =
+                  (keyboardType as KeyboardTypeOptions) || "default";
+
+                return (
+                  <View
+                    key={name}
+                    style={[
+                      styles.inputContainer,
+                      { opacity: loading ? 0.5 : 1 },
+                    ]}
+                  >
+                    <Text style={styles.label}>{label}</Text>
+
+                    {/* Kiểm tra kiểu input */}
+                    {type === "date" ? (
+                      <TouchableOpacity
+                        onPress={() => setShowDatePicker(name)}
+                        style={styles.dateInput}
+                      >
+                        <Text>{value ? value : "Chọn ngày"}</Text>
+                      </TouchableOpacity>
+                    ) : type === "dropdown" ? (
+                      <View style={styles.pickerContainer}>
+                        <Picker
+                          selectedValue={value}
+                          onValueChange={(itemValue) =>
+                            setForm((prev) => ({ ...prev, [name]: itemValue }))
+                          }
+                          style={styles.picker}
+                          enabled={isEdit}
+                        >
+                          {options?.map((option) => (
+                            <Picker.Item
+                              key={option}
+                              label={option}
+                              value={option}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    ) : (
+                      <TextInput
+                        style={styles.input}
+                        value={value}
+                        onChangeText={(text) =>
+                          setForm((prev) => ({ ...prev, [name]: text }))
+                        }
+                        keyboardType={inputKeyboardType}
+                        editable={isEdit && !loading}
+                      />
+                    )}
+
+                    {error && <Text style={styles.errorText}>{error}</Text>}
+                  </View>
+                );
+              }
+            )}
+
+            {/* Hiển thị DateTimePicker nếu showDatePicker không null */}
+            {showDatePicker && (
+              <CustomeDatePicker
+                dateValue={form[showDatePicker as keyof UserProps] || ""}
+                onChangeDate={(date) => {
+                  setForm((prev) => ({ ...prev, [showDatePicker]: date }));
+                  setShowDatePicker(null);
+                }}
+              />
+            )}
           </Card.Content>
         </Card>
 
@@ -154,7 +213,6 @@ const EditProfileScreen = () => {
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -201,6 +259,36 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     backgroundColor: "#F9F9F9",
+  },
+  dateInput: {
+    height: 50,
+    justifyContent: "center",
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: "#F9F9F9",
+  },
+  pickerContainer: {
+    height: 50,
+    width: "100%",
+    padding: 0,
+    margin: 0,
+    borderRadius: 8,
+    backgroundColor: "#F9F9F9",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    overflow: "hidden",
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+    padding: 0,
+    margin: 0,
+    borderRadius: 8,
+    backgroundColor: "#F9F9F9",
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
   button: {
     backgroundColor: "#007BFF",
