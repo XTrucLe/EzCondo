@@ -1,28 +1,14 @@
-import remoteConfig from "@react-native-firebase/remote-config";
-import messaging from "@react-native-firebase/messaging";
-import * as SercureStore from "expo-secure-store";
+import * as Notifications from "expo-notifications";
 
-export const getApiUrl = async () => {
-  await remoteConfig().setDefaults({
-    API_URL: "https://localhost:7245",
-  });
-
-  await remoteConfig().fetchAndActivate();
-  return remoteConfig().getValue("API_HOST").asString();
+export type FCMTokenProps = {
+  data: string;
+  type?: string;
 };
 
 export const getFCMToken = async () => {
   try {
-    let fcmToken = await SercureStore.getItem("fcmToken");
-
-    if (!fcmToken) {
-      fcmToken = await messaging().getToken();
-      if (fcmToken) {
-        await SercureStore.setItem("fcmToken", fcmToken);
-        console.log("🔥 FCM Token:", fcmToken);
-      }
-    }
-
+    const fcmToken = await Notifications.getDevicePushTokenAsync();
+    console.log("🔑 FCM Token:", fcmToken);
     return fcmToken;
   } catch (error) {
     console.log("❌ Lỗi lấy FCM Token:", error);

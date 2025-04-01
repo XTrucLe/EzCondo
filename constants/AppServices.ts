@@ -1,3 +1,5 @@
+import { ServiceDetailType } from "@/utils/type/serviceDetailType";
+
 export const SERVICES = [
   {
     id: 1,
@@ -25,21 +27,23 @@ export const SERVICES = [
     name: "Điện nước",
     category: "Tiện ích",
     icon: "flash-outline",
-    // onPress: () => console.log("Điện nước được chọn"),
+    onPress: (navigation: any) => navigation.navigate("bill" as never),
   },
   {
     id: 5,
     name: "Quản lý cư dân",
     category: "Cư dân",
     icon: "people-outline",
-    onPress: () => console.log("Quản lý cư dân được chọn"),
+    onPress: (navigation: any) =>
+      navigation.navigate("apartmentMember" as never),
   },
   {
     id: 6,
     name: "Phí dịch vụ",
     category: "Tài chính",
     icon: "wallet-outline",
-    onPress: () => console.log("Phí dịch vụ được chọn"),
+    onPress: (navigation: any) =>
+      navigation.navigate("detail", { service: "fee" }),
   },
   {
     id: 7,
@@ -63,3 +67,21 @@ export const SERVICES = [
     onPress: () => console.log("Quản lý đặt chỗ được chọn"),
   },
 ] as const;
+
+export const fakeData: ServiceDetailType[] = [
+  {
+    id: "as4qw8",
+    name: "Bể bơi",
+    description:
+      "Bể bơi trong nhà với nước sạch và an toàn cho sức khỏe. Giờ mở cửa từ 6h đến 22h hàng ngày.",
+    images: [
+      { id: "1", image: "https://example.com/pool.jpg" },
+      { id: "2", image: "https://example.com/pool2.jpg" },
+    ],
+    price: [
+      { name: "Giá vé người lớn", price: 50000 },
+      { name: "Giá vé trẻ em", price: 30000 },
+    ],
+    status: "active",
+  },
+];

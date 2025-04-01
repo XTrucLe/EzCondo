@@ -1,6 +1,6 @@
 import { loginBackgroundImage } from "@/constants/FakeDatabase";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import * as SecureStore from "expo-secure-store";
 import {
   StyleSheet,
@@ -18,63 +18,78 @@ import { Text, TextInput, Button, Checkbox } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "expo-router";
 import useAuthStore from "@/hooks/useAuth";
+import { applicationImages, enImg, viImg } from "@/constants/ImageLink";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useValidate } from "@/hooks/useValidate";
+import { validateEmail, validateLogin } from "@/utils/validate/validateRules";
+import { useLoading } from "@/hooks/useLoading";
+
+// Định nghĩa action types
+const actionTypes = {
+  SET_EMAIL: "SET_EMAIL",
+  SET_PASSWORD: "SET_PASSWORD",
+  TOGGLE_REMEMBER_ME: "TOGGLE_REMEMBER_ME",
+  SET_SHOW_PASSWORD: "SET_SHOW_PASSWORD",
+};
+
+// Reducer function
+const reducer = (state: any, action: any) => {
+  switch (action.type) {
+    case actionTypes.SET_EMAIL:
+      return { ...state, email: action.payload };
+    case actionTypes.SET_PASSWORD:
+      return { ...state, password: action.payload };
+    case actionTypes.TOGGLE_REMEMBER_ME:
+      return { ...state, rememberMe: !state.rememberMe };
+    case actionTypes.SET_SHOW_PASSWORD:
+      return { ...state, showPassword: action.payload };
+    default:
+      return state;
+  }
+};
 
 const LoginScreen = () => {
   const { login } = useAuthStore();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const { currentLang, translation, setLanguage } = useLanguage();
+  const { startLoading, stopLoading } = useLoading();
+  const { errors, handleChange, handleRemoveError, validateAll } = useValidate(
+    { email: "", password: "" },
+    validateLogin
+  );
+
+  // Khởi tạo reducer state
+  const [state, dispatch] = useReducer(reducer, {
+    email: "",
+    password: "",
+    rememberMe: false,
+    showPassword: false,
+  });
+
   const backgroundColor = useThemeColor({}, "buttonPrimary");
   const textColor = useThemeColor({}, "buttonPrimaryText");
   const inputBorderColor = useThemeColor({}, "inputBorder");
 
   useEffect(() => {
     const loadRememberedUser = async () => {
-      // Load user data from storage
-      // If user data exists, set email and rememberMe to the stored values
       const hasRememberedUser = await SecureStore.getItem("REMEMBER_KEY");
       if (hasRememberedUser) {
         const storedEmail = await SecureStore.getItem("EMAIL_KEY");
         if (storedEmail) {
-          setEmail(storedEmail);
-          setRememberMe(true);
+          dispatch({ type: actionTypes.SET_EMAIL, payload: storedEmail });
+          dispatch({ type: actionTypes.TOGGLE_REMEMBER_ME });
         }
       }
     };
     loadRememberedUser();
   }, []);
 
-  // Hiển thị và ẩn mật khẩu sau 1s
   const togglePasswordVisibility = () => {
-    setShowPassword(true);
-    setTimeout(() => setShowPassword(false), 1000); // Ẩn sau 3 giây
-  };
-
-  // Kiểm tra email hợp lệ
-  const validateEmail = (text: string) => {
-    setEmail(text);
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!text) {
-      setEmailError("Email is required");
-    } else if (!emailRegex.test(text)) {
-      setEmailError("Invalid email format");
-    } else {
-      setEmailError("");
-    }
-  };
-
-  const validateInput = (text: string) => {
-    setPassword(text);
-    if (!text) {
-      setPasswordError("Password is required");
-    } else {
-      setPasswordError("");
-    }
+    dispatch({ type: actionTypes.SET_SHOW_PASSWORD, payload: true });
+    setTimeout(() => {
+      dispatch({ type: actionTypes.SET_SHOW_PASSWORD, payload: false });
+    }, 1000);
   };
 
   const handleForgotPassword = () => {
@@ -82,26 +97,19 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    if (!email || emailError) {
-      alert("Please enter a valid email");
-      validateEmail(email);
-      return;
-    }
-    if (!password || passwordError) {
-      alert("Please enter a password");
-      validateInput(password);
-      return;
-    }
-    console.log("Email:", email, "Password:", password);
+    validateAll();
+    console.log(errors);
+
+    if (errors?.mail != "" && errors?.password != "") return;
+    startLoading();
     try {
-      await login(email, password, rememberMe);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "(tabs)" as never }],
-      });
+      await login(state.email, state.password, state.rememberMe);
+      navigation.reset({ index: 0, routes: [{ name: "(tabs)" as never }] });
+      stopLoading();
     } catch (error) {
       console.error(error);
-      alert(error);
+      alert((error as any).message);
+      stopLoading();
     }
   };
 
@@ -113,97 +121,121 @@ const LoginScreen = () => {
         resizeMode="cover"
       >
         <KeyboardAvoidingView
-          // behavior={Platform.OS === "ios" ? "position" : undefined}
           keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
         >
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             <Image
-              source={require("../../assets/images/EzCondoIcon.png")}
+              source={applicationImages}
               style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={styles.title}>Welcome Back!</Text>
+            <Text style={styles.title}>{translation.wellcome}!</Text>
 
-            {/* Email Input */}
             <TextInput
               label="Email"
-              value={email}
-              onEndEditing={() => validateEmail(email)}
-              onChangeText={setEmail}
+              value={state.email}
+              onEndEditing={() => handleChange("email", state.email ?? "")}
+              onChangeText={(text) =>
+                dispatch({ type: actionTypes.SET_EMAIL, payload: text })
+              }
+              onKeyPress={() => handleRemoveError("email")}
               mode="outlined"
               style={styles.input}
               keyboardType="email-address"
               autoCapitalize="none"
-              error={!!emailError}
+              error={!!errors.email}
             />
-            {emailError ? (
-              <Text style={styles.errorText}>{emailError}</Text>
+            {errors?.email ? (
+              <Text style={styles.errorText}>{errors.email}</Text>
             ) : null}
 
-            <View style={styles.container}>
-              <TextInput
-                label="Password"
-                value={password}
-                onEndEditing={() => validateInput(password)}
-                onChangeText={setPassword}
-                mode="outlined"
-                secureTextEntry={!showPassword} // Ẩn/hiện mật khẩu
-                style={styles.input}
-                error={!!passwordError}
-                theme={{ colors: { primary: inputBorderColor } }}
-                right={
-                  <TextInput.Icon
-                    icon={showPassword ? "eye-off" : "eye"} // Icon mắt mở/tắt
-                    onPress={togglePasswordVisibility}
-                  />
-                }
-              />
-              {passwordError ? (
-                <Text style={styles.errorText}>{passwordError}</Text>
-              ) : null}
-            </View>
+            <TextInput
+              label={translation.password}
+              value={state.password}
+              onEndEditing={() =>
+                handleChange("password", state.password ?? "")
+              }
+              onChangeText={(text) =>
+                dispatch({ type: actionTypes.SET_PASSWORD, payload: text })
+              }
+              mode="outlined"
+              secureTextEntry={!state.showPassword}
+              style={styles.input}
+              onKeyPress={() => handleRemoveError("password")}
+              error={!!errors.password}
+              theme={{ colors: { primary: inputBorderColor } }}
+              right={
+                <TextInput.Icon
+                  icon={state.showPassword ? "eye-off" : "eye"}
+                  onPress={togglePasswordVisibility}
+                />
+              }
+            />
+            {errors.password ? (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            ) : null}
 
-            {/* Remember Me */}
             <View style={styles.rememberForgotContainer}>
-              {/* Remember Me */}
               <TouchableOpacity
                 style={styles.rememberMeContainer}
-                onPress={() => setRememberMe(!rememberMe)}
+                onPress={() =>
+                  dispatch({ type: actionTypes.TOGGLE_REMEMBER_ME })
+                }
               >
-                <Checkbox
-                  status={rememberMe ? "checked" : "unchecked"}
-                  onPress={() => setRememberMe(!rememberMe)}
-                />
-                <Text style={styles.rememberMeText}>Remember me</Text>
+                <Checkbox status={state.rememberMe ? "checked" : "unchecked"} />
+                <Text style={styles.rememberMeText}>
+                  {translation.rememberMe}
+                </Text>
               </TouchableOpacity>
 
-              {/* Forgot Password */}
               <TouchableOpacity onPress={handleForgotPassword}>
-                <Text style={styles.forgetPassword}>Forgot password?</Text>
+                <Text style={styles.forgetPassword}>
+                  {translation.forgotPassword}
+                </Text>
               </TouchableOpacity>
             </View>
-            {/* Login Button */}
+
             <Button
               mode="contained"
               onPress={handleLogin}
               style={[styles.button, { backgroundColor }]}
               labelStyle={[styles.buttonLabel, { color: textColor }]}
             >
-              Login
+              {translation.login}
             </Button>
-            {/* Forgot Password Link */}
           </ScrollView>
+          <ChangeLanguage
+            currentLang={currentLang}
+            changeLanguage={setLanguage}
+          />
         </KeyboardAvoidingView>
       </ImageBackground>
     </TouchableWithoutFeedback>
   );
 };
 
+const ChangeLanguage = ({
+  changeLanguage,
+  currentLang,
+}: {
+  changeLanguage: (lang: string) => void;
+  currentLang: string;
+}) => {
+  return (
+    <TouchableOpacity
+      style={styles.iconContainer}
+      onPress={() => changeLanguage(currentLang === "en" ? "vi" : "en")}
+    >
+      <Image
+        source={currentLang === "vi" ? viImg : enImg}
+        style={styles.languageImgs}
+      />
+      <Text>{currentLang}</Text>
+    </TouchableOpacity>
+  );
+};
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
+  container: { flex: 1, backgroundColor: "#f5f5f5" },
   scrollContainer: {
     flexGrow: 1,
     paddingHorizontal: 20,
@@ -222,21 +254,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 30,
   },
-  input: {
-    marginBottom: 10,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-    fontSize: 14,
-  },
-  button: {
-    marginTop: 10,
-  },
-  buttonLabel: {
-    fontSize: 16,
-    paddingVertical: 5,
-  },
+  input: { marginBottom: 10 },
+  errorText: { color: "red", marginBottom: 10, fontSize: 14 },
+  button: { marginTop: 10 },
+  buttonLabel: { fontSize: 16, paddingVertical: 5 },
   rememberForgotContainer: {
     flexDirection: "row",
     justifyContent: "space-between", // Đẩy Remember Me sang trái, Forgot Password sang phải
@@ -257,6 +278,24 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textDecorationLine: "underline",
     fontSize: 14,
+  },
+  iconContainer: {
+    position: "absolute",
+    display: "flex",
+    flexDirection: "row",
+    right: 20,
+    top: 20,
+    backgroundColor: "rgba(248, 248, 248, 0.8)",
+    height: 50,
+    width: 50,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  languageImgs: {
+    width: 30,
+    height: 30,
+    alignSelf: "center",
   },
 });
 

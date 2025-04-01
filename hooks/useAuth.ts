@@ -2,7 +2,6 @@ import { create } from "zustand";
 import {
   getToken,
   saveToken,
-  clearToken,
   fetchUserInfo,
   getUserFromStorage,
   loginAPI,
@@ -11,9 +10,10 @@ import {
   forgotPassword,
   verifyOTP,
   updatePassword,
-  setAuthHeader,
+  setStorage,
 } from "@/services/authService";
-import { UserProps } from "@/services/UserService";
+import { regisFCMToken, UserProps } from "@/services/UserService";
+import { FCMTokenProps, getFCMToken } from "@/services/firebaseService";
 
 const AUTO_LOGOUT_TIME = 300000; // 5 phút
 
@@ -21,6 +21,7 @@ interface AuthState {
   loading: boolean;
   verified: boolean;
   user: UserProps | null;
+  fcm: FCMTokenProps | null;
   logOutTimer: NodeJS.Timeout | null;
   startLogoutTimer: () => void;
   clearLogoutTimer: () => void;
@@ -42,6 +43,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   verified: false,
   user: null,
   logOutTimer: null,
+  fcm: null,
 
   startLogoutTimer: () => {
     set({ logOutTimer: setTimeout(get().logout, AUTO_LOGOUT_TIME) });
@@ -63,6 +65,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
         const user = cachedUser || (await fetchUserInfo());
         set({ verified: !!token, user });
       }
+      const fcm = await getFCMToken();
+      if (fcm) {
+        set({ fcm });
+        await regisFCMToken(fcm.data, fcm.type || "expo", true);
+      }
     } catch (error) {
       console.error("Error loading token:", error);
     }
@@ -73,7 +80,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     try {
       const token = await loginAPI(email, password);
-      await saveToken(token);
+      if (rememberMe) {
+        await setStorage("EMAIL_KEY", email);
+        await setStorage("REMEMBER_KEY", "true");
+      }
+
+      if (!token) await saveToken(token);
       let user = null;
       if (token) {
         user = await fetchUserInfo();
@@ -81,7 +93,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
       set({ verified: true, user });
     } catch (error) {
-      console.error("Login failed:", error);
       throw error;
     }
     set({ loading: false });
@@ -91,7 +102,13 @@ const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     try {
       await logoutAPI();
+      await regisFCMToken(
+        get().fcm?.data ?? "",
+        get().fcm?.type ?? "expo",
+        false
+      );
       set({ verified: false, user: null });
+      set({ fcm: null });
     } catch (error) {
       console.error("Logout failed:", error);
       throw error;

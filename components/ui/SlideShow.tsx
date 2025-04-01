@@ -2,11 +2,20 @@ import { SlidesOfCarousel } from "@/constants/SlideLinks";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
 const width = Dimensions.get("window").width;
+type SlideType = {
+  id?: string;
+  image?: string;
+};
 
-export const SlideShow = () => {
+type SlideProps = {
+  item: SlideType[];
+  time?: number;
+};
+export const SlideShow = ({ item, time }: SlideProps) => {
   const carouselRef = useRef<FlatList<any>>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const slides = SlidesOfCarousel;
+  const slides = item.length > 0 ? item : SlidesOfCarousel;
+  const timeInterval = time ? time : 5000; // Default to 5 seconds if no time is provided
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -15,7 +24,7 @@ export const SlideShow = () => {
         carouselRef.current.scrollToIndex({ index: nextIndex, animated: true });
         setCurrentIndex(nextIndex);
       }
-    }, 3000);
+    }, timeInterval);
 
     return () => clearInterval(interval);
   }, [currentIndex]);

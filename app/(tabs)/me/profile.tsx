@@ -1,10 +1,19 @@
+import ModalCustome from "@/components/ui/custome/ModalCustome";
 import { userDefaultImage } from "@/constants/ImageLink";
 import { profileFields } from "@/constants/profile_form";
 import useAuthStore from "@/hooks/useAuth";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { UserProps as OriginalUserProps } from "@/services/UserService";
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Modal,
+  Button,
+} from "react-native";
 import { Card } from "react-native-paper";
 
 interface UserProps extends OriginalUserProps {
@@ -17,6 +26,7 @@ const ProfileScreen = () => {
   const textColor = useThemeColor({}, "text");
   const cardColor = useThemeColor({}, "cardBackground");
   const [userInfo, setUserInfo] = React.useState<UserProps>();
+  const [visible, setVisible] = React.useState(false);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -28,7 +38,10 @@ const ProfileScreen = () => {
   }, [user]);
 
   const UserInfoRow = ({ label, value }: { label: string; value: string }) => (
-    <View style={styles.infoRow}>
+    <View
+      style={styles.infoRow}
+      onTouchStart={() => label == "apartmentNumber" && setVisible(true)}
+    >
       <Text style={styles.label}>{label}</Text>
       <Text
         style={[styles.info, { color: textColor }]}
@@ -63,11 +76,12 @@ const ProfileScreen = () => {
               <UserInfoRow
                 key={name}
                 label={label}
-                value={userInfo?.[name] ?? "N/A"}
+                value={userInfo ? userInfo[name] : ""}
               />
             ))}
         </Card.Content>
       </Card>
+      <ModalCustome visible={visible} setVisible={setVisible} />
     </View>
   );
 };
@@ -140,6 +154,23 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "#FF3B30",
     width: "80%",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)", // Nền tối khi mở Modal
+  },
+  modalContent: {
+    width: 300,
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
   },
 });
 

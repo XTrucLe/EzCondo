@@ -62,3 +62,31 @@ const updateProfile = async (data: any) => {
     throw new Error(error as any);
   }
 };
+
+export const regisFCMToken = async (
+  fcmToken: string,
+  deviceType: string,
+  status: boolean
+) => {
+  try {
+    const response = await request({
+      method: "post",
+      url: endpoints.user?.regisFCMToken,
+      data: { fcmToken, deviceType, status },
+    });
+
+    if (!response) {
+      return { error: "Request failed" };
+    }
+
+    const { data, error } = response;
+
+    if (error) {
+      return { error };
+    }
+
+    return { data };
+  } catch (error) {
+    throw new Error(error as any);
+  }
+};

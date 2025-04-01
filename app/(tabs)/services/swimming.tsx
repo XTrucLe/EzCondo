@@ -11,7 +11,7 @@ import { useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Swimming() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   return (
     <ScrollView style={styles.container}>
@@ -77,7 +77,12 @@ export default function Swimming() {
       {/* Nút đặt lịch */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("booking" as never)}
+        onPress={() =>
+          navigation.navigate("booking", {
+            monthPrice: 100000,
+            yearPrice: 800000,
+          })
+        }
       >
         <Text style={styles.buttonText}>Đặt lịch ngay</Text>
       </TouchableOpacity>

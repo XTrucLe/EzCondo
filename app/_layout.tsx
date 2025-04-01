@@ -13,11 +13,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import useAuthStore from "@/hooks/useAuth";
 import { AppState } from "react-native";
 import { requestUserPermission } from "@/utils/permision/PushNotification";
-import { getApiUrl, getFCMToken } from "@/services/firebaseService";
-import {
-  listenForBackgroundMessages,
-  listenForForegroundMessages,
-} from "@/services/notificationHandler";
+import { getFCMToken } from "@/services/firebaseService";
+import { useNotificationListener } from "@/services/notificationHandler";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -44,12 +42,11 @@ export default function RootLayout() {
     };
   }, []);
 
+  useNotificationListener();
+
   useEffect(() => {
     const initialize = () => {
       requestUserPermission();
-      getFCMToken();
-      listenForForegroundMessages();
-      listenForBackgroundMessages();
     };
     initialize();
   }, []);
@@ -72,6 +69,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
+      <LoadingOverlay />
     </ThemeProvider>
   );
 }

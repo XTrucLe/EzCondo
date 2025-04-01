@@ -6,7 +6,6 @@ import {
   Switch,
   SafeAreaView,
   TouchableOpacity,
-  useColorScheme,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import useAuthStore from "@/hooks/useAuth";
@@ -15,13 +14,12 @@ import * as SecureStore from "expo-secure-store";
 import { Avatar, Button, Card, List } from "react-native-paper";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { userDefaultImage } from "@/constants/ImageLink";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const { logout } = useAuthStore();
-  const { user: userInfo } = useAuthStore();
+  const { logout, user: userInfo } = useAuthStore();
   const [darkMode, setDarkMode] = useState(false);
-  const [language, setLanguage] = useState("English");
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
 
   const backgroundColor = useThemeColor({}, "background");
@@ -30,45 +28,51 @@ const ProfileScreen = () => {
   const iconColor = useThemeColor({}, "icon");
   const logoutButtonColor = useThemeColor({}, "error");
 
+  const { translation, setLanguage, currentLang } = useLanguage();
+
   useEffect(() => {
     loadSettings();
   }, []);
 
   const loadSettings = async () => {
     const storedDarkMode = await SecureStore.getItem("darkMode");
-    const storedLanguage = await SecureStore.getItem("language");
     const stored2FA = await SecureStore.getItem("twoFactorAuth");
 
     setDarkMode(storedDarkMode === "true");
-    setLanguage(storedLanguage || "Tiếng Việt");
     setTwoFactorAuth(stored2FA === "true");
   };
 
   const toggleDarkMode = async () => {
-    setDarkMode((prev) => !prev);
-    await SecureStore.setItem("darkMode", (!darkMode).toString());
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    await SecureStore.setItem("darkMode", newDarkMode.toString());
   };
 
   const toggleTwoFactorAuth = async () => {
-    setTwoFactorAuth((prev) => !prev);
-    await SecureStore.setItem("twoFactorAuth", (!twoFactorAuth).toString());
+    const new2FA = !twoFactorAuth;
+    setTwoFactorAuth(new2FA);
+    await SecureStore.setItem("twoFactorAuth", new2FA.toString());
   };
 
   const handleLogout = () => {
-    Alert.alert("Confirm Logout", "Are you sure you want to log out?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Logout",
-        onPress: async () => {
-          logout();
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "auth" as never }],
-          });
+    Alert.alert(
+      `${translation.confirm} ${translation.logout}`,
+      translation.confirmLogout,
+      [
+        { text: translation.cancel, style: "cancel" },
+        {
+          text: translation.logout,
+          onPress: async () => {
+            logout();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "auth" as never }],
+            });
+          },
+          style: "destructive",
         },
-        style: "destructive",
-      },
-    ]);
+      ]
+    );
   };
 
   return (
@@ -101,10 +105,10 @@ const ProfileScreen = () => {
 
       <List.Section>
         <List.Subheader style={[styles.subHeader, { color: textColor }]}>
-          Cài đặt chung
+          {translation.generalSetting}
         </List.Subheader>
         <List.Item
-          title="Chế độ tối"
+          title={translation.darkMode}
           left={() => <List.Icon icon="theme-light-dark" color={iconColor} />}
           right={() => (
             <Switch value={darkMode} onValueChange={toggleDarkMode} />
@@ -112,12 +116,10 @@ const ProfileScreen = () => {
           style={styles.listItem}
         />
         <List.Item
-          title="Ngôn ngữ"
-          description={language}
+          title={translation.language}
+          description={currentLang === "en" ? "English" : "Tiếng Việt"}
           left={() => <List.Icon icon="translate" color={iconColor} />}
-          onPress={() =>
-            setLanguage(language === "English" ? "Tiếng Việt" : "English")
-          }
+          onPress={() => setLanguage(currentLang === "en" ? "vi" : "en")}
           style={styles.listItem}
         />
         <List.Item
@@ -132,7 +134,7 @@ const ProfileScreen = () => {
 
       <List.Section>
         <List.Subheader style={[styles.subHeader, { color: textColor }]}>
-          Hỗ trợ
+          {translation.support}
         </List.Subheader>
         <List.Item
           title="Trung tâm trợ giúp"
@@ -141,9 +143,15 @@ const ProfileScreen = () => {
           style={styles.listItem}
         />
         <List.Item
-          title="Cài đặt tài khoản"
+          title={translation.accountSetting}
           left={() => <List.Icon icon="account-cog" color={iconColor} />}
           onPress={() => navigation.navigate("profile_edit" as never)}
+          style={styles.listItem}
+        />
+        <List.Item
+          title={translation.accountSetting}
+          left={() => <List.Icon icon="account-cog" color={iconColor} />}
+          onPress={() => navigation.navigate("changePassword" as never)}
           style={styles.listItem}
         />
       </List.Section>
@@ -153,7 +161,7 @@ const ProfileScreen = () => {
         onPress={handleLogout}
         style={[styles.logoutButton, { backgroundColor: logoutButtonColor }]}
       >
-        Đăng xuất
+        {translation.logout}
       </Button>
     </SafeAreaView>
   );

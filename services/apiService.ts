@@ -1,84 +1,95 @@
 import axios from "axios";
 import { getToken } from "./authService";
 import { getApiUrl } from "@/utils/getApiUrl";
+import { useLanguage } from "@/hooks/useLanguage";
+
+let apiInstance: ReturnType<typeof axios.create> | null = null;
+
+// Delay function
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Khởi tạo Api instance
-const createApiInstance = async () => {
-  const baseURL = await getApiUrl(); // Lấy URL API từ Firebase Remote Config
-  if (!baseURL) {
-    throw new Error("Không thể lấy URL API từ Remote Config!");
-  }
-  console.log("🌐 API URL:", baseURL);
+const getApiInstance = async () => {
+  if (!apiInstance) {
+    let baseURL = await getApiUrl(); // Lấy URL API từ Firebase Remote Config
+    if (!baseURL) throw new Error("Không thể lấy URL API từ Remote Config!");
 
-  const api = axios.create({
-    baseURL,
-    timeout: 10000,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+    apiInstance = axios.create({
+      baseURL,
+      timeout: 10000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  api.interceptors.request.use(
-    async (config) => {
-      const token = await getToken();
-      if (token && !config.headers["Authorization"]) {
-        config.headers["Authorization"] = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => Promise.reject(error)
-  );
+    // 🛠️ Interceptor để thêm token vào request
+    apiInstance.interceptors.request.use(
+      async (config) => {
+        const token = await getToken();
+        if (token && !config.headers["Authorization"]) {
+          config.headers["Authorization"] = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
 
-  api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (!error.response) {
-        console.error(
-          "[API ERROR] Không có phản hồi từ server:",
-          error.message
+    // 🔥 Interceptor xử lý lỗi
+    apiInstance.interceptors.response.use(
+      (response) => {
+        console.debug(
+          `[API SUCCESS] ${response.config.method?.toUpperCase()} ${
+            response.config.url
+          } - ${response.status}`
         );
-
-        if (
-          error.code === "ECONNABORTED" ||
-          error.message === "Network Error"
-        ) {
+        return response;
+      },
+      (error) => {
+        const { translation } = useLanguage.getState();
+        if (!error.response) {
           return Promise.reject({
-            message: "Không thể kết nối, kiểm tra mạng!",
+            message: translation.apiError,
             status: 0,
           });
         }
 
-        return Promise.reject({
-          message: "Lỗi kết nối. Vui lòng thử lại!",
-          details: null,
-        });
+        const { status, config } = error.response;
+        let errorMessage = translation[status] || translation.apiError;
+
+        // 🔥 Nếu API là `/login` và bị lỗi 401 thì thông báo là "Không tồn tại user"
+        if (config.url?.includes("/login")) {
+          if (status === 404) {
+            errorMessage = translation.not_found;
+          }
+          if (status === 401) {
+            errorMessage = translation.wrong_credentials;
+          }
+        }
+
+        return Promise.reject(new Error(errorMessage));
       }
+    );
+  }
 
-      const { status, data, config } = error.response;
-      const errorMessage = errorMessages[status] || "Đã xảy ra lỗi!";
+  return apiInstance;
+};
 
-      console.error(`[API ERROR] ${status}: ${errorMessage}`);
+const shouldRetry = (error: any) => {
+  const status = error.response?.status || 0;
+  return [408, 429, 500, 502, 503, 504].includes(status);
+};
 
-      return Promise.reject(new Error(errorMessage));
+const withRetry = async (fn: () => Promise<any>, retryCount: number) => {
+  while (retryCount > 0) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      if (!shouldRetry(error)) throw error;
+      await delay(1000);
+      retryCount--;
     }
-  );
-  return api;
+  }
 };
-
-// Mã lỗi và thông báo tương ứng
-const errorMessages: Record<number, string> = {
-  400: "Yêu cầu không hợp lệ!",
-  401: "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!",
-  403: "Bạn không có quyền truy cập!",
-  404: "Không tìm thấy tài nguyên!",
-  408: "Yêu cầu quá lâu, vui lòng thử lại!",
-  429: "Quá nhiều yêu cầu, hãy thử lại sau!",
-  500: "Lỗi hệ thống, vui lòng thử lại sau!",
-  502: "Máy chủ gặp sự cố, thử lại sau!",
-  503: "Dịch vụ hiện không khả dụng!",
-  504: "Máy chủ phản hồi chậm, vui lòng thử lại!",
-};
-
 type ApiRequest = {
   method: "get" | "post" | "put" | "delete";
   url: string;
@@ -93,26 +104,6 @@ export const request = async ({
   data,
   retryCount = 1,
 }: ApiRequest) => {
-  const api = await createApiInstance();
-  for (let attempt = 0; attempt < retryCount; attempt++) {
-    try {
-      const response = await api({ method, url, data });
-      console.log(`[API SUCCESS] ${method.toUpperCase()} ${url}`);
-
-      return { data: response.data, error: null };
-    } catch (error: any) {
-      if (attempt === retryCount - 1 || !error.response) {
-        console.error(`[API ERROR] Thử lần ${attempt + 1} thất bại:`, {
-          message: error.message,
-          response: error.response ? error.response.data : null,
-          status: error.response ? error.response.status : "No response",
-          header: error.config,
-        });
-        return { data: null, error: error.message };
-      }
-      console.warn(
-        `[API RETRY] Đang thử lại (${attempt + 1}/${retryCount})...`
-      );
-    }
-  }
+  const api = await getApiInstance();
+  return withRetry(() => api.request({ method, url, data }), retryCount);
 };

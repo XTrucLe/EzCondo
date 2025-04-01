@@ -13,6 +13,9 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import useAuthStore from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
+import { getFCMToken } from "@/services/firebaseService";
+import { useLoading } from "@/hooks/useLoading";
 
 export default function TabLayout() {
   const theme = useColorScheme();
@@ -20,7 +23,12 @@ export default function TabLayout() {
   const navigationState = useRootNavigationState();
   const router = useRouter();
   const { verified, loading } = useAuthStore();
+  const { translation } = useLanguage();
+  const { isLoading } = useLoading();
 
+  useEffect(() => {
+    getFCMToken();
+  }, []);
   useEffect(() => {
     if (!navigationState?.key || loading) return;
 
@@ -42,13 +50,14 @@ export default function TabLayout() {
     "members",
     "payment",
     "add_member",
+    "apartmentMember",
+    "changePassword",
   ];
 
   const isTabHidden =
     !navigationState?.key ||
     hiddenScreens.includes(segment[segment.length - 1]);
 
-  const handleTabPress = (index: number) => {};
   return (
     <Tabs
       screenOptions={{
@@ -77,7 +86,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: translation.home,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
@@ -86,7 +95,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="services"
         options={{
-          title: "Services",
+          title: translation.services,
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="star" color={color} />
           ),
@@ -96,7 +105,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          title: "Notifications",
+          title: translation.notification,
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="notifications" color={color} />
           ),
@@ -106,7 +115,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="me"
         options={{
-          title: "Me",
+          title: translation.profile,
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="person" color={color} />
           ),

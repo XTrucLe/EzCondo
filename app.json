@@ -12,6 +12,10 @@
       "barStyle": "dark-content"
     },
     "newArchEnabled": true,
+    "notifications": {
+      "icon": "./assets/images/EzCondoIcon.png",
+      "color": "#FF5733"
+    },
     "ios": {
       "supportsTablet": true
     },

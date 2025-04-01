@@ -19,6 +19,15 @@ export const clearToken = async () => {
   await SecureStore.deleteItemAsync(TOKEN_KEY);
 };
 
+export const setStorage = async (key: string, value: string) => {
+  await SecureStore.setItemAsync(key, value);
+};
+
+export const getStorage = async (key: string) => {
+  const value = await SecureStore.getItemAsync(key);
+  return value ? JSON.parse(value) : null;
+};
+
 export const setAuthHeader = (token: string) => {
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 };
@@ -63,17 +72,19 @@ export const clearUserInfo = async () => {
 
 // 🔹 API đăng nhập
 export const loginAPI = async (email: string, password: string) => {
-  const response = await request({
-    method: "post",
-    url: endpoints.auth?.login,
-    data: { email, password },
-  });
-  let token = response?.data?.token;
-  if (!token) throw new Error("Invalid token");
-
-  await saveToken(token);
-  setAuthHeader(token);
-  return token;
+  try {
+    const response = await request({
+      method: "post",
+      url: endpoints.auth?.login,
+      data: { email, password },
+    });
+    let token = response?.data?.token;
+    await saveToken(token);
+    setAuthHeader(token);
+    return token;
+  } catch (error) {
+    throw error;
+  }
 };
 
 // 🔹 API đăng xuất

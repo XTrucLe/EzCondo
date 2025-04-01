@@ -1,9 +1,10 @@
 import ExtensionsUI from "@/components/ui/ExtensionsUI";
 import { SlideShow } from "@/components/ui/SlideShow";
 import { userInformation } from "@/constants/FakeDatabase";
+import { useLanguage } from "@/hooks/useLanguage";
 import useAuthStore from "@/hooks/useAuth";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -35,9 +36,12 @@ const Header = ({
 }) => {
   const theme = useColorScheme();
   const { user } = useAuthStore();
+  const { translation } = useLanguage();
   const backgroundColor = useThemeColor({}, "header");
   const textColor = useThemeColor({}, "text");
-  const textTime = isLightTime(new Date().getHours()) ? "sáng! 🌞" : "tối! 🌙";
+  const textTime = isLightTime(new Date().getHours())
+    ? `${translation.goodMorning}! 🌞`
+    : `${translation.goodEvening}! 🌙`;
   const wellcomeTextColor = theme == "light" ? "#FF9800" : "#121212";
   const [userInfo, setUserInfo] = useState<UserHomeProps>({
     fullName: "Người dùng",
@@ -80,7 +84,7 @@ const Header = ({
       style={[styles.header, { height: headerHeight, backgroundColor }]}
     >
       <Text style={[styles.wellcomeText, { color: wellcomeTextColor }]}>
-        Chào buổi {textTime}
+        {textTime}
       </Text>
       <Animated.View
         style={[
@@ -167,7 +171,7 @@ export default function HomeScreen() {
         scrollEventThrottle={16}
       >
         <ExtensionsUI />
-        <SlideShow />
+        <SlideShow item={[]} />
       </Animated.ScrollView>
       {/* Nút FAB để mở màn hình "incident" */}
       <FAB

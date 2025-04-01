@@ -1,15 +1,16 @@
 {
   "project_info": {
     "project_number": "899090682451",
+    "firebase_url": "https://ezcondo-73fc4-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "ezcondo-73fc4",
     "storage_bucket": "ezcondo-73fc4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:899090682451:android:574820db7e2eb543666ca6",
+        "mobilesdk_app_id": "1:899090682451:android:9f0047d9ee6d23c4666ca6",
         "android_client_info": {
-          "package_name": "com.ezcondo"
+          "package_name": "com.trucle0505.EzCondo"
         }
       },
       "oauth_client": [],

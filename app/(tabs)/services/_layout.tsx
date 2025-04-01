@@ -24,6 +24,9 @@ export default function _layout() {
           ),
         }}
       />
+      <Stack.Screen name="apartmentMember" options={{ headerShown: true }} />
+      <Stack.Screen name="bill" options={{ headerShown: true }} />
+      <Stack.Screen name="detail" options={{ headerShown: true }} />
     </Stack>
   );
 }
