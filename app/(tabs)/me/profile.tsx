@@ -1,9 +1,9 @@
 import ModalCustome from "@/components/ui/custome/ModalCustome";
 import { userDefaultImage } from "@/constants/ImageLink";
-import { profileFields } from "@/constants/profile_form";
 import useAuthStore from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { UserProps as OriginalUserProps } from "@/services/UserService";
+import { formFields, UserInfoProps } from "@/utils/type/userInfoType";
 import React, { useEffect } from "react";
 import {
   View,
@@ -16,18 +16,14 @@ import {
 } from "react-native";
 import { Card } from "react-native-paper";
 
-interface UserProps extends OriginalUserProps {
-  [key: string]: any;
-}
-
 const ProfileScreen = () => {
   const { user } = useAuthStore();
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
   const cardColor = useThemeColor({}, "cardBackground");
-  const [userInfo, setUserInfo] = React.useState<UserProps>();
+  const [userInfo, setUserInfo] = React.useState<UserInfoProps>();
   const [visible, setVisible] = React.useState(false);
-
+  const { translation } = useLanguage();
   useEffect(() => {
     const fetchUserInfo = async () => {
       if (user) {
@@ -58,27 +54,32 @@ const ProfileScreen = () => {
       {/* Ảnh đại diện */}
       <TouchableOpacity style={styles.avatarContainer}>
         <Image
-          source={userInfo?.image ? { uri: userInfo.image } : userDefaultImage}
+          source={
+            userInfo?.avatar ? { uri: userInfo.avatar } : userDefaultImage
+          }
           style={styles.avatar}
         />
       </TouchableOpacity>
 
       {/* Thông tin người dùng */}
       <Text style={styles.name}>{user?.fullName}</Text>
-      <Text style={styles.role}>{user?.roleName}</Text>
+      <Text style={styles.role}>{user?.role}</Text>
 
       {/* Card hiển thị thông tin */}
       <Card style={[styles.card, { backgroundColor: cardColor }]}>
         <Card.Content>
-          {profileFields
-            .filter(({ name }) => name != "fullName")
-            .map(({ label, name }) => (
-              <UserInfoRow
-                key={name}
-                label={label}
-                value={userInfo ? userInfo[name] : ""}
-              />
-            ))}
+          {Object.entries(formFields)
+            .filter(([key]) => key !== "fullname")
+            .map(([key, field]) => {
+              const value = userInfo?.[key as keyof UserInfoProps] || "-";
+              return (
+                <UserInfoRow
+                  key={key}
+                  label={translation[field?.label || ""]}
+                  value={value.toString()}
+                />
+              );
+            })}
         </Card.Content>
       </Card>
       <ModalCustome visible={visible} setVisible={setVisible} />

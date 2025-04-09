@@ -1,4 +1,3 @@
-import { profileFields } from "@/constants/profile_form";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -19,17 +18,6 @@ const AddMemberScreen = () => {
 
   return (
     <View style={styles.container}>
-      {profileFields.map((field) => (
-        <View key={field.label}>
-          <Text style={styles.label}>{field.label}</Text>
-          <TextInput
-            style={styles.input}
-            value={formData[field.label] || ""}
-            onChangeText={(value) => handleChange(field.label, value)}
-          />
-        </View>
-      ))}
-
       <TouchableOpacity
         style={[styles.button, styles.saveButton]}
         onPress={() => navigation.goBack()}

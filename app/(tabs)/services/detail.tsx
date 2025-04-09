@@ -5,69 +5,60 @@ import { SlideShow } from "@/components/ui/SlideShow";
 import { ServiceDetailType } from "@/utils/type/serviceDetailType";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "react-native-paper";
-import { fakeData } from "@/constants/AppServices";
+import { useNavigation } from "expo-router";
+import { getServiceImages } from "@/services/servicesService";
 
 const ServicesDetailScreen = () => {
-  const { service } = useRoute().params as { service: string };
+  const { service, data } = useRoute().params as {
+    service: string;
+    data: ServiceDetailType[];
+  };
   const { translation } = useLanguage();
+  const navigation = useNavigation<any>();
   const [serviceDetails, setServiceDetails] = useState<ServiceDetailType>({
-    id: "",
-    name: "",
-    description: "",
+    ...data[0],
     images: [],
-    price: [],
-    status: "",
   });
+
   useEffect(() => {
-    const getServiceDetail = async () => {
-      try {
-        // const response = await getServices(serviceId);
-        // console.log(response);
-
-        // setServiceDetails(response.data);
-        setServiceDetails(fakeData[0]);
-      } catch (error) {
-        console.log(error);
-      }
+    const fetchImages = async () => {
+      const image = await getServiceImages(serviceDetails.id);
+      setServiceDetails((prev) => ({ ...prev, images: image }));
     };
-    getServiceDetail();
-  }, [service]);
-
+    fetchImages();
+  }, []);
   const handleBooking = () => {
     // Handle booking logic here
-    console.log("Booking service:", serviceDetails.name);
+    navigation.navigate("booking", {
+      monthPrice: serviceDetails.priceOfMonth,
+      yearPrice: serviceDetails.priceOfYear,
+    });
+    console.log("Booking service:", serviceDetails.serviceName);
   };
   return (
     <ScrollView style={styles.container}>
-      <SlideShow item={serviceDetails.images} />
+      <SlideShow item={serviceDetails.images || []} />
       {/* Tiêu đề */}
-      <Text style={styles.title}>{serviceDetails.name}</Text>
+      <Text style={styles.title}>{serviceDetails.serviceName}</Text>
 
       {/* Giới thiệu */}
       <Text style={styles.sectionTitle}>🌊 {translation.introduce}</Text>
       <Text style={styles.description}>{serviceDetails.description}</Text>
 
-      {/* Tiện ích */}
-      <Text style={styles.sectionTitle}>✨ {translation.facilities}</Text>
-      <View style={styles.facilityContainer}>
-        {serviceDetails?.facilities?.map((item, index) => (
-          <View key={index} style={styles.facilityItem}>
-            <Text>{item.name}</Text>
-          </View>
-        ))}
-      </View>
-
       {/* Giá cả */}
       <Text style={styles.sectionTitle}>💰 {translation.price}</Text>
       <View style={styles.priceTable}>
-        {serviceDetails.price?.length ? (
-          serviceDetails.price.map((item, index) => (
-            <Text key={index} style={styles.priceRow}>
-              {item.name}: <Text style={styles.price}>{item.price} VND</Text>
-            </Text>
-          ))
-        ) : (
-          <Text style={styles.descriptionText}>{translation.noPrice}</Text>
+        {serviceDetails.typeOfMonth && (
+          <Text style={styles.priceRow}>
+            {translation.month}:{" "}
+            <Text style={styles.price}>{serviceDetails.priceOfMonth} VND</Text>
+          </Text>
+        )}
+        {serviceDetails.typeOfYear && (
+          <Text style={styles.priceRow}>
+            {translation.year}:{" "}
+            <Text style={styles.price}>{serviceDetails.priceOfYear} VND</Text>
+          </Text>
         )}
       </View>
 

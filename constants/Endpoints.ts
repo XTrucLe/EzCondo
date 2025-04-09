@@ -24,12 +24,13 @@ export const endpoints = {
     getInfo: `${API_BASE}/User/get-infor-me`,
     updateProfile: `${API_BASE}/User/edit-infor-me`,
     updateAvatar: `${API_BASE}/User/add-or-update-avatar`,
-    regisFCMToken: `${API_BASE}/User/update-fcm-token`,
+    regisFCMToken: `${API_BASE}/User/add-or-update-fcm-token`,
+    changePassword: `${API_BASE}/User/change-password`,
   },
 
   notification: {
-    getNotification: `${API_BASE}/Notification/get-notification`,
-    readNotification: `${API_BASE}/Notification/read-notification`,
+    getNotification: `${API_BASE}/Notification/user-get-notifications`,
+    readNotification: `${API_BASE}/Notification/notifications/mark-as-read`,
   },
 
   fee: {
@@ -40,7 +41,8 @@ export const endpoints = {
 
   service: {
     getServices: `${API_BASE}/Services/get-services`,
-    getServiceDetail: `${API_BASE}/Services/get-service-detail`,
+    getServiceDetail: `${API_BASE}/Services/get-all-services`,
+    getServiceImages: `${API_BASE}/Services/get-service-images`,
     getServiceHistory: `${API_BASE}/Services/get-service-history`,
     getServiceType: `${API_BASE}/Services/get-service-type`,
     postServiceRequest: `${API_BASE}/Services/post-service-request`,

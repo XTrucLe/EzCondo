@@ -4,16 +4,22 @@ import { getApiUrl } from "@/utils/getApiUrl";
 import { useLanguage } from "@/hooks/useLanguage";
 
 let apiInstance: ReturnType<typeof axios.create> | null = null;
-
+let currentBaseURL: string | null = null;
 // Delay function
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const resetApiInstance = () => {
+  apiInstance = null; // Đặt lại apiInstance về null
+};
+
 // Khởi tạo Api instance
 const getApiInstance = async () => {
+  let baseURL = await getApiUrl(); // Lấy URL API từ Firebase Remote Config
+  if (currentBaseURL !== baseURL) {
+    resetApiInstance(); // Nếu URL khác thì đặt lại apiInstance
+    currentBaseURL = baseURL; // Cập nhật currentBaseURL
+  }
   if (!apiInstance) {
-    let baseURL = await getApiUrl(); // Lấy URL API từ Firebase Remote Config
-    if (!baseURL) throw new Error("Không thể lấy URL API từ Remote Config!");
-
     apiInstance = axios.create({
       baseURL,
       timeout: 10000,
@@ -91,7 +97,7 @@ const withRetry = async (fn: () => Promise<any>, retryCount: number) => {
   }
 };
 type ApiRequest = {
-  method: "get" | "post" | "put" | "delete";
+  method: "get" | "post" | "put" | "delete" | "patch";
   url: string;
   data?: any;
   retryCount?: number;
@@ -105,5 +111,11 @@ export const request = async ({
   retryCount = 1,
 }: ApiRequest) => {
   const api = await getApiInstance();
+  console.log(
+    `[API REQUEST]${api.getUri()} /${method.toUpperCase()} ${url} - ${JSON.stringify(
+      data
+    )}`
+  );
+
   return withRetry(() => api.request({ method, url, data }), retryCount);
 };

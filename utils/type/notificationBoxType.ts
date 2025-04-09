@@ -3,7 +3,7 @@ export type NotificationBoxType = {
   title: string;
   content: string;
   date: string;
-  type: "notification" | "fee" | "news";
+  type: "notice" | "Fee" | "News";
   isRead: boolean;
   createBy: string;
   createAt: string;

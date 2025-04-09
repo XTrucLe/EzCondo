@@ -43,7 +43,12 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
+      "expo-secure-store",
+      "expo-image-picker",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true

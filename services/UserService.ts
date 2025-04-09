@@ -1,20 +1,8 @@
 import { endpoints } from "@/constants/Endpoints";
 import { request } from "./apiService";
+import { fetchUserInfo } from "./authService";
 
-export { UserProps, getUserInfo, updateProfile };
-
-type UserProps = {
-  fullName: string;
-  email?: string;
-  citizenIdentity?: string;
-  phoneNumber?: string;
-  dateOfBirth?: string;
-  gender?: string;
-  roleName?: string;
-  status?: string;
-  apartmentNumber?: string;
-  avatar?: string;
-};
+export { getUserInfo, updateProfile };
 
 const getUserInfo = async () => {
   try {
@@ -38,11 +26,10 @@ const getUserInfo = async () => {
     throw new Error(error as any);
   }
 };
-
 const updateProfile = async (data: any) => {
   try {
     const response = await request({
-      method: "put",
+      method: "patch",
       url: endpoints.user?.updateProfile,
       data,
     });
@@ -50,7 +37,7 @@ const updateProfile = async (data: any) => {
     if (!response) {
       return { error: "Request failed" };
     }
-
+    await fetchUserInfo();
     const { data: responseData, error } = response;
 
     if (error) {
@@ -69,10 +56,40 @@ export const regisFCMToken = async (
   status: boolean
 ) => {
   try {
+    console.log("regisFCMToken", fcmToken, deviceType, status);
+
     const response = await request({
       method: "post",
       url: endpoints.user?.regisFCMToken,
-      data: { fcmToken, deviceType, status },
+      data: { fcmToken: fcmToken, type: deviceType, isActive: status },
+    });
+
+    if (!response) {
+      return { error: "Request failed" };
+    }
+
+    const { data, error } = response;
+    console.log("Success regisFCMToken");
+
+    if (error) {
+      return { error };
+    }
+
+    return { data };
+  } catch (error) {
+    throw new Error(error as any);
+  }
+};
+
+export const changePassword = async (
+  oldpassword: string,
+  newPassword: string
+) => {
+  try {
+    const response = await request({
+      method: "patch",
+      url: endpoints.user?.changePassword,
+      data: { oldPassword: oldpassword, newPassword: newPassword },
     });
 
     if (!response) {

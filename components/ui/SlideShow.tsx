@@ -2,9 +2,9 @@ import { SlidesOfCarousel } from "@/constants/SlideLinks";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
 const width = Dimensions.get("window").width;
-type SlideType = {
+export type SlideType = {
   id?: string;
-  image?: string;
+  imagePath?: string;
 };
 
 type SlideProps = {

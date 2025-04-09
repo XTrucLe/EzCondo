@@ -7,8 +7,7 @@ export const handleReadNotice = async (id: string) => {
       method: "post",
       url: endpoints.notification.readNotification,
       data: {
-        id,
-        isRead: true,
+        notificationIds: [id],
       },
     });
   } catch (error) {
@@ -27,12 +26,13 @@ export const handleReadNotice = async (id: string) => {
 //   }
 // };
 
-const getNotification = async () => {
+export const getNotification = async () => {
   try {
     const response = await request({
       method: "get",
       url: endpoints.notification.getNotification,
     });
+
     return response.data;
   } catch (error) {
     console.error("Error fetching notifications:", error);

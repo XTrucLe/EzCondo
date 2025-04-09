@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store";
 import { request } from "@/services/apiService";
 import { endpoints } from "@/constants/Endpoints";
 import axios from "axios";
+import { getUserInfo } from "./UserService";
 
 const TOKEN_KEY = "authToken";
 const USER_KEY = "userData";
@@ -39,12 +40,11 @@ export const clearAuthHeader = () => {
 // 🔹 Lấy user từ API
 export const fetchUserInfo = async () => {
   try {
-    const response = await request({
-      method: "get",
-      url: endpoints.user.getInfo,
-    });
+    const response = await getUserInfo();
+    if (!response) return null; // Handle case when user info is not available
 
     const user = response?.data;
+    if (!user) return null; // Handle case when user data is not available
     await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user)); // Cache user
 
     return user;

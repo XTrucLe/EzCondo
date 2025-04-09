@@ -81,8 +81,12 @@ export const useValidate = (
     return !Object.values(newErrors).some(Boolean);
   };
 
+  const handleSetValues = (newValues: { [key: string]: string }) => {
+    setValues((prev) => ({ ...prev, ...newValues }));
+  };
   return {
     values,
+    handleSetValues,
     errors,
     handleChange,
     handleRemoveError,

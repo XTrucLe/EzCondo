@@ -95,6 +95,7 @@ export const validatePassword = (value: string): string => {
 };
 
 export const validateConfirmPassword = (
+  oldvalue: string,
   value: string,
   values: string,
   translation: any
@@ -103,6 +104,7 @@ export const validateConfirmPassword = (
     return formatMessage(translation.notMatch, {
       fieldName: translation.password,
     });
+  if (oldvalue == value) return translation.samePass;
   return "";
 };
 

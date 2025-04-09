@@ -12,15 +12,17 @@ import {
   updatePassword,
   setStorage,
 } from "@/services/authService";
-import { regisFCMToken, UserProps } from "@/services/UserService";
+import { regisFCMToken } from "@/services/UserService";
 import { FCMTokenProps, getFCMToken } from "@/services/firebaseService";
+import { UserInfoProps } from "@/utils/type/userInfoType";
 
 const AUTO_LOGOUT_TIME = 300000; // 5 phút
 
 interface AuthState {
   loading: boolean;
   verified: boolean;
-  user: UserProps | null;
+  user: UserInfoProps | null;
+  setUser: (user: UserInfoProps) => void;
   fcm: FCMTokenProps | null;
   logOutTimer: NodeJS.Timeout | null;
   startLogoutTimer: () => void;
@@ -42,6 +44,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   loading: false,
   verified: false,
   user: null,
+  setUser: (user) => set({ user }),
   logOutTimer: null,
   fcm: null,
 
@@ -57,45 +60,55 @@ const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   loadToken: async () => {
-    set({ loading: true });
     try {
-      const token = await getToken();
+      set({ loading: true });
+
+      const [token, fcm] = await Promise.all([getToken(), getFCMToken()]);
+      let user = null;
+
       if (token) {
         const cachedUser = await getUserFromStorage();
-        const user = cachedUser || (await fetchUserInfo());
-        set({ verified: !!token, user });
+        user = cachedUser || (await fetchUserInfo());
       }
-      const fcm = await getFCMToken();
+
       if (fcm) {
-        set({ fcm });
         await regisFCMToken(fcm.data, fcm.type || "expo", true);
       }
+
+      set({ verified: !!token, user, fcm, loading: false });
     } catch (error) {
       console.error("Error loading token:", error);
+      set({ loading: false });
     }
-    set({ loading: false });
   },
 
   login: async (email, password, rememberMe) => {
-    set({ loading: true });
     try {
+      set({ loading: true });
+
       const token = await loginAPI(email, password);
+      if (!token) throw new Error("Login failed");
+
       if (rememberMe) {
-        await setStorage("EMAIL_KEY", email);
-        await setStorage("REMEMBER_KEY", "true");
+        await Promise.all([
+          setStorage("EMAIL_KEY", email),
+          setStorage("REMEMBER_KEY", "true"),
+        ]);
       }
 
-      if (!token) await saveToken(token);
-      let user = null;
-      if (token) {
-        user = await fetchUserInfo();
+      await saveToken(token);
+      const [user, fcm] = await Promise.all([fetchUserInfo(), getFCMToken()]);
+
+      if (fcm) {
+        await regisFCMToken(fcm.data, fcm.type || "expo", true);
       }
 
-      set({ verified: true, user });
+      set({ verified: true, user, fcm, loading: false });
     } catch (error) {
+      console.error("Login error:", error);
+      set({ loading: false });
       throw error;
     }
-    set({ loading: false });
   },
 
   logout: async () => {
@@ -158,5 +171,4 @@ const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 }));
-
 export default useAuthStore;

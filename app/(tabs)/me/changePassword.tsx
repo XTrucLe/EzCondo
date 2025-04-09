@@ -1,6 +1,7 @@
 import InputField from "@/components/ui/custome/InputCustome";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useValidate } from "@/hooks/useValidate";
+import { changePassword } from "@/services/UserService";
 import { validateConfirmPassword } from "@/utils/validate/validate";
 import { validateChangePassword } from "@/utils/validate/validateRules";
 import React from "react";
@@ -17,7 +18,9 @@ const ChangePassword = () => {
     form,
     validateChangePassword
   );
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
+    console.log(values, form);
+
     if (!validateAll()) {
       Alert.alert(translation.error, translation.checkInfo, [
         { text: translation.ok },
@@ -29,6 +32,7 @@ const ChangePassword = () => {
 
     // Kiểm tra xác nhận mật khẩu
     const errorMessage = validateConfirmPassword(
+      form.oldPassword,
       form.confirmPassword,
       form.newPassword,
       translation
@@ -40,7 +44,14 @@ const ChangePassword = () => {
     }
 
     // Nếu không có lỗi, tiến hành đổi mật khẩu
-    Alert.alert(translation.success, translation.changePasswordSuccess);
+    try {
+      await changePassword(form.oldPassword, form.newPassword);
+
+      Alert.alert(translation.success, translation.changePasswordSuccess);
+    } catch (error) {
+      Alert.alert(translation.error, translation.changePasswordFail);
+      console.log(error);
+    }
     setForm({
       oldPassword: "",
       newPassword: "",
@@ -66,7 +77,7 @@ const ChangePassword = () => {
         value={form.newPassword}
         onEndEditing={() => handleChange("newPassword", form.newPassword)}
         onChangeText={(text) => {
-          setForm((prev) => ({ ...prev, newPassword: text }));
+          setForm((prev) => ({ ...prev, newPassword: text.trim() }));
           handleChange("newPassword", text);
         }}
         error={errors?.newPassword ?? ""}
@@ -79,7 +90,7 @@ const ChangePassword = () => {
           handleChange("confirmPassword", form.confirmPassword)
         }
         onChangeText={(text) =>
-          setForm((prev) => ({ ...prev, confirmPassword: text }))
+          setForm((prev) => ({ ...prev, confirmPassword: text.trim() }))
         }
         error={errors?.confirmPassword ?? ""}
         secureTextEntry

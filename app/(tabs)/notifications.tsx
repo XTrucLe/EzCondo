@@ -1,5 +1,6 @@
 import NotificationBox from "@/components/ui/notification/NotificationBox";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { getNotification } from "@/services/notificationService";
 import {
   fakeNotification,
   NotificationBoxType,
@@ -133,35 +134,44 @@ export default function TabViewScreen() {
 
   useEffect(() => {
     const handleGetNotification = async () => {
-      // const { data, error } = await getNotification();
-      // if (error) {
-      //   console.error(error);
-      // }
-      // setNotification(data);
-      // return () => {
-      //   // Cleanup if necessary
-      // }
-      return fakeNotification;
-    };
-    handleGetNotification();
-  }, []);
+      try {
+        const response = await getNotification();
 
+        const newNotifications: NotificationBoxType[] =
+          response.notifications.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            content: item.content,
+            type: item.type,
+            isRead: item.isRead,
+            createdAt: item.createdAt,
+            createdBy: item.createdBy,
+          }));
+
+        setNotification(newNotifications);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    handleGetNotification();
+  }, []); // 👈 Chỉ chạy một lần khi component mount
+
+  console.log("Notifications:", notification); // 👈 Kiểm tra dữ liệu notification
   return (
     <TabView
       navigationState={{ index, routes }}
       renderScene={SceneMap({
         notifications: () => (
           <NotificationsScreen
-            data={fakeNotification.filter((n) => n.type === "notification")}
+            data={notification.filter((n) => n.type === "notice")}
           />
         ),
         fees: () => (
-          <FeesScreen data={fakeNotification.filter((n) => n.type === "fee")} />
+          <FeesScreen data={notification.filter((n) => n.type === "Fee")} />
         ),
         news: () => (
-          <NewsScreen
-            data={fakeNotification.filter((n) => n.type === "news")}
-          />
+          <NewsScreen data={notification.filter((n) => n.type === "News")} />
         ),
       })}
       onIndexChange={setIndex}

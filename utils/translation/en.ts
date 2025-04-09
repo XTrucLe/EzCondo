@@ -3,7 +3,7 @@ export default {
   login: "Login",
   forgotPassword: "Forgot Password",
   rememberMe: "Remember Me",
-  no: "Apartment No",
+  no: "CCCD/CMND",
   relationship: "Relationship",
   goodMorning: "Good Morning",
   goodAfternoon: "Good Afternoon",
@@ -58,12 +58,13 @@ export default {
   successCreate: "Create successfully",
   changePassword: "Change Password",
   changePasswordTitle: "Change Password",
+  samePass: "The new password cannot be the same as the old password",
   changePasswordSuccess: "Change password successfully",
   changePasswordFail: "Change password failed",
 
   // fields
-  fullname: "Fullname",
-  phone: "Phone",
+  fullName: "Fullname",
+  phoneNumber: "Phone number",
   email: "Email",
   password: "Password",
   newPassword: "New Password",
@@ -74,12 +75,18 @@ export default {
   dateOfBirth: "Date of Birth",
   gender: "Gender",
   apartment: "Apartment",
-  apartmentNo: "Apartment No",
-
+  apartmentNumber: "Apartment Number",
+  selectGender: "Select gender",
+  month: "Month",
+  year: "Year",
+  day: "Day",
   search: "Search",
   searchPlaceholder: "Search...",
   searchResult: "Search Result",
 
+  Male: "Male",
+  Female: "Female",
+  Other: "Other",
   //api error
   apiError:
     "An error occurred while processing your request. Please try again later",

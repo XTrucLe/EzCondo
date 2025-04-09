@@ -16,9 +16,9 @@ const NotificationBox: React.FC<NotificationBoxType> = ({
   const { translation } = useLanguage();
 
   // Dùng useCallback để tránh tạo lại function mỗi lần render
-  const handleClickNotice = useCallback(async () => {
+  const handleClickNotice = async () => {
     await handleReadNotice(id);
-  }, [id]);
+  };
 
   return (
     <Pressable onPress={handleClickNotice} style={styles.pressable}>

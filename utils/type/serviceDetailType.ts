@@ -1,9 +1,13 @@
+import { SlideType } from "@/components/ui/SlideShow";
+
 export type ServiceDetailType = {
   id: string;
-  name: string;
+  serviceName: string;
   description: string;
-  facilities?: Array<{ id: string; name: string; icon: string }>;
-  images: Array<{ id: string; image: string }>;
-  price: Array<{ name: string; price: number }>;
-  status: string;
+  images?: SlideType[];
+  typeOfMonth: boolean;
+  typeOfYear: boolean;
+  priceOfMonth: number;
+  priceOfYear: number;
+  status: "active" | "inactive";
 };

@@ -10,8 +10,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from "@react-navigation/native";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useNavigation } from "expo-router";
 
 const BookingScreen = () => {
+  const { translation } = useLanguage();
+  const navigation = useNavigation<any>();
   // Lấy giá tháng và năm từ route params
   const { monthPrice, yearPrice } = useRoute().params as {
     monthPrice: number;
@@ -86,6 +90,15 @@ const BookingScreen = () => {
     ]).start();
   };
 
+  const handleBookNow = () => {
+    navigation.navigate("booking.confirm", {
+      startDate: startDate.toLocaleDateString("vi-VN"),
+      endDate: endDate.toLocaleDateString("vi-VN"),
+      numMonths: selectedPackage === "month" ? numMonths : "1",
+      totalPrice,
+      selectedPackage,
+    });
+  };
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -181,11 +194,8 @@ const BookingScreen = () => {
       </Animated.View>
 
       {/* Nút đặt lịch */}
-      <TouchableOpacity
-        style={styles.bookButton}
-        onPress={() => console.log("Đặt lịch thành công!")}
-      >
-        <Text style={styles.bookButtonText}>🚀 Đặt lịch ngay</Text>
+      <TouchableOpacity style={styles.bookButton} onPress={handleBookNow}>
+        <Text style={styles.bookButtonText}>{translation.bookNow}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -12,6 +12,10 @@ interface InputFieldProps {
   onBlur?: () => void;
   error?: string;
   secureTextEntry?: boolean;
+  keyboardType?: "default" | "numeric" | "email-address" | "phone-pad";
+  editable?: boolean;
+  disable?: boolean;
+  onPress?: (key: any) => void;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -21,6 +25,10 @@ const InputField: React.FC<InputFieldProps> = ({
   onChangeText,
   error,
   secureTextEntry = false,
+  keyboardType = "default",
+  editable = true,
+  disable = false,
+  onPress,
 }) => {
   const [touched, setTouched] = useState(false);
   const { translation } = useLanguage();
@@ -79,6 +87,10 @@ const InputField: React.FC<InputFieldProps> = ({
         onChangeText={onChangeText}
         onBlur={() => setTouched(true)}
         secureTextEntry={secureTextEntry && !showPassword}
+        keyboardType={keyboardType}
+        editable={editable}
+        disabled={disable}
+        onPress={onPress}
         mode="outlined"
         right={
           secureTextEntry ? (

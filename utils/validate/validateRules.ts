@@ -61,4 +61,7 @@ export const validateUserInfo = {
   dateOfBirth: {
     required: true,
   },
+  gender: {
+    required: true,
+  },
 };

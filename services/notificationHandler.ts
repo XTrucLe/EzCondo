@@ -17,6 +17,7 @@ const handleNotificationListener = async (title?: string, message?: string) => {
       content: {
         title: title || "📩 Thông báo từ EzCondo",
         body: message || "Chào mừng bạn đến với Ứng dụng!",
+        
       },
       trigger: null, // Hiển thị ngay lập tức
     });

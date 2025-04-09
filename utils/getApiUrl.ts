@@ -1,20 +1,21 @@
-import remoteConfig from "@react-native-firebase/remote-config";
+import { ref, get } from "firebase/database";
+import { database } from "./firebase/config";
+import { Alert } from "react-native";
 
 export const getApiUrl = async (): Promise<string> => {
-  remoteConfig().settings = {
-    minimumFetchIntervalMillis: 0,
-  };
   try {
-    await remoteConfig().fetchAndActivate();
-    console.log("🔗 Đã cập nhật cấu hình từ Firebase Remote Config!");
-
-    let apiUrl = remoteConfig().getValue("API_HOST").asString();
-
-    console.log("🔗 API URL từ Firebase Remote Config:", apiUrl);
-
-    return apiUrl || "http://localhost:7254"; // Trả về mặc định nếu Remote Config null
-  } catch (error) {
-    console.error("❌ Lỗi lấy API URL từ Firebase Remote Config:", error);
+    const snapshot = await get(ref(database, "API_HOST"));
+    if (snapshot.exists()) {
+      const apiUrl = snapshot.val();
+      console.log("🔗 API_HOST từ Firebase:", apiUrl);
+      return apiUrl;
+    } else {
+      console.warn("⚠️ Không có dữ liệu API_HOST trong Realtime DB");
+      Alert.alert("Cảnh báo", "Không có dữ liệu API_HOST trong Realtime DB");
+      return "http://localhost:7254";
+    }
+  } catch (err) {
+    console.error("❌ Lỗi lấy dữ liệu:", err);
     return "https://localhost:7245";
   }
 };

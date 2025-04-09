@@ -21,7 +21,7 @@ import useAuthStore from "@/hooks/useAuth";
 import { applicationImages, enImg, viImg } from "@/constants/ImageLink";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useValidate } from "@/hooks/useValidate";
-import { validateEmail, validateLogin } from "@/utils/validate/validateRules";
+import { validateLogin } from "@/utils/validate/validateRules";
 import { useLoading } from "@/hooks/useLoading";
 
 // Định nghĩa action types
@@ -54,10 +54,6 @@ const LoginScreen = () => {
   const insets = useSafeAreaInsets();
   const { currentLang, translation, setLanguage } = useLanguage();
   const { startLoading, stopLoading } = useLoading();
-  const { errors, handleChange, handleRemoveError, validateAll } = useValidate(
-    { email: "", password: "" },
-    validateLogin
-  );
 
   // Khởi tạo reducer state
   const [state, dispatch] = useReducer(reducer, {
@@ -66,6 +62,13 @@ const LoginScreen = () => {
     rememberMe: false,
     showPassword: false,
   });
+  const {
+    errors,
+    handleSetValues,
+    handleChange,
+    handleRemoveError,
+    validateAll,
+  } = useValidate({ email: state.email, password: "" }, validateLogin);
 
   const backgroundColor = useThemeColor({}, "buttonPrimary");
   const textColor = useThemeColor({}, "buttonPrimaryText");
@@ -79,9 +82,11 @@ const LoginScreen = () => {
         if (storedEmail) {
           dispatch({ type: actionTypes.SET_EMAIL, payload: storedEmail });
           dispatch({ type: actionTypes.TOGGLE_REMEMBER_ME });
+          handleSetValues({ email: storedEmail });
         }
       }
     };
+
     loadRememberedUser();
   }, []);
 
@@ -136,7 +141,7 @@ const LoginScreen = () => {
               value={state.email}
               onEndEditing={() => handleChange("email", state.email ?? "")}
               onChangeText={(text) =>
-                dispatch({ type: actionTypes.SET_EMAIL, payload: text })
+                dispatch({ type: actionTypes.SET_EMAIL, payload: text.trim() })
               }
               onKeyPress={() => handleRemoveError("email")}
               mode="outlined"
@@ -156,7 +161,10 @@ const LoginScreen = () => {
                 handleChange("password", state.password ?? "")
               }
               onChangeText={(text) =>
-                dispatch({ type: actionTypes.SET_PASSWORD, payload: text })
+                dispatch({
+                  type: actionTypes.SET_PASSWORD,
+                  payload: text.trim(),
+                })
               }
               mode="outlined"
               secureTextEntry={!state.showPassword}
@@ -260,7 +268,7 @@ const styles = StyleSheet.create({
   buttonLabel: { fontSize: 16, paddingVertical: 5 },
   rememberForgotContainer: {
     flexDirection: "row",
-    justifyContent: "space-between", // Đẩy Remember Me sang trái, Forgot Password sang phải
+    justifyContent: "space-between",
     alignItems: "center",
     marginTop: 10,
     paddingHorizontal: 10, // Thêm khoảng cách ngang

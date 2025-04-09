@@ -3,7 +3,7 @@ export default {
   login: "Đăng nhập",
   forgotPassword: "Quên mật khẩu",
   rememberMe: "Ghi nhớ",
-  no: "Số căn hộ",
+  no: "CCCD/CMND",
   relationship: "Quan hệ",
   goodMorning: "Chào buổi sáng",
   goodAfternoon: "Chào buổi chiều",
@@ -36,6 +36,8 @@ export default {
 
   apartmentMember: "Thành viên căn hộ",
   swimming: "Bể bơi",
+  gym: "Phòng gym",
+  parking: "Bãi đỗ xe",
   booking: "Đặt chỗ",
   incident: "Báo cáo sự cố",
   report: "Báo cáo",
@@ -71,11 +73,12 @@ export default {
   failUpdate: "Cập nhật thất bại",
   changePassword: "Đổi mật khẩu",
   changePasswordTitle: "Đổi mật khẩu",
+  samePass: "Mật khẩu mới không được trùng với mật khẩu cũ",
   changePasswordSuccess: "Đổi mật khẩu thành công",
   changePasswordFail: "Đổi mật khẩu thất bại",
 
-  fullname: "Họ và tên",
-  phone: "Số điện thoại",
+  fullName: "Họ và tên",
+  phoneNumber: "Số điện thoại",
   email: "Email",
   password: "Mật khẩu",
   newPassword: "Mật khẩu mới",
@@ -86,11 +89,18 @@ export default {
   dateOfBirth: "Ngày sinh",
   gender: "Giới tính",
   apartment: "Căn hộ",
-  apartmentNo: "Apartment No",
-
+  apartmentNumber: "Căn hộ",
+  selectGender: "Chọn giới tính",
+  year: "Năm",
+  month: "Tháng",
+  day: "Ngày",
   search: "Tìm kiếm",
   searchPlaceholder: "Tìm kiếm...",
   searchResult: "Kết quả tìm kiếm",
+
+  Male: "Nam",
+  Female: "Nữ",
+  Other: "Khác",
 
   // api error
   apiError: "Lỗi kết nối đến server!",
