@@ -1,8 +1,9 @@
-import { ref, get } from "firebase/database";
-import { database } from "./firebase/config";
+import { ref, get, getDatabase, update } from "firebase/database";
 import { Alert } from "react-native";
+import { app } from "./firebase/config";
 
 export const getApiUrl = async (): Promise<string> => {
+  let database = getDatabase(app);
   try {
     const snapshot = await get(ref(database, "API_HOST"));
     if (snapshot.exists()) {
@@ -12,10 +13,20 @@ export const getApiUrl = async (): Promise<string> => {
     } else {
       console.warn("⚠️ Không có dữ liệu API_HOST trong Realtime DB");
       Alert.alert("Cảnh báo", "Không có dữ liệu API_HOST trong Realtime DB");
-      return "http://localhost:7254";
+      return "http://192.168.1.50:7254";
     }
   } catch (err) {
     console.error("❌ Lỗi lấy dữ liệu:", err);
-    return "https://localhost:7245";
+    return "https://192.168.1.50:7245";
+  }
+};
+
+export const handleUpdateApiUrl = async (newUrl: string) => {
+  const database = getDatabase(app);
+  try {
+    const apiUrlRef = ref(database, "CURRENT_API_HOST");
+    await update(apiUrlRef, { apiUrl: newUrl });
+  } catch (error) {
+    console.error("❌ Lỗi cập nhật API_HOST:", error);
   }
 };

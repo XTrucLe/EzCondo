@@ -34,7 +34,7 @@ EZCondo is a modern solution designed to simplify condominium management for res
 
 You can download the EZCondo app from the following platforms:
 
-- [Google Play Store](https://expo.dev/artifacts/eas/6U71khDBYum17dg33c6uYZ.apk)
+- [Google Play Store](https://expo.dev/artifacts/eas/4mqAwpQePSuhxyNG5TASMT.apk)
 
 ## Technologies Used
 

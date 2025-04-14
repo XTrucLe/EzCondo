@@ -1,25 +1,14 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from "react-native";
-import * as SecureStore from "expo-secure-store";
-import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, ScrollView, Text } from "react-native";
 import { useNavigation } from "expo-router";
 
 const ServiceOverview = () => {
   const navigation = useNavigation<any>();
 
   return (
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-    ></ScrollView>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* header had  */}
+    </ScrollView>
   );
 };
 

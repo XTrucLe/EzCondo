@@ -32,8 +32,9 @@ export const getServiceImages = async (serviceId: string) => {
       method: "get",
       url: `${endpoints.service.getServiceImages}?serviceId=${serviceId}`,
     });
+    console.log(response);
 
-    return response.data;
+    return response;
   } catch (error) {
     console.log(error);
   }

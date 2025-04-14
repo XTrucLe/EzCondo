@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getToken } from "./authService";
-import { getApiUrl } from "@/utils/getApiUrl";
+import { getApiUrl, handleUpdateApiUrl } from "@/utils/getApiUrl";
 import { useLanguage } from "@/hooks/useLanguage";
 
 let apiInstance: ReturnType<typeof axios.create> | null = null;
@@ -28,6 +28,7 @@ const getApiInstance = async () => {
       },
     });
 
+    await handleUpdateApiUrl(currentBaseURL);
     // 🛠️ Interceptor để thêm token vào request
     apiInstance.interceptors.request.use(
       async (config) => {

@@ -22,12 +22,16 @@ const PickerCustome: React.FC<Props> = ({
       <Picker
         selectedValue={value}
         onValueChange={(itemValue) => onValueChange(itemValue)}
-        style={{ height: 50, width: "100%" }}
+        style={{ height: 50, width: "100%", top: -2 }}
       >
         {options.map((option) => {
           const labelText = translation?.[option] || option;
           return (
-            <Picker.Item key={labelText} label={labelText} value={option} />
+            <Picker.Item
+              key={labelText}
+              label={labelText.charAt(0).toUpperCase() + labelText.slice(1)}
+              value={option}
+            />
           );
         })}
       </Picker>

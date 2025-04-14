@@ -19,7 +19,7 @@ export default function ServiceLayout() {
         }}
       />
       <Stack.Screen name="listServices" options={{ headerShown: true }} />
-      <Stack.Screen name="swimming" options={{ headerShown: true }} />
+      
       <Stack.Screen name="booking" options={{ headerShown: true }} />
       <Stack.Screen
         name="incident"

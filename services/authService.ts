@@ -3,6 +3,7 @@ import { request } from "@/services/apiService";
 import { endpoints } from "@/constants/Endpoints";
 import axios from "axios";
 import { getUserInfo } from "./UserService";
+import { Alert } from "react-native";
 
 const TOKEN_KEY = "authToken";
 const USER_KEY = "userData";
@@ -12,6 +13,8 @@ export const getToken = async () => await SecureStore.getItemAsync(TOKEN_KEY);
 
 // 🔹 Lưu token vào SecureStore
 export const saveToken = async (token: string) => {
+  if (typeof token != "string") throw new Error("Lỗi token không hợp lệ");
+
   await SecureStore.setItemAsync(TOKEN_KEY, token);
 };
 
@@ -78,7 +81,7 @@ export const loginAPI = async (email: string, password: string) => {
       url: endpoints.auth?.login,
       data: { email, password },
     });
-    let token = response?.data?.token;
+    let token = response?.data?.data?.token;
     await saveToken(token);
     setAuthHeader(token);
     return token;

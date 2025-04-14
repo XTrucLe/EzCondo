@@ -12,13 +12,21 @@ import * as ImagePicker from "expo-image-picker";
 import { Button } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
+import PickerCustome from "@/components/ui/custome/PickerCustome";
+import { IncidentType, IncidentTypes } from "@/utils/type/incidentTypes";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const MAX_MEDIA = 6;
 const NUM_COLUMNS = 3;
 
 const ReportIssueScreen = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const { translation } = useLanguage();
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    type: "",
+  });
+
   const [mediaList, setMediaList] = useState([]);
   const navigation = useNavigation();
 
@@ -38,7 +46,11 @@ const ReportIssueScreen = () => {
   };
 
   const handleSubmit = () => {
-    console.log({ title, description, mediaList });
+    console.log(form);
+    if (!form.title || !form.description) {
+      alert("Vui lòng nhập tiêu đề và mô tả sự cố.");
+      return;
+    }
     alert("Báo cáo đã được gửi!");
     navigation.goBack();
   };
@@ -46,12 +58,23 @@ const ReportIssueScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Tiêu đề:</Text>
-      <TextInput value={title} onChangeText={setTitle} style={styles.input} />
+      <TextInput
+        value={form.title}
+        onChangeText={(text) => setForm({ ...form, title: text })}
+        style={styles.input}
+      />
+      <Text style={styles.label}>Loại sự cố:</Text>
+      <PickerCustome
+        options={[...IncidentTypes]}
+        onValueChange={(val) => setForm({ ...form, type: val })}
+        value={form.type}
+        translation={translation}
+      />
 
       <Text style={styles.label}>Mô tả sự cố:</Text>
       <TextInput
-        value={description}
-        onChangeText={setDescription}
+        value={form.description}
+        onChangeText={(text) => setForm({ ...form, description: text })}
         style={styles.input}
         multiline
       />

@@ -41,7 +41,14 @@ export const SlideShow = ({ item, time }: SlideProps) => {
         data={slides}
         renderItem={({ item }) => (
           <View style={styles.slide}>
-            <Image source={item.image} style={styles.image} />
+            <Image
+              source={
+                typeof item.image === "string"
+                  ? { uri: item.image }
+                  : item.image
+              }
+              style={styles.image}
+            />
           </View>
         )}
         horizontal

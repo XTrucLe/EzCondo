@@ -164,19 +164,24 @@ export default function TabViewScreen() {
       renderScene={SceneMap({
         notifications: () => (
           <NotificationsScreen
-            data={notification.filter((n) => n.type === "notice")}
+            data={notification.filter((n) => n.type.includes("notice"))}
           />
         ),
         fees: () => (
-          <FeesScreen data={notification.filter((n) => n.type === "Fee")} />
+          <FeesScreen
+            data={notification.filter((n) => n.type.includes("fee"))}
+          />
         ),
         news: () => (
-          <NewsScreen data={notification.filter((n) => n.type === "News")} />
+          <NewsScreen
+            data={notification.filter((n) => n.type.includes("new"))}
+          />
         ),
       })}
       onIndexChange={setIndex}
       initialLayout={{ width: layout.width }}
       renderTabBar={(props) => <CustomTabBar {...props} setIndex={setIndex} />}
+      style={styles.screen}
     />
   );
 }
@@ -184,6 +189,7 @@ export default function TabViewScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    marginTop: 10,
   },
   tabContainer: {
     flexDirection: "row",

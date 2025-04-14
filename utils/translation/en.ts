@@ -115,4 +115,7 @@ export default {
   serviceDetail: "Service Detail",
   serviceHistory: "Service History",
   bookNow: "Book Now",
+
+  parkingCard: "Parking Card",
+  parkingRegis: "Parking Registration",
 };

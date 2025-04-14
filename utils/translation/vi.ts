@@ -129,4 +129,7 @@ export default {
   serviceDetail: "Chi tiết dịch vụ",
   serviceHistory: "Lịch sử dịch vụ",
   bookNow: "Đặt ngay",
+
+  parkingCard: "Thẻ xe",
+  parkingRegis: "Đăng ký xe",
 };

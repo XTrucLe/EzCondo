@@ -17,12 +17,6 @@ const servicesData: Service[] = [
     description: "Enjoy access to the pool",
   },
   { id: "gym", name: "Gym", icon: "🏋️‍♂️", description: "Modern gym facilities" },
-  {
-    id: "parking",
-    name: "Parking",
-    icon: "🚗",
-    description: "Secure vehicle parking",
-  },
 ];
 
 const ListServices = () => {
@@ -33,10 +27,11 @@ const ListServices = () => {
   const handleOnPress = async (service: Service) => {
     try {
       const response = await getServiceDetail(service.id);
-      if (!response) {
+      if (!response || (Array.isArray(response) && response.length === 0)) {
         Alert.alert("Info", "Comming soon");
         return;
       }
+      console.log("response", response);
 
       navigation.navigate("detail", { service, data: response });
     } catch (error) {

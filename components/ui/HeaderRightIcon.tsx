@@ -1,16 +1,38 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import { TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 
 type HeaderRightIconProps = {
-  iconName: keyof typeof Ionicons.glyphMap;
+  text?: string;
+  iconName:
+    | keyof typeof Ionicons.glyphMap
+    | keyof typeof MaterialIcons.glyphMap;
   navigationScreen: string;
+  type?: "default" | "material";
 };
 const HeaderRightIcon = ({
+  type,
+  text,
   iconName,
   navigationScreen,
 }: HeaderRightIconProps) => {
   const navigation = useNavigation();
+  const IconMap = {
+    default: Ionicons,
+    material: MaterialIcons,
+  };
+
+  const renderIcon = () => {
+    const IconComponent = IconMap[type || "default"] as React.ComponentType<{
+      name:
+        | keyof typeof Ionicons.glyphMap
+        | keyof typeof MaterialIcons.glyphMap;
+      size: number;
+      color: string;
+    }>;
+    return <IconComponent name={iconName} size={24} color="#000000" />;
+  };
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -18,7 +40,8 @@ const HeaderRightIcon = ({
       }}
       style={{ marginRight: 16 }}
     >
-      <Ionicons name={iconName} size={24} color="#000000" />
+      {text && <Text style={{ marginRight: 8 }}>{text}</Text>}
+      {renderIcon()}
     </TouchableOpacity>
   );
 };

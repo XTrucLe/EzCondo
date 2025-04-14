@@ -13,7 +13,7 @@ import { ThemedText } from "../ThemedText";
 import { useNavigation } from "expo-router";
 
 const utilities = [
-  { id: "1", name: "Bãi đậu xe", icon: "car" }, // Quản lý đăng ký chỗ đỗ xe
+  { id: "1", name: "Bãi đậu xe", icon: "car", navigatePage: "parking" }, // Quản lý đăng ký chỗ đỗ xe
   { id: "2", name: "Điện - Nước", icon: "flash" }, // Xem và thanh toán hóa đơn điện, nước
   { id: "3", name: "Hồ bơi", icon: "walk", navigatePage: "index" }, // Đặt lịch sử dụng hồ bơi
   { id: "4", name: "Phòng Gym", icon: "barbell" }, // Đặt lịch và sử dụng phòng tập gym
@@ -21,6 +21,7 @@ const utilities = [
     id: "5",
     name: "Báo cáo sự cố",
     icon: "alert-circle",
+    navigatePage: "incident",
   }, // Gửi yêu cầu sửa chữa, báo cáo sự cố
   { id: "6", name: "Thanh toán dịch vụ", icon: "cash" }, // Thanh toán các khoản phí chung cư
   { id: "7", name: "Thông báo", icon: "notifications" }, // Nhận thông báo từ ban quản lý

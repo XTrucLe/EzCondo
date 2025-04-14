@@ -176,9 +176,9 @@ export default function HomeScreen() {
       {/* Nút FAB để mở màn hình "incident" */}
       <FAB
         icon="plus"
-        label="Báo sự cố"
+        label="Support"
         style={styles.fab}
-        onPress={() => navigation.navigate("incident")}
+        onPress={() => navigation.navigate("chatbotHome")}
       />
     </SafeAreaView>
   );
