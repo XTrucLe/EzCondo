@@ -1,4 +1,5 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
+import useAuthStore from "@/hooks/useAuth";
+import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React, { useState, useRef, useEffect } from "react";
 import {
@@ -10,7 +11,8 @@ import {
 } from "react-native";
 
 const VerifyOTPScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
+  const { forgotPassword, verifyOTP } = useAuthStore();
   const { email } = useLocalSearchParams();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<Array<TextInput | null>>([]);
@@ -39,21 +41,40 @@ const VerifyOTPScreen = () => {
     }
   }, [timer]);
 
-  const handleResendOTP = () => {
+  const handleResendOTP = async () => {
     setTimer(60);
     setCanResend(false);
     // Gọi API gửi lại OTP tại đây
+    try {
+      await forgotPassword(email as string);
+      setOtp(["", "", "", "", "", ""]);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Không thể gửi lại mã OTP. Vui lòng thử lại!");
+      return;
+    }
     alert("Mã OTP đã được gửi lại!");
   };
 
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
     const enteredOTP = otp.join("");
     if (enteredOTP.length !== 6) {
       alert("Mã OTP không hợp lệ!");
       return;
     }
-    // Gọi API xác thực OTP tại đây
-    navigation.navigate("reset_password" as never);
+
+    try {
+      const response = await verifyOTP(email as string, enteredOTP);
+      console.log("OTP verification response:", response);
+
+      navigation.navigate("reset_password", {
+        tokenMemory: response,
+      });
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      alert("Không thể xác thực mã OTP. Vui lòng thử lại!");
+      return;
+    }
   };
 
   return (

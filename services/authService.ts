@@ -106,19 +106,22 @@ export const forgotPassword = async (email: string) => {
   });
 };
 
-export const verifyOTP = async (otp: string) => {
+export const verifyOTP = async (email: string, code: string) => {
   return request({
     method: "post",
     url: endpoints.auth.verifyOTP,
-    data: { otp },
+    data: { email, code },
   });
 };
 
-export const resetPassword = async (newPassword: string) => {
+export const resetPassword = async (
+  tokenMemory: string,
+  newPassword: string
+) => {
   return request({
     method: "post",
     url: endpoints.auth.resetPassword,
-    data: { newPassword },
+    data: { tokenMemory, newPassword },
   });
 };
 

@@ -1,5 +1,6 @@
 import InputField from "@/components/ui/custome/InputCustome";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useLoading } from "@/hooks/useLoading";
 import { useValidate } from "@/hooks/useValidate";
 import { changePassword } from "@/services/UserService";
 import { validateConfirmPassword } from "@/utils/validate/validate";
@@ -8,6 +9,8 @@ import React from "react";
 import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
 
 const ChangePassword = () => {
+  const { startLoading, stopLoading } = useLoading();
+
   const [form, setForm] = React.useState({
     oldPassword: "",
     newPassword: "",
@@ -45,13 +48,17 @@ const ChangePassword = () => {
 
     // Nếu không có lỗi, tiến hành đổi mật khẩu
     try {
+      startLoading();
       await changePassword(form.oldPassword, form.newPassword);
 
       Alert.alert(translation.success, translation.changePasswordSuccess);
     } catch (error) {
       Alert.alert(translation.error, translation.changePasswordFail);
       console.log(error);
+    } finally {
+      stopLoading();
     }
+
     setForm({
       oldPassword: "",
       newPassword: "",

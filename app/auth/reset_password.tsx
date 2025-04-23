@@ -7,11 +7,14 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 import { useNavigation } from "expo-router";
+import { useRoute } from "@react-navigation/native";
+import useAuthStore from "@/hooks/useAuth";
 
 const ResetPasswordScreen = () => {
   const navigation = useNavigation();
+  const { tokenMemory } = useRoute().params as any;
+  const { resetPassword } = useAuthStore();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -43,7 +46,7 @@ const ResetPasswordScreen = () => {
 
     try {
       setLoading(true);
-      //   await axios.post("https://api.example.com/reset-password", { password });
+      await resetPassword(tokenMemory, password);
       alert("Mật khẩu đã được đặt lại thành công!");
       navigation.reset({ index: 0, routes: [{ name: "login" as never }] });
     } catch (err) {

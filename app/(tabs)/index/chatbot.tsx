@@ -1,4 +1,5 @@
 // screens/ChatbotScreen.tsx
+import { getAnswerForChat } from "@/services/chatbotService";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -18,6 +19,7 @@ interface Message {
 const ChatbotScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Tin nhắn chào mừng
@@ -29,7 +31,19 @@ const ChatbotScreen = () => {
     setMessages([welcomeMessage]);
   }, []);
 
-  const handleSend = () => {
+  const chatbotAnswer = async (question: string) => {
+    setIsLoading(true);
+    try {
+      const response = await getAnswerForChat(question);
+      if (!response) return "Tôi không thể trả lời câu hỏi này.";
+      return response.message;
+    } catch (error) {
+      console.error("Error fetching answer:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -38,14 +52,18 @@ const ChatbotScreen = () => {
       sender: "user",
     };
 
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+
+    const replyText = await chatbotAnswer(input);
+
     const botReply: Message = {
       id: (Date.now() + 1).toString(),
-      text: "🤖 Tôi đã nhận được tin nhắn của bạn!",
+      text: replyText,
       sender: "bot",
     };
 
-    setMessages((prev) => [...prev, userMessage, botReply]);
-    setInput("");
+    setMessages((prev) => [...prev, botReply]);
   };
 
   const renderItem = ({ item }: { item: Message }) => (
@@ -67,6 +85,7 @@ const ChatbotScreen = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
       />
+      {isLoading && <TypingIndicator />}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -74,11 +93,44 @@ const ChatbotScreen = () => {
           onChangeText={setInput}
           placeholder="Nhập tin nhắn..."
         />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Text style={{ color: "#fff", fontWeight: "bold" }}>Gửi</Text>
+        <TouchableOpacity
+          style={styles.sendButton}
+          onPress={handleSend}
+          disabled={isLoading}
+        >
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>
+            {isLoading ? "Đang gửi..." : "Gửi"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
+  );
+};
+
+const TypingIndicator = () => {
+  const [dots, setDots] = useState("");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length < 3 ? prev + "." : ""));
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <Text
+      style={{
+        fontStyle: "italic",
+        color: "gray",
+        marginLeft: 8,
+        marginBottom: 10,
+        padding: 10,
+        borderRadius: 8,
+      }}
+    >
+      🤖 Đang nhập{dots}
+    </Text>
   );
 };
 

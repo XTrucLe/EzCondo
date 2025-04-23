@@ -9,8 +9,8 @@ import { useNavigation } from "expo-router";
 import { getServiceImages } from "@/services/servicesService";
 
 const ServicesDetailScreen = () => {
-  const { service, data } = useRoute().params as {
-    service: string;
+  const { name, data } = useRoute().params as {
+    name: string;
     data: ServiceDetailType[];
   };
   const { translation } = useLanguage();
@@ -20,11 +20,15 @@ const ServicesDetailScreen = () => {
     images: [],
   });
 
+  console.log("Service details:", serviceDetails.images);
+
   useEffect(() => {
     const fetchImages = async () => {
       const image = await getServiceImages(serviceDetails.id);
       setServiceDetails((prev) => ({ ...prev, images: image }));
+      console.log("Image data:", image);
     };
+
     fetchImages();
   }, []);
   const handleBooking = () => {
@@ -38,34 +42,38 @@ const ServicesDetailScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <SlideShow item={serviceDetails.images || []} />
-      {/* Tiêu đề */}
-      <Text style={styles.title}>{serviceDetails.serviceName}</Text>
+      <View style={styles.detailContainer}>
+        {/* Tiêu đề */}
+        <Text style={styles.title}>{serviceDetails.serviceName}</Text>
 
-      {/* Giới thiệu */}
-      <Text style={styles.sectionTitle}>🌊 {translation.introduce}</Text>
-      <Text style={styles.description}>{serviceDetails.description}</Text>
+        {/* Giới thiệu */}
+        <Text style={styles.sectionTitle}>{translation.introduce}</Text>
+        <Text style={styles.description}>{serviceDetails.description}</Text>
 
-      {/* Giá cả */}
-      <Text style={styles.sectionTitle}>💰 {translation.price}</Text>
-      <View style={styles.priceTable}>
-        {serviceDetails.typeOfMonth && (
-          <Text style={styles.priceRow}>
-            {translation.month}:{" "}
-            <Text style={styles.price}>{serviceDetails.priceOfMonth} VND</Text>
-          </Text>
-        )}
-        {serviceDetails.typeOfYear && (
-          <Text style={styles.priceRow}>
-            {translation.year}:{" "}
-            <Text style={styles.price}>{serviceDetails.priceOfYear} VND</Text>
-          </Text>
-        )}
+        {/* Giá cả */}
+        <Text style={styles.sectionTitle}>💰 {translation.price}</Text>
+        <View style={styles.priceTable}>
+          {serviceDetails.typeOfMonth && (
+            <Text style={styles.priceRow}>
+              {translation.month}:{" "}
+              <Text style={styles.price}>
+                {serviceDetails.priceOfMonth} VND
+              </Text>
+            </Text>
+          )}
+          {serviceDetails.typeOfYear && (
+            <Text style={styles.priceRow}>
+              {translation.year}:{" "}
+              <Text style={styles.price}>{serviceDetails.priceOfYear} VND</Text>
+            </Text>
+          )}
+        </View>
+
+        {/* Nút đặt lịch */}
+        <Button mode="contained" style={styles.button} onPress={handleBooking}>
+          {translation.bookNow}
+        </Button>
       </View>
-
-      {/* Nút đặt lịch */}
-      <Button mode="contained" style={styles.button} onPress={handleBooking}>
-        {translation.bookNow}
-      </Button>
     </ScrollView>
   );
 };
@@ -75,7 +83,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f4f4f4",
+    paddingTop: -10,
+    paddingHorizontal: 10,
+  },
+  detailContainer: {
     padding: 20,
+    borderRadius: 10,
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    marginBottom: 20,
   },
   title: {
     fontSize: 26,
@@ -94,7 +110,6 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     color: "#555",
-    textAlign: "center",
     marginBottom: 10,
   },
   descriptionText: {

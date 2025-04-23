@@ -8,19 +8,28 @@ const ParkingRegisForm: React.FC = () => {
   const { translation } = useLanguage();
   const [formData, setFormData] = useState([
     {
+      id: Date.now().toString(),
       name: "",
       vehicleNumber: "",
       contactNumber: "",
     },
   ]);
 
-  const handleChange = (name: string, value: string) => {
-    setFormData({ ...formData, [name]: value });
+  const handleChange = (index: number, name: string, value: string) => {
+    const updatedForms = [...formData];
+    updatedForms[index][name as keyof (typeof formData)[0]] = value;
+    setFormData(updatedForms);
   };
+
   const handleAddForm = () => {
     setFormData([
       ...formData,
-      { name: "", vehicleNumber: "", contactNumber: "" },
+      {
+        id: Date.now().toString() + Math.random().toString(),
+        name: "",
+        vehicleNumber: "",
+        contactNumber: "",
+      },
     ]);
   };
   const handleSubmit = () => {
@@ -30,21 +39,24 @@ const ParkingRegisForm: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Parking Registration Form</Text>
       {formData.map((form, index) => (
-        <Card key={index} style={{ marginBottom: 20 }}>
+        <Card key={form.id} style={{ marginBottom: 20 }}>
           <Card.Title title={`${translation.parkingCard} #${index + 1}`} />
           <Card.Content>
-            {Object.keys(form).map((field) => (
-              <InputField
-                label={field.charAt(0).toUpperCase() + field.slice(1)}
-                value={form.name}
-                onChangeText={(value) => handleChange(field, value.trim())}
-              />
-            ))}
+            {Object.keys(form)
+              .filter((field) => field !== "id")
+              .map((field) => (
+                <InputField
+                  key={field}
+                  label={field.charAt(0).toUpperCase() + field.slice(1)}
+                  value={form[field as keyof typeof form]}
+                  onChangeText={(value) => handleChange(index, field, value)}
+                />
+              ))}
           </Card.Content>
         </Card>
       ))}
+
       <View style={styles.buttonContainer}>
         <Button title="Add Another Vehicle" onPress={handleAddForm} />
         <Button title="Submit" onPress={handleSubmit} />

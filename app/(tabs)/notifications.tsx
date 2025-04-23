@@ -123,6 +123,7 @@ const CustomTabBar = React.memo(({ navigationState, setIndex }: any) => {
 });
 
 export default function TabViewScreen() {
+  const [refreshing, setRefreshing] = useState(false);
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -164,17 +165,23 @@ export default function TabViewScreen() {
       renderScene={SceneMap({
         notifications: () => (
           <NotificationsScreen
-            data={notification.filter((n) => n.type.includes("notice"))}
+            data={notification.filter((n) =>
+              n.type.toLowerCase().includes("notice")
+            )}
           />
         ),
         fees: () => (
           <FeesScreen
-            data={notification.filter((n) => n.type.includes("fee"))}
+            data={notification.filter((n) =>
+              n.type.toLowerCase().includes("fee")
+            )}
           />
         ),
         news: () => (
           <NewsScreen
-            data={notification.filter((n) => n.type.includes("new"))}
+            data={notification.filter((n) =>
+              n.type.toLowerCase().includes("new")
+            )}
           />
         ),
       })}

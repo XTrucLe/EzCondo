@@ -39,18 +39,21 @@ export const SlideShow = ({ item, time }: SlideProps) => {
       <FlatList
         ref={carouselRef}
         data={slides}
-        renderItem={({ item }) => (
-          <View style={styles.slide}>
-            <Image
-              source={
-                typeof item.image === "string"
-                  ? { uri: item.image }
-                  : item.image
-              }
-              style={styles.image}
-            />
-          </View>
-        )}
+        renderItem={({ item }) => {
+          return (
+            <View style={styles.slide}>
+              {item.imgPath ? (
+                <Image
+                  source={{ uri: item.imgPath }}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Image source={item.image} style={styles.image} />
+              )}
+            </View>
+          );
+        }}
         horizontal
         pagingEnabled
         keyExtractor={(item) => item.id}
@@ -81,16 +84,15 @@ export const SlideShow = ({ item, time }: SlideProps) => {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
-    marginTop: 20,
+    marginTop: 15,
     justifyContent: "center",
     alignItems: "center",
   },
-  slide: { width: width, alignItems: "center" },
-  image: { width: "90%", height: 200, borderRadius: 10 },
+  slide: { width: width, alignItems: "center", justifyContent: "center" },
+  image: { width: "98%", height: 200, borderRadius: 10 },
   dotContainer: {
     position: "absolute",
     bottom: 10,
-
     flexDirection: "row",
     justifyContent: "center",
     marginBottom: 10,

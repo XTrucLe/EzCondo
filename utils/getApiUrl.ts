@@ -30,3 +30,5 @@ export const handleUpdateApiUrl = async (newUrl: string) => {
     console.error("❌ Lỗi cập nhật API_HOST:", error);
   }
 };
+
+export const chatAPI = " https://chatbott1.onrender.com/chat/ask";

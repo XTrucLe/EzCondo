@@ -10,7 +10,7 @@ type ModalCustomeProps = {
 };
 
 const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
-  const { translation } = useLanguage.getState();
+  const { translation } = useLanguage();
   return (
     <Modal
       animationType="slide"
@@ -30,10 +30,10 @@ const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
           <ScrollView style={styles.modalBody}>
             {data ? (
               Object.entries(data)
-                .filter(([key]) => !["avatar", "id"].includes(key)) // Loại bỏ avatar khỏi danh sách
+                .filter(([key]) => !["avatar", "id", "regency"].includes(key)) // Loại bỏ avatar khỏi danh sách
                 .map(([key, value]) => (
                   <View key={key} style={styles.row}>
-                    <Text style={styles.label}>{formatLabel(key)}:</Text>
+                    <Text style={styles.label}>{translation[key]}:</Text>
                     <Text style={styles.value}>{value || "N/A"}</Text>
                   </View>
                 ))
@@ -52,18 +52,6 @@ const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
       </View>
     </Modal>
   );
-};
-
-const formatLabel = (key: string) => {
-  const labels: Record<string, string> = {
-    fullName: "Họ và tên",
-    dateOfBirth: "Ngày sinh",
-    email: "Email",
-    gender: "Giới tính",
-    no: "Số căn hộ",
-    relationship: "Quan hệ",
-  };
-  return labels[key] || key;
 };
 
 const styles = StyleSheet.create({

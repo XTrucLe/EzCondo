@@ -97,6 +97,7 @@ export default {
   403: "You do not have permission!",
   404: "Resource not found!",
   408: "Request timeout, please try again!",
+  423: "Your account has been locked!",
   429: "Too many requests, try again later!",
   500: "System error, please try again later!",
   502: "Server error, try again later!",

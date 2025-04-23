@@ -35,8 +35,8 @@ interface AuthState {
   ) => Promise<void>;
   logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
-  verifyOTP: (otp: string) => Promise<void>;
-  resetPassword: (newPassword: string) => Promise<void>;
+  verifyOTP: (email: string, otp: string) => Promise<void>;
+  resetPassword: (tokenMemory: string, newPassword: string) => Promise<void>;
   updatePassword: (oldPassword: string, newPassword: string) => Promise<void>;
 }
 
@@ -94,12 +94,19 @@ const useAuthStore = create<AuthState>((set, get) => ({
           setStorage("EMAIL_KEY", email),
           setStorage("REMEMBER_KEY", "true"),
         ]);
+      } else {
+        await Promise.all([
+          setStorage("EMAIL_KEY", ""),
+          setStorage("REMEMBER_KEY", "false"),
+        ]);
       }
 
       await saveToken(token);
       const [user, fcm] = await Promise.all([fetchUserInfo(), getFCMToken()]);
 
       if (fcm) {
+        console.log("FCM token:", fcm.data, fcm.type);
+
         await regisFCMToken(fcm.data, fcm.type || "expo", true);
       }
 
@@ -139,10 +146,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  verifyOTP: async (otp) => {
+  verifyOTP: async (email, otp) => {
     set({ loading: true });
     try {
-      await verifyOTP(otp);
+      const response = await verifyOTP(email, otp);
+      return response.data;
     } catch (error) {
       throw error;
     } finally {
@@ -150,10 +158,10 @@ const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  resetPassword: async (newPassword) => {
+  resetPassword: async (tokenMemory, newPassword) => {
     set({ loading: true });
     try {
-      await resetPassword(newPassword);
+      await resetPassword(tokenMemory, newPassword);
     } catch (error) {
       throw error;
     } finally {

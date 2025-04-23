@@ -10,9 +10,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useNavigation } from "expo-router";
+import { request } from "@/services/apiService";
+import useAuthStore from "@/hooks/useAuth";
 
 const ForgotPasswordScreen = () => {
   const navigation = useNavigation<any>();
+  const { forgotPassword } = useAuthStore();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,10 +35,13 @@ const ForgotPasswordScreen = () => {
 
     try {
       setLoading(true);
-      await axios.post("https://api.example.com/forgot-password", { email });
-      alert("Liên kết đặt lại mật khẩu đã được gửi đến email của bạn!");
+      const response = await forgotPassword(email);
+      console.log("Response:", response);
+
       navigation.navigate("otp", { email });
     } catch (err) {
+      console.log("Error:", err);
+
       setError("Không thể gửi yêu cầu. Vui lòng thử lại!");
     } finally {
       setLoading(false);

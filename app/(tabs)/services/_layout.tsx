@@ -19,26 +19,15 @@ export default function ServiceLayout() {
         }}
       />
       <Stack.Screen name="listServices" options={{ headerShown: true }} />
-      
-      <Stack.Screen name="booking" options={{ headerShown: true }} />
+
+      <Stack.Screen name="bill" options={{ headerShown: true }} />
       <Stack.Screen
-        name="incident"
+        name="subscription"
         options={{
           headerShown: true,
-          headerTitle: "Báo cáo sự cố",
-          headerLeft: () => (
-            <HeaderLeftIcon
-              iconName="chevron-back"
-              navigationScreen="goBack"
-              firstScreen="services"
-            />
-          ),
+          headerTitle: "",
         }}
       />
-      <Stack.Screen name="apartmentMember" options={{ headerShown: true }} />
-      <Stack.Screen name="bill" options={{ headerShown: true }} />
-      <Stack.Screen name="detail" options={{ headerShown: true }} />
-      <Stack.Screen name="booking.confirm" options={{ headerShown: true }} />
     </Stack>
   );
 }

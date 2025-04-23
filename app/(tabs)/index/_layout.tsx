@@ -27,15 +27,46 @@ export default function HomeLayout() {
               />
             );
           },
+          headerTitle: "Danh sách thẻ đỗ xe",
         }}
       />
-      <Stack.Screen name="parking.regis" options={{ headerShown: true }} />
+      <Stack.Screen
+        name="parking.regis"
+        options={{ headerShown: true, headerTitle: "Đăng ký thẻ xe" }}
+      />
+
+      <Stack.Screen
+        name="booking"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
+
+      <Stack.Screen
+        name="detail"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
+      <Stack.Screen
+        name="booking.confirm"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
+      <Stack.Screen
+        name="apartmentMember"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
+
       <Stack.Screen
         name="chatbot"
         options={{ headerShown: true, headerTitle: "" }}
       />
       <Stack.Screen
         name="chatbotHome"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
+      <Stack.Screen
+        name="seviceFees"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
+      <Stack.Screen
+        name="feeDetail"
         options={{ headerShown: true, headerTitle: "" }}
       />
     </Stack>

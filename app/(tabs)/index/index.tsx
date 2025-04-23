@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import { FAB } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { userDefaultImage } from "@/constants/ImageLink";
 
 const MAX_HEADER_HEIGHT = 200;
 const MIN_HEADER_HEIGHT = 130;
@@ -96,7 +97,10 @@ const Header = ({
           onPress={onImagePress}
           style={styles.userImageContainer}
         >
-          <Image source={userInformation.image} style={styles.userImage} />
+          <Image
+            source={userInfo.image ? { uri: userInfo.image } : userDefaultImage}
+            style={styles.userImage}
+          />
         </TouchableOpacity>
 
         <View style={styles.userInfo}>
@@ -176,7 +180,7 @@ export default function HomeScreen() {
       {/* Nút FAB để mở màn hình "incident" */}
       <FAB
         icon="plus"
-        label="Support"
+        label="Chat"
         style={styles.fab}
         onPress={() => navigation.navigate("chatbotHome")}
       />
@@ -314,6 +318,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 20,
     bottom: 20,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#34C759",
   },
 });

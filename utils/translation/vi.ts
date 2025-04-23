@@ -111,6 +111,7 @@ export default {
   403: "Bạn không có quyền truy cập!",
   404: "Không tìm thấy tài nguyên!",
   408: "Yêu cầu quá lâu, vui lòng thử lại!",
+  423: "Tài khoản của bạn đã bị khóa!",
   429: "Quá nhiều yêu cầu, hãy thử lại sau!",
   500: "Lỗi hệ thống, vui lòng thử lại sau!",
   502: "Máy chủ gặp sự cố, thử lại sau!",

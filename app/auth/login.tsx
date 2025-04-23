@@ -238,7 +238,7 @@ const ChangeLanguage = ({
         source={currentLang === "vi" ? viImg : enImg}
         style={styles.languageImgs}
       />
-      <Text>{currentLang}</Text>
+      <Text style={styles.languageText}>{currentLang}</Text>
     </TouchableOpacity>
   );
 };
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     top: 20,
     backgroundColor: "rgba(248, 248, 248, 0.8)",
     height: 50,
-    width: 50,
+    width: 60,
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
@@ -304,6 +304,13 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     alignSelf: "center",
+  },
+  languageText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    color: "#000",
+    marginLeft: 5,
   },
 });
 

@@ -11,45 +11,92 @@ import { Ionicons } from "@expo/vector-icons";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
 import { useNavigation } from "expo-router";
+import { request } from "@/services/apiService";
+import { getServiceDetail } from "@/services/servicesService";
 
-const utilities = [
-  { id: "1", name: "Bãi đậu xe", icon: "car", navigatePage: "parking" }, // Quản lý đăng ký chỗ đỗ xe
-  { id: "2", name: "Điện - Nước", icon: "flash" }, // Xem và thanh toán hóa đơn điện, nước
-  { id: "3", name: "Hồ bơi", icon: "walk", navigatePage: "index" }, // Đặt lịch sử dụng hồ bơi
-  { id: "4", name: "Phòng Gym", icon: "barbell" }, // Đặt lịch và sử dụng phòng tập gym
+const utilitiesList = [
+  { id: "1", name: "Bãi đậu xe", icon: "car", navigatePage: "parking" },
+  { id: "2", name: "Điện - Nước", icon: "flash", navigatePage: "seviceFees" },
   {
-    id: "5",
+    id: "3",
+    name: "Thành viên",
+    icon: "person",
+    navigatePage: "apartmentMember",
+  },
+];
+
+const servicesList = [
+  { id: "swim", name: "Hồ bơi", icon: "walk", navigatePage: "detail" },
+  { id: "5", name: "Phòng Gym", icon: "barbell", navigatePage: "defaultPage" },
+  {
+    id: "6",
     name: "Báo cáo sự cố",
     icon: "alert-circle",
     navigatePage: "incident",
-  }, // Gửi yêu cầu sửa chữa, báo cáo sự cố
-  { id: "6", name: "Thanh toán dịch vụ", icon: "cash" }, // Thanh toán các khoản phí chung cư
-  { id: "7", name: "Thông báo", icon: "notifications" }, // Nhận thông báo từ ban quản lý
-  { id: "8", name: "Hỗ trợ", icon: "help-circle", navigatePage: "members" }, // Liên hệ ban quản lý để được hỗ trợ
+  },
+  {
+    id: "7",
+    name: "Thanh toán dịch vụ",
+    icon: "cash",
+    navigatePage: "defaultPage",
+  },
+  {
+    id: "8",
+    name: "Thông báo",
+    icon: "notifications",
+    navigatePage: "defaultPage",
+  },
+  { id: "9", name: "Hỗ trợ", icon: "help-circle", navigatePage: "members" },
 ];
 
 interface UtilityItemProps {
+  id: string;
   name: string;
   icon: any;
   navigatePage?: string;
 }
 
 const UtilityItem: React.FC<UtilityItemProps> = ({
+  id,
   name,
   icon,
   navigatePage,
 }) => {
-  const theme = useColorScheme();
   const textColor = useThemeColor({}, "text");
   const backgroundColor = useThemeColor({}, "cardBackground");
   const iconColor = useThemeColor({}, "icon");
   const navigation = useNavigation<any>();
 
+  const handleCheckServiceDetail = async () => {
+    try {
+      const [res1, res2] = await Promise.all([
+        getServiceDetail(id.toLowerCase()),
+        getServiceDetail(name.toLowerCase()),
+      ]);
+      return res1?.length ? res1 : res2;
+    } catch (error) {
+      console.error("Error fetching service detail:", error);
+      return null;
+    }
+  };
+
+  const handleNavigate = async () => {
+    if (!navigatePage) return;
+
+    if (id.toLowerCase().includes("swim")) {
+      const response = await handleCheckServiceDetail();
+      if (!response || !response.length) {
+        alert("Coming soon");
+        return;
+      }
+      navigation.navigate("detail", { name, data: response });
+    } else {
+      navigation.navigate(navigatePage);
+    }
+  };
+
   return (
-    <TouchableOpacity
-      style={styles.item}
-      onPress={() => navigation.navigate(navigatePage)}
-    >
+    <TouchableOpacity style={styles.item} onPress={handleNavigate}>
       <View style={[styles.iconContainer, { backgroundColor }]}>
         <Ionicons name={icon} size={30} color={iconColor} />
       </View>
@@ -58,33 +105,39 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
   );
 };
 
+const renderUtilityGrid = (data: UtilityItemProps[], noRow = 1) => (
+  <View style={styles.gridContainer}>
+    {[0, 1].map((row) => (
+      <View key={row} style={styles.row}>
+        {data
+          .filter((_, index) => index % noRow === row)
+          .map((item) => (
+            <UtilityItem key={item.id} {...item} />
+          ))}
+      </View>
+    ))}
+  </View>
+);
+
 const ExtensionsUI = () => {
-  const itemSize = 100;
-  const theme = useColorScheme();
   return (
     <View style={styles.container}>
-      <ThemedText type="subtitle">Tiện ích và dịch vụ</ThemedText>
+      <ThemedText type="subtitle">Tiện ích</ThemedText>
       <ScrollView
-        horizontal={true}
-        showsHorizontalScrollIndicator={true}
+        horizontal
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollStyle}
       >
-        <View style={styles.gridContainer}>
-          {[0, 1].map((row) => (
-            <View key={row} style={styles.row}>
-              {utilities
-                .filter((_, index) => index % 2 === row)
-                .map((item) => (
-                  <UtilityItem
-                    key={item.id}
-                    name={item.name}
-                    icon={item.icon}
-                    navigatePage={item.navigatePage}
-                  />
-                ))}
-            </View>
-          ))}
-        </View>
+        {renderUtilityGrid(utilitiesList)}
+      </ScrollView>
+
+      <ThemedText type="subtitle">Dịch vụ</ThemedText>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollStyle}
+      >
+        {renderUtilityGrid(servicesList, 2)}
       </ScrollView>
     </View>
   );
@@ -109,7 +162,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 4,
+    paddingHorizontal: 10,
   },
   item: {
     width: 80,

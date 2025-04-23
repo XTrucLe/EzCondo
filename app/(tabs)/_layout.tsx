@@ -52,6 +52,17 @@ export default function TabLayout() {
     "add_member",
     "apartmentMember",
     "changePassword",
+    "booking",
+    "booking.confirm",
+    "incident",
+    "gym",
+    "parking",
+    "parking.regis",
+    "chatbot",
+    "chatbotHome",
+    "detail",
+    "seviceFees",
+    "feeDetail",
   ];
 
   const isTabHidden =

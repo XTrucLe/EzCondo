@@ -72,7 +72,6 @@ const getApiInstance = async () => {
             errorMessage = translation.wrong_credentials;
           }
         }
-
         return Promise.reject(new Error(errorMessage));
       }
     );
@@ -117,6 +116,13 @@ export const request = async ({
       data
     )}`
   );
+  const isFormData = data instanceof FormData;
+
+  if (isFormData) {
+    api.defaults.headers["Content-Type"] = "multipart/form-data";
+  } else {
+    api.defaults.headers["Content-Type"] = "application/json";
+  }
 
   return withRetry(() => api.request({ method, url, data }), retryCount);
 };

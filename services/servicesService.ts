@@ -34,7 +34,7 @@ export const getServiceImages = async (serviceId: string) => {
     });
     console.log(response);
 
-    return response;
+    return response.data;
   } catch (error) {
     console.log(error);
   }
