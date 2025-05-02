@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, Image } from "react-native";
+import { View, SafeAreaView, StyleSheet, Image } from "react-native";
 import React from "react";
 import SearchBox from "@/components/ui/SearchBox";
 import { applicationImages } from "@/constants/ImageLink";

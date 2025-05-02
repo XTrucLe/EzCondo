@@ -87,6 +87,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true });
 
       const token = await loginAPI(email, password);
+
       if (!token) throw new Error("Login failed");
 
       if (rememberMe) {

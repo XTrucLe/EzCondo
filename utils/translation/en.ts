@@ -105,18 +105,31 @@ export default {
   504: "Server timeout, please try again!",
   network: "Unable to connect, check your network!",
   unknown: "An error has occurred!",
-
+  loginAnotherAccount: "Please log in with another account!",
   //service
   service: "Service",
+  serviceName: "Service Name",
+  serviceType: "Service Type",
+  serviceStatus: "Service Status",
   introduce: "Introduce",
   utilities: "Utilities",
-  serviceType: "Service Type",
   price: "Price",
   noInfo: "No information",
   serviceDetail: "Service Detail",
   serviceHistory: "Service History",
   bookNow: "Book Now",
+  paidDate: "Paid Date",
+  note: "Note",
+  status: "Status",
 
   parkingCard: "Parking Card",
   parkingRegis: "Parking Registration",
+
+  accountNumber: "Account Number",
+  accountOwner: "Account Owner",
+  bankName: "Bank Name",
+  amount: "Amount",
+  description: "Description",
+  paymentMethod: "Payment Method",
+  qrCode: "QR Code",
 };

@@ -81,10 +81,19 @@ export const loginAPI = async (email: string, password: string) => {
       url: endpoints.auth?.login,
       data: { email, password },
     });
-    let token = response?.data?.data?.token;
-    await saveToken(token);
-    setAuthHeader(token);
-    return token;
+    const { token, role } = response?.data?.data || {};
+
+    if (["resident"].includes(role?.toLowerCase())) {
+      await saveToken(token);
+      setAuthHeader(token);
+      return token;
+    }
+
+    Alert.alert(
+      "Không thể đăng nhập",
+      "Chỉ tài khoản cư dân (resident) mới được phép truy cập ứng dụng.",
+      [{ text: "OK" }]
+    );
   } catch (error) {
     throw error;
   }

@@ -28,6 +28,13 @@ export default function ServiceLayout() {
           headerTitle: "",
         }}
       />
+      <Stack.Screen
+        name="QRcode"
+        options={{
+          headerShown: true,
+          headerTitle: "",
+        }}
+      />
     </Stack>
   );
 }

@@ -16,6 +16,9 @@ export const endpoints = {
   apartment: {
     getMyApartment: `${API_BASE}/Apartment/get-my-apartment`,
   },
+  booking: {
+    createBooking: `${API_BASE}/Booking/Add-Booking`,
+  },
   household: {
     getHousehold: `${API_BASE}/HouseHoldMember/get-my-house-hold-member`,
   },
@@ -60,5 +63,9 @@ export const endpoints = {
     sendIncident: `${API_BASE}/Incident/add-incident`,
     sendIncodentImage: `${API_BASE}/Incident/add-or-update-incident-image`,
     getIncidentHistory: `${API_BASE}/Incident/get-incident-history`,
+  },
+  payment: {
+    createPayment: `${API_BASE}/Payment/Create-QR-Payment`,
+    checkStatusPayment: `${API_BASE}/Payment/Check-Payment-Status`,
   },
 };

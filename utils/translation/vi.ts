@@ -119,9 +119,11 @@ export default {
   504: "Máy chủ phản hồi chậm, vui lòng thử lại!",
   network: "Không thể kết nối, kiểm tra mạng!",
   unknown: "Đã xảy ra lỗi!",
-
+  loginAnotherAccount: "Vui lòng đăng nhập tài khoản khác!",
   // service
   service: "Dịch vụ",
+  serviceName: "Tên dịch vụ",
+  serviceStatus: "Trạng thái dịch vụ",
   introduce: "Giới thiệu",
   utilities: "Tiện ích",
   serviceType: "Loại dịch vụ",
@@ -130,7 +132,18 @@ export default {
   serviceDetail: "Chi tiết dịch vụ",
   serviceHistory: "Lịch sử dịch vụ",
   bookNow: "Đặt ngay",
+  paidDate: "Ngày thanh toán",
+  note: "Ghi chú",
+  status: "Trạng thái",
 
   parkingCard: "Thẻ xe",
   parkingRegis: "Đăng ký xe",
+
+  accountNumber: "STK",
+  accountOwner: "Chủ tài khoản",
+  bankName: "Ngân hàng",
+  amount: "Giá trị",
+  paymentMethod: "Phương thức thanh toán",
+  description: "Chi tiết",
+  qrCode: "QR Code",
 };

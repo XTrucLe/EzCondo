@@ -54,6 +54,10 @@ const ReportIssueScreen = () => {
     }
   };
 
+  const removeMedia = (index: number) => {
+    setMediaList((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async () => {
     console.log(form);
     if (!form.title || !form.description) {
@@ -116,7 +120,19 @@ const ReportIssueScreen = () => {
         key={NUM_COLUMNS}
         renderItem={({ item }) =>
           item ? (
-            <Image source={{ uri: item.uri }} style={styles.mediaPreview} />
+            <View style={styles.mediaPreview}>
+              <Text
+                style={styles.mediaRemove}
+                onPress={() => removeMedia(mediaList.indexOf(item))}
+              >
+                X
+              </Text>
+
+              <Image
+                source={{ uri: item.uri }}
+                style={{ width: "100%", height: "100%", borderRadius: 5 }}
+              />
+            </View>
           ) : (
             <TouchableOpacity style={styles.mediaPicker} onPress={pickMedia}>
               <AntDesign name="plus" size={40} color="#ccc" />
@@ -175,6 +191,22 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderWidth: 1,
     borderColor: "#ccc",
+  },
+  mediaRemove: {
+    position: "absolute",
+    lineHeight: 20,
+    top: 5,
+    right: 5,
+    fontSize: 10,
+    fontWeight: "bold",
+    backgroundColor: "#fff",
+    color: "#000",
+    textAlign: "center",
+    textAlignVertical: "center",
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    zIndex: 1,
   },
   submitButton: {
     marginTop: 20,

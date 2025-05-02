@@ -1,7 +1,16 @@
 import { useLanguage } from "@/hooks/useLanguage";
 import React from "react";
-import { View, Text, StyleSheet, Modal, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { Button } from "react-native-paper";
+import { formatVND } from "./../../../hooks/useFormat";
 
 type ModalCustomeProps = {
   visible: boolean;
@@ -11,6 +20,37 @@ type ModalCustomeProps = {
 
 const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
   const { translation } = useLanguage();
+
+  const renderValue = (key: string, value: any) => {
+    const keyLower = key.toLowerCase();
+    const isMoneyKey = ["amount", "price", "total"].includes(keyLower);
+
+    if (keyLower === "status") {
+      let statusStyle = styles.statusDefault;
+      let statusText = value;
+
+      if (value === "success") {
+        statusStyle = styles.statusSuccess;
+        statusText = "Thành công";
+      } else if (value === "failed") {
+        statusStyle = styles.statusFailed;
+        statusText = "Thất bại";
+      }
+
+      return (
+        <View style={[styles.statusBadge, statusStyle]}>
+          <Text style={styles.statusText}>{statusText}</Text>
+        </View>
+      );
+    }
+
+    return (
+      <Text style={[styles.value, isMoneyKey && styles.money]}>
+        {isMoneyKey ? formatVND(value) : value || "N/A"}
+      </Text>
+    );
+  };
+
   return (
     <Modal
       animationType="slide"
@@ -22,7 +62,6 @@ const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>📋 Thông tin chi tiết</Text>
 
-          {/* Hiển thị Avatar nếu có */}
           {data?.avatar && (
             <Image source={{ uri: data.avatar }} style={styles.avatar} />
           )}
@@ -30,11 +69,11 @@ const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
           <ScrollView style={styles.modalBody}>
             {data ? (
               Object.entries(data)
-                .filter(([key]) => !["avatar", "id", "regency"].includes(key)) // Loại bỏ avatar khỏi danh sách
+                .filter(([key]) => !["avatar", "id", "regency"].includes(key))
                 .map(([key, value]) => (
                   <View key={key} style={styles.row}>
-                    <Text style={styles.label}>{translation[key]}:</Text>
-                    <Text style={styles.value}>{value || "N/A"}</Text>
+                    <Text style={styles.label}>{translation[key] || key}:</Text>
+                    {renderValue(key, value)}
                   </View>
                 ))
             ) : (
@@ -42,12 +81,12 @@ const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
             )}
           </ScrollView>
 
-          <Button
-            role="button"
-            onPress={() => setVisible(false)}
-            children="X"
+          <TouchableOpacity
             style={styles.closeButton}
-          />
+            onPress={() => setVisible(false)}
+          >
+            <Text style={styles.closeButtonText}>Đóng</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -104,10 +143,48 @@ const styles = StyleSheet.create({
     color: "#555",
     fontSize: 16,
   },
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 20,
+    alignSelf: "flex-end",
+  },
+
+  statusText: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+
+  statusSuccess: {
+    backgroundColor: "#4CAF50",
+  },
+
+  statusFailed: {
+    backgroundColor: "#F44336",
+  },
+
+  statusDefault: {
+    backgroundColor: "#9E9E9E",
+  },
+
+  money: {
+    color: "#007aff",
+    fontWeight: "bold",
+  },
+
   closeButton: {
-    position: "absolute",
-    top: 0,
-    right: -10,
+    marginTop: 15,
+    backgroundColor: "#007aff",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
