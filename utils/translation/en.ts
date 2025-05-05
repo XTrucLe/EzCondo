@@ -87,6 +87,25 @@ export default {
   Male: "Male",
   Female: "Female",
   Other: "Other",
+
+  createBy: "Created by",
+  createAt: "Created at",
+  createdBy: "Created by",
+  createdAt: "Created at",
+  updateAt: "Updated at",
+  updateBy: "Updated by",
+  statusActive: "Active",
+  statusInactive: "Inactive",
+  statusPending: "Pending",
+  statusApproved: "Approved",
+  statusRejected: "Rejected",
+  statusCompleted: "Completed",
+  statusInProgress: "In Progress",
+  statusCancelled: "Cancelled",
+  statusWaiting: "Waiting",
+  statusProcessing: "Processing",
+  statusSuccess: "Success",
+
   //api error
   apiError:
     "An error occurred while processing your request. Please try again later",
@@ -106,6 +125,7 @@ export default {
   network: "Unable to connect, check your network!",
   unknown: "An error has occurred!",
   loginAnotherAccount: "Please log in with another account!",
+
   //service
   service: "Service",
   serviceName: "Service Name",

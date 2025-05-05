@@ -15,6 +15,9 @@ export const Colors = {
     panelBackground: "#E9EFF5",
     panelBorder: "#C3CBD3",
     divider: "#BFC8D2",
+    primary: "#3674B5", // Màu chính cho các nút và tiêu đề
+    secondary: "#A1E3F9", // Màu phụ cho các nút và tiêu đề
+    tertiary: "#F5F7FA", // Màu nền cho các thành phần
 
     tint: tintColorLight,
     icon: "#3674B5",
@@ -57,6 +60,10 @@ export const Colors = {
     tabViewIndicator: tintColorLight,
     tabViewBorder: "#A1E3F9",
     tabViewInactive: "#9BAEC2",
+
+    textPrimary: "#1A1A1A",
+    textSecondary: "#6D7C85", // 🔹 Màu INACTIVE dịu hơn
+    textTertiary: "#A1A1A1", // 🔹 Màu INACTIVE dịu hơn
   },
 
   dark: {
@@ -68,6 +75,9 @@ export const Colors = {
     panelBackground: "#343A41",
     panelBorder: "#4A4F58",
     divider: "#4A6572",
+    primary: "#A1E3F9", // Màu chính cho các nút và tiêu đề
+    secondary: "#3674B5", // Màu phụ cho các nút và tiêu đề
+    tertiary: "#2A2E35", // Màu nền cho các thành phần
 
     tint: tintColorDark,
     icon: "#A1E3F9",
@@ -110,5 +120,9 @@ export const Colors = {
     tabViewIndicator: tintColorDark,
     tabViewBorder: "#A1E3F9",
     tabViewInactive: "#5B748C",
+
+    textPrimary: "#ECEDEE",
+    textSecondary: "#A1A1A1", // 🔹 Màu INACTIVE dịu hơn
+    textTertiary: "#5B748C", // 🔹 Màu INACTIVE dịu hơn
   },
 };

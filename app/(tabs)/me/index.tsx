@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,41 +8,59 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import useAuthStore from "@/hooks/useAuth";
-import { useNavigation } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { Avatar, Button, Card, List } from "react-native-paper";
+import { useNavigation } from "expo-router";
+
+// Custom hooks and utilities
+import useAuthStore from "@/hooks/useAuth";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { userDefaultImage } from "@/constants/ImageLink";
 import { useLanguage } from "@/hooks/useLanguage";
+import { userDefaultImage } from "@/constants/ImageLink";
+
+// Types
+type SettingItem = {
+  id: string;
+  title: string;
+  icon: string;
+  action?: () => void;
+  rightComponent?: React.ReactNode;
+  description?: string;
+};
 
 const ProfileScreen = () => {
+  // Hooks and state
   const navigation = useNavigation();
   const { logout, user: userInfo } = useAuthStore();
   const [darkMode, setDarkMode] = useState(false);
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
-
-  const backgroundColor = useThemeColor({}, "background");
-  const textColor = useThemeColor({}, "text");
-  const cardColor = useThemeColor({}, "cardBackground");
-  const iconColor = useThemeColor({}, "icon");
-  const logoutButtonColor = useThemeColor({}, "error");
-
   const { translation, setLanguage, currentLang } = useLanguage();
 
+  // Theme colors
+  const theme = {
+    background: useThemeColor({}, "background"),
+    text: useThemeColor({}, "text"),
+    cardBackground: useThemeColor({}, "cardBackground"),
+    icon: useThemeColor({}, "icon"),
+    error: useThemeColor({}, "error"),
+  };
+
+  // Load settings from secure storage
   useEffect(() => {
+    const loadSettings = async () => {
+      const [storedDarkMode, stored2FA] = await Promise.all([
+        SecureStore.getItem("darkMode"),
+        SecureStore.getItem("twoFactorAuth"),
+      ]);
+
+      setDarkMode(storedDarkMode === "true");
+      setTwoFactorAuth(stored2FA === "true");
+    };
+
     loadSettings();
   }, []);
 
-  const loadSettings = async () => {
-    const storedDarkMode = await SecureStore.getItem("darkMode");
-    const stored2FA = await SecureStore.getItem("twoFactorAuth");
-
-    setDarkMode(storedDarkMode === "true");
-    setTwoFactorAuth(stored2FA === "true");
-  };
-
+  // Toggle handlers
   const toggleDarkMode = async () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
@@ -54,6 +73,11 @@ const ProfileScreen = () => {
     await SecureStore.setItem("twoFactorAuth", new2FA.toString());
   };
 
+  const handleLanguageChange = () => {
+    setLanguage(currentLang === "en" ? "vi" : "en");
+  };
+
+  // Logout handler
   const handleLogout = () => {
     Alert.alert(
       `${translation.confirm} ${translation.logout}`,
@@ -75,10 +99,79 @@ const ProfileScreen = () => {
     );
   };
 
+  // Settings sections
+  const generalSettings: SettingItem[] = [
+    {
+      id: "darkMode",
+      title: translation.darkMode,
+      icon: "theme-light-dark",
+      rightComponent: (
+        <Switch value={darkMode} onValueChange={toggleDarkMode} />
+      ),
+    },
+    {
+      id: "language",
+      title: translation.language,
+      icon: "translate",
+      description: currentLang === "en" ? "English" : "Tiếng Việt",
+      action: handleLanguageChange,
+    },
+    {
+      id: "twoFactorAuth",
+      title: "Xác thực 2 lớp",
+      icon: "shield-lock",
+      rightComponent: (
+        <Switch value={twoFactorAuth} onValueChange={toggleTwoFactorAuth} />
+      ),
+    },
+  ];
+
+  const supportSettings: SettingItem[] = [
+    {
+      id: "helpCenter",
+      title: "Trung tâm trợ giúp",
+      icon: "help-circle",
+      action: () => navigation.navigate("support" as never),
+    },
+    {
+      id: "accountSettings",
+      title: translation.accountSetting,
+      icon: "account-cog",
+      action: () => navigation.navigate("profile_edit" as never),
+    },
+    {
+      id: "changePassword",
+      title: translation.changePassword,
+      icon: "lock-reset",
+      action: () => navigation.navigate("changePassword" as never),
+    },
+  ];
+
+  // Render function for settings items
+  const renderSettingItem = (item: SettingItem) => (
+    <List.Item
+      key={item.id}
+      title={item.title}
+      description={item.description}
+      left={() => <List.Icon icon={item.icon as any} color={theme.icon} />}
+      right={() => item.rightComponent}
+      onPress={item.action}
+      style={styles.listItem}
+    />
+  );
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      {/* Profile Card */}
       <TouchableOpacity onPress={() => navigation.navigate("profile" as never)}>
-        <Card style={[styles.profileCard, { backgroundColor: cardColor }]}>
+        <Card
+          style={[
+            styles.profileCard,
+            { backgroundColor: theme.cardBackground },
+          ]}
+        >
           <View style={styles.profileInfo}>
             <Avatar.Image
               size={60}
@@ -87,79 +180,42 @@ const ProfileScreen = () => {
               }
             />
             <View style={{ marginLeft: 15 }}>
-              <Text style={[styles.name, { color: textColor }]}>
+              <Text style={[styles.name, { color: theme.text }]}>
                 {userInfo?.fullName}
               </Text>
-              <Text style={{ color: textColor }}>
+              <Text style={{ color: theme.text }}>
                 Căn hộ: {userInfo?.apartmentNumber}
               </Text>
             </View>
             <List.Icon
               icon="chevron-right"
-              color={iconColor}
+              color={theme.icon}
               style={{ position: "absolute", right: 10 }}
             />
           </View>
         </Card>
       </TouchableOpacity>
 
+      {/* Settings Sections */}
       <List.Section>
-        <List.Subheader style={[styles.subHeader, { color: textColor }]}>
+        <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
           {translation.generalSetting}
         </List.Subheader>
-        <List.Item
-          title={translation.darkMode}
-          left={() => <List.Icon icon="theme-light-dark" color={iconColor} />}
-          right={() => (
-            <Switch value={darkMode} onValueChange={toggleDarkMode} />
-          )}
-          style={styles.listItem}
-        />
-        <List.Item
-          title={translation.language}
-          description={currentLang === "en" ? "English" : "Tiếng Việt"}
-          left={() => <List.Icon icon="translate" color={iconColor} />}
-          onPress={() => setLanguage(currentLang === "en" ? "vi" : "en")}
-          style={styles.listItem}
-        />
-        <List.Item
-          title="Xác thực 2 lớp"
-          left={() => <List.Icon icon="shield-lock" color={iconColor} />}
-          right={() => (
-            <Switch value={twoFactorAuth} onValueChange={toggleTwoFactorAuth} />
-          )}
-          style={styles.listItem}
-        />
+        {generalSettings.map(renderSettingItem)}
       </List.Section>
 
       <List.Section>
-        <List.Subheader style={[styles.subHeader, { color: textColor }]}>
+        <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
           {translation.support}
         </List.Subheader>
-        <List.Item
-          title="Trung tâm trợ giúp"
-          left={() => <List.Icon icon="help-circle" color={iconColor} />}
-          onPress={() => navigation.navigate("support" as never)}
-          style={styles.listItem}
-        />
-        <List.Item
-          title={translation.accountSetting}
-          left={() => <List.Icon icon="account-cog" color={iconColor} />}
-          onPress={() => navigation.navigate("profile_edit" as never)}
-          style={styles.listItem}
-        />
-        <List.Item
-          title={translation.accountSetting}
-          left={() => <List.Icon icon="account-cog" color={iconColor} />}
-          onPress={() => navigation.navigate("changePassword" as never)}
-          style={styles.listItem}
-        />
+        {supportSettings.map(renderSettingItem)}
       </List.Section>
 
+      {/* Logout Button */}
       <Button
         mode="contained"
         onPress={handleLogout}
-        style={[styles.logoutButton, { backgroundColor: logoutButtonColor }]}
+        style={[styles.logoutButton, { backgroundColor: theme.error }]}
       >
         {translation.logout}
       </Button>
@@ -168,7 +224,11 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 20, marginTop: 20 },
+  container: {
+    flex: 1,
+    paddingTop: 20,
+    marginTop: 20,
+  },
   profileCard: {
     width: "96%",
     alignSelf: "center",
@@ -179,7 +239,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  name: { fontSize: 18, fontWeight: "bold" },
+  name: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   subHeader: {
     marginTop: 10,
     fontSize: 16,

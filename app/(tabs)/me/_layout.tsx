@@ -30,7 +30,10 @@ export default function MeLayout() {
         options={{ headerShown: true, headerTitle: "Trở lại" }}
       />
       <Stack.Screen name="support" options={{ headerShown: false }} />
-      <Stack.Screen name="changePassword" options={{ headerShown: true }} />
+      <Stack.Screen
+        name="changePassword"
+        options={{ headerShown: true, title: "" }}
+      />
     </Stack>
   );
 }

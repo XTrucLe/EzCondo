@@ -3,16 +3,75 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { openBankApp } from "@/components/BankLinking";
 
+// Types
+type Bill = {
+  id: string;
+  room: string;
+  owner: string;
+  type: string;
+  month: string;
+  createdDate: string;
+  readDate: string;
+  startReading: number;
+  endReading: number;
+  usage: number;
+  amount: number;
+  status: "paid" | "unpaid";
+  dueDate: string;
+};
+
+type InfoRowProps = {
+  label: string;
+  value: string | number;
+  valueStyle?: object;
+};
+
+// Constants
+const STATUS_CONFIG = {
+  paid: {
+    text: "Đã thanh toán",
+    color: "#10B981", // green-500
+    icon: "✅",
+  },
+  unpaid: {
+    text: "Chưa thanh toán",
+    color: "#EF4444", // red-500
+    icon: "⚠️",
+  },
+};
+
+// Components
+const InfoRow = ({ label, value, valueStyle = {} }: InfoRowProps) => (
+  <View style={styles.row}>
+    <Text style={styles.label}>{label}</Text>
+    <Text style={[styles.value, valueStyle]}>{value}</Text>
+  </View>
+);
+
+const PaymentButton = ({ onPress }: { onPress: () => void }) => (
+  <TouchableOpacity style={styles.button} onPress={onPress}>
+    <Text style={styles.buttonText}>Thanh Toán Ngay</Text>
+  </TouchableOpacity>
+);
+
+// Main Component
 export default function BillDetailScreen() {
-  const route = useRoute<any>();
-  const navigation = useNavigation<any>();
-  const { bill } = route.params;
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { bill } = route.params as { bill: Bill };
+
+  const handlePayment = () => {
+    // Xử lý thanh toán
+    // navigation.navigate("Payment", { billId: bill.id });
+  };
+
+  const statusConfig = STATUS_CONFIG[bill.status];
 
   const detailRows = [
     { label: "Mã hóa đơn:", value: bill.id },
@@ -21,112 +80,99 @@ export default function BillDetailScreen() {
     { label: "Dịch vụ:", value: bill.type },
     { label: "Tháng:", value: bill.month },
     { label: "Ngày tạo:", value: bill.createdDate },
-    { label: "Ngày ghi chỉ số:", value: bill.readDate },
-    { label: "Chỉ số đầu:", value: bill.startReading },
-    { label: "Chỉ số cuối:", value: bill.endReading },
     { label: "Sử dụng:", value: `${bill.usage} kWh` },
     { label: "Số tiền:", value: `${bill.amount.toLocaleString()} đ` },
-    {
-      label: "Trạng thái:",
-      value: bill.status === "paid" ? "Đã thanh toán" : "Chưa thanh toán",
-      valueStyle: { color: bill.status === "paid" ? "green" : "red" },
-    },
-    { label: "Hạn thanh toán:", value: bill.dueDate },
   ];
-
-  const InfoRow = ({
-    label,
-    value,
-    valueStyle = {},
-  }: {
-    label: string;
-    value: string | number;
-    valueStyle?: any;
-  }) => (
-    <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={[styles.value, valueStyle]}>{value}</Text>
-    </View>
-  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>📄 Chi tiết Hóa đơn</Text>
+
         {detailRows.map((item, index) => (
           <InfoRow
-            key={index}
+            key={`${item.label}-${index}`}
             label={item.label}
             value={item.value}
-            valueStyle={item.valueStyle}
           />
         ))}
-        {bill.status === "unpaid" && (
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Thanh Toán Ngay</Text>
-          </TouchableOpacity>
-        )}
       </View>
     </ScrollView>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
-    backgroundColor: "#f9fafb",
-    minHeight: "100%",
+    flex: 1,
+    backgroundColor: "#f5f7fa",
+    paddingHorizontal: 16,
+    paddingVertical: 24,
   },
   content: {
     backgroundColor: "#ffffff",
-    padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
+    padding: 24,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    marginBottom: 16,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 5,
   },
   title: {
     fontSize: 24,
     fontWeight: "700",
+    color: "#1a365d",
     textAlign: "center",
-    marginBottom: 24,
-    color: "#1f2937",
+    marginBottom: 32,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e2e8f0",
   },
   row: {
-    backgroundColor: "#fff",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    borderBottomColor: "#e5e7eb",
+    alignItems: "center",
+    paddingVertical: 14,
     borderBottomWidth: 1,
+    borderBottomColor: "#edf2f7",
   },
   label: {
-    fontWeight: "bold",
+    fontWeight: "500",
     fontSize: 16,
-    color: "#374151",
-    width: "50%",
+    color: "#4a5568",
+    flex: 1,
   },
   value: {
-    fontSize: 15,
-    color: "#4b5563",
-    width: "48%",
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#2d3748",
+    flex: 1,
     textAlign: "right",
   },
   button: {
-    backgroundColor: "#10b981",
+    backgroundColor: "#4299e1",
     paddingVertical: 16,
     borderRadius: 12,
     marginTop: 32,
-    shadowColor: "#10b981",
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: "#4299e1",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
     shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 24,
+    textAlign: "center",
   },
   buttonText: {
     color: "#ffffff",
@@ -134,5 +180,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "600",
     letterSpacing: 0.5,
+  },
+  statusContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  statusText: {
+    marginLeft: 6,
+    fontWeight: "600",
   },
 });

@@ -41,3 +41,7 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+
+# files not to be ignored
+services/apiService.ts

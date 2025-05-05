@@ -114,28 +114,34 @@ const ChangePassword = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f8f9fa",
-    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingTop: 40,
+    paddingBottom: 20,
+    backgroundColor: "#ffffff",
   },
   title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#1c1c1e",
+    marginBottom: 32,
     textAlign: "center",
-    color: "#333",
   },
   button: {
-    backgroundColor: "#007bff",
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: "#2563eb", // Blue-600
+    paddingVertical: 14,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 28,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Android shadow
   },
   buttonText: {
-    color: "white",
+    color: "#ffffff",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 });
 

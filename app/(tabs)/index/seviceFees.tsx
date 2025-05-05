@@ -47,61 +47,63 @@ const mockData = [
 export default function BillListScreen() {
   const navigation = useNavigation<any>();
 
+  const renderItem = ({ item }: any) => {
+    const paid = item.status === "paid";
+    return (
+      <TouchableOpacity
+        style={[styles.card, paid ? styles.cardPaid : styles.cardUnpaid]}
+        onPress={() => navigation.navigate("feeDetail", { bill: item })}
+        activeOpacity={0.8}
+      >
+        {/* Header: Icon + Title + Amount */}
+        <View style={styles.header}>
+          <View style={styles.titleWrap}>
+            <Ionicons
+              name={item.type.includes("nước") ? "water" : "flash"}
+              size={24}
+              color="#4A90E2"
+            />
+            <Text style={styles.title}>
+              {item.type} • {item.month}
+            </Text>
+          </View>
+          <Text style={styles.amount}>{item.amount.toLocaleString()}₫</Text>
+        </View>
+
+        {/* Sub-info: Room & Owner */}
+        <Text style={styles.subInfo}>
+          Phòng <Text style={styles.highlight}>{item.room}</Text> – Chủ hộ{" "}
+          <Text style={styles.highlight}>{item.owner}</Text>
+        </Text>
+
+        {/* Footer: Status badge & Due/Paid Date */}
+        <View style={styles.footer}>
+          <View
+            style={[styles.badge, paid ? styles.badgePaid : styles.badgeUnpaid]}
+          >
+            <Text style={styles.badgeText}>
+              {paid ? "Đã thanh toán" : "Chưa thanh toán"}
+            </Text>
+          </View>
+          {paid ? (
+            <Text style={styles.dateText}>
+              Ngày thanh toán: {item.paidDate}
+            </Text>
+          ) : (
+            <Text style={styles.dateText}>Hạn: {item.dueDate}</Text>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={mockData}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.card,
-              item.status === "unpaid" ? styles.unpaidCard : styles.paidCard,
-            ]}
-            onPress={() => navigation.navigate("feeDetail", { bill: item })}
-          >
-            <View style={styles.rowBetween}>
-              <View style={styles.rowCenter}>
-                <Ionicons
-                  name={item.type.includes("nước") ? "water" : "flash"}
-                  size={24}
-                  color="#4A90E2"
-                />
-                <Text style={styles.titleText}>
-                  {"  "}
-                  {item.type} – {item.month}
-                </Text>
-              </View>
-              <Text style={styles.amountText}>
-                {item.amount.toLocaleString()}đ
-              </Text>
-            </View>
-
-            <Text style={styles.infoText}>
-              Phòng: {item.room} – Chủ hộ: {item.owner}
-            </Text>
-
-            <Text
-              style={[
-                styles.statusText,
-                item.status === "unpaid"
-                  ? styles.statusUnpaid
-                  : styles.statusPaid,
-              ]}
-            >
-              Trạng thái:{" "}
-              {item.status === "unpaid"
-                ? "❌ Chưa thanh toán"
-                : "✅ Đã thanh toán"}
-            </Text>
-
-            {item.status === "unpaid" && (
-              <Text style={styles.dueDateText}>
-                Hạn thanh toán: {item.dueDate}
-              </Text>
-            )}
-          </TouchableOpacity>
-        )}
+        renderItem={renderItem}
+        contentContainerStyle={styles.listContent}
       />
     </View>
   );
@@ -110,69 +112,84 @@ export default function BillListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f0f2f5",
+  },
+  listContent: {
     padding: 16,
-    backgroundColor: "#f5f5f5",
-  },
-  unpaidCard: {
-    backgroundColor: "#fff3f3",
-    borderColor: "#ffcccc",
-    borderWidth: 1,
-  },
-  paidCard: {
-    backgroundColor: "#e8f5e9",
-    borderColor: "#c8e6c9",
-    borderWidth: 1,
   },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
+    marginBottom: 12,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  rowBetween: {
+  cardUnpaid: {
+    backgroundColor: "#fff5f5",
+    borderLeftWidth: 4,
+    borderLeftColor: "#e74c3c",
+  },
+  cardPaid: {
+    backgroundColor: "#f5fff9",
+    borderLeftWidth: 4,
+    borderLeftColor: "#2ecc71",
+  },
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  rowCenter: {
+  titleWrap: {
     flexDirection: "row",
     alignItems: "center",
   },
-  titleText: {
+  title: {
+    marginLeft: 8,
     fontSize: 16,
     fontWeight: "600",
     color: "#333",
   },
-  amountText: {
+  amount: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1E88E5",
+    color: "#1e88e5",
   },
-  infoText: {
+  subInfo: {
     fontSize: 14,
     color: "#666",
-    marginBottom: 4,
+    marginBottom: 12,
   },
-  statusText: {
-    fontSize: 14,
+  highlight: {
+    color: "#333",
     fontWeight: "500",
-    marginBottom: 4,
   },
-  statusUnpaid: {
-    color: "#E53935",
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  statusPaid: {
-    color: "#43A047",
+  badge: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
-  dueDateText: {
-    fontSize: 13,
+  badgeUnpaid: {
+    backgroundColor: "#fdecea",
+  },
+  badgePaid: {
+    backgroundColor: "#e8f5e9",
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#333",
+  },
+  dateText: {
+    fontSize: 12,
     color: "#999",
   },
 });
