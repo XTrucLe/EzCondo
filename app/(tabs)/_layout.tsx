@@ -15,7 +15,6 @@ import { Ionicons } from "@expo/vector-icons";
 import useAuthStore from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
 import { getFCMToken } from "@/services/firebaseService";
-import { useLoading } from "@/hooks/useLoading";
 
 export default function TabLayout() {
   const theme = useColorScheme();
@@ -24,7 +23,6 @@ export default function TabLayout() {
   const router = useRouter();
   const { verified, loading } = useAuthStore();
   const { translation } = useLanguage();
-  const { isLoading } = useLoading();
 
   useEffect(() => {
     getFCMToken();
@@ -37,38 +35,12 @@ export default function TabLayout() {
     }
   }, [verified, loading, navigationState]);
 
-  const hiddenScreens = [
-    "profile",
-    "profile_edit",
-    "chatbot",
-    "incident",
-    "incident_detail",
-    "incident_create",
-    "support",
-    "swimming",
-    "booking",
-    "members",
-    "payment",
-    "add_member",
-    "apartmentMember",
-    "changePassword",
-    "booking",
-    "booking.confirm",
-    "incident",
-    "gym",
-    "parking",
-    "parking.regis",
-    "chatbot",
-    "chatbotHome",
-    "detail",
-    "seviceFees",
-    "feeDetail",
-  ];
+  const dispalyScreens = ["(tabs)", "index", "services", "notifications", "me"];
+  console.log("segment", segment[segment.length - 1]);
 
-  const isTabHidden =
+  const isTabDisplay =
     !navigationState?.key ||
-    hiddenScreens.includes(segment[segment.length - 1]);
-
+    dispalyScreens.includes(segment[segment.length - 1]);
   return (
     <Tabs
       screenOptions={{
@@ -80,17 +52,16 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: [
-          isTabHidden
-            ? { display: "none" }
-            : {
+          isTabDisplay
+            ? {
                 ...Platform.select({
                   ios: {
-                    // Use a transparent background on iOS to show the blur effect
                     position: "absolute",
                   },
                   default: {},
                 }),
-              },
+              }
+            : { display: "none" },
         ],
       }}
     >
@@ -121,6 +92,7 @@ export default function TabLayout() {
             <Ionicons size={28} name="notifications" color={color} />
           ),
           headerShown: true,
+          headerTitle: translation.notification,
         }}
       />
       <Tabs.Screen

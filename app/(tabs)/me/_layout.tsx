@@ -1,7 +1,9 @@
 import HeaderRightIcon from "@/components/ui/HeaderRightIcon";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Stack } from "expo-router";
 
 export default function MeLayout() {
+  const { translation } = useLanguage();
   return (
     <Stack
       initialRouteName="index"
@@ -16,7 +18,7 @@ export default function MeLayout() {
         name="profile"
         options={{
           headerShown: true,
-          headerTitle: "Thông tin chủ căn hộ",
+          headerTitle: translation.holderInfo,
           headerRight: () => (
             <HeaderRightIcon
               iconName="pencil"
@@ -27,8 +29,22 @@ export default function MeLayout() {
       />
       <Stack.Screen
         name="profile_edit"
-        options={{ headerShown: true, headerTitle: "Trở lại" }}
+        options={{ headerShown: true, headerTitle: translation.goback }}
       />
+
+      <Stack.Screen
+        name="payment_waiting"
+        options={{ headerShown: true, title: translation.paymentWaiting }}
+      />
+      <Stack.Screen
+        name="payment_history"
+        options={{ headerShown: true, title: translation.paymentHistory }}
+      />
+      <Stack.Screen
+        name="payment_detail"
+        options={{ headerShown: true, title: translation.paymentDetail }}
+      />
+
       <Stack.Screen name="support" options={{ headerShown: false }} />
       <Stack.Screen
         name="changePassword"

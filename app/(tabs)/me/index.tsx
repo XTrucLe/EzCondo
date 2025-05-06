@@ -99,6 +99,21 @@ const ProfileScreen = () => {
     );
   };
 
+  const paymentSettings: SettingItem[] = [
+    {
+      id: "paymentHistory",
+      title: translation.paymentHistory,
+      icon: "history",
+      action: () => navigation.navigate("payment_history" as never),
+    },
+    {
+      id: "pendingPayments",
+      title: translation.paymentPending,
+      icon: "clock-outline",
+      action: () => navigation.navigate("payment_waiting" as never),
+    },
+  ];
+
   // Settings sections
   const generalSettings: SettingItem[] = [
     {
@@ -118,7 +133,7 @@ const ProfileScreen = () => {
     },
     {
       id: "twoFactorAuth",
-      title: "Xác thực 2 lớp",
+      title: translation.twoFactor,
       icon: "shield-lock",
       rightComponent: (
         <Switch value={twoFactorAuth} onValueChange={toggleTwoFactorAuth} />
@@ -195,6 +210,14 @@ const ProfileScreen = () => {
           </View>
         </Card>
       </TouchableOpacity>
+
+      {/* Payment Settings Section */}
+      <List.Section>
+        <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
+          {translation.paymentHistory}
+        </List.Subheader>
+        {paymentSettings.map(renderSettingItem)}
+      </List.Section>
 
       {/* Settings Sections */}
       <List.Section>

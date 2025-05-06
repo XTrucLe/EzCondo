@@ -61,6 +61,7 @@ export default {
   samePass: "The new password cannot be the same as the old password",
   changePasswordSuccess: "Change password successfully",
   changePasswordFail: "Change password failed",
+  twoFactor: "Two Factor Authentication",
 
   // fields
   fullName: "Fullname",
@@ -83,6 +84,7 @@ export default {
   search: "Search",
   searchPlaceholder: "Search...",
   searchResult: "Search Result",
+  notFound: "No results found",
 
   Male: "Male",
   Female: "Female",
@@ -149,7 +151,19 @@ export default {
   accountOwner: "Account Owner",
   bankName: "Bank Name",
   amount: "Amount",
-  description: "Description",
   paymentMethod: "Payment Method",
+  paymentStatus: "Payment Status",
+  paymentDate: "Payment Date",
+  paymentHistory: "Payment History",
+  paymentPending: "Payment Pending",
+  paymentSuccess: "Payment Success",
+  paymentDetail: "Payment Detail",
+  paymentWaiting: "Payment Waiting",
+
+  description: "Description",
   qrCode: "QR Code",
+
+  holderInfo: "Holder Information",
+  holderName: "Holder Name",
+  goback: "Go Back",
 };

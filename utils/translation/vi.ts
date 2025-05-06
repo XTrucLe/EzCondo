@@ -76,6 +76,7 @@ export default {
   samePass: "Mật khẩu mới không được trùng với mật khẩu cũ",
   changePasswordSuccess: "Đổi mật khẩu thành công",
   changePasswordFail: "Đổi mật khẩu thất bại",
+  twoFactor: "Xác thực 2 lớp",
 
   fullName: "Họ và tên",
   phoneNumber: "Số điện thoại",
@@ -97,6 +98,7 @@ export default {
   search: "Tìm kiếm",
   searchPlaceholder: "Tìm kiếm...",
   searchResult: "Kết quả tìm kiếm",
+  notFound: "Không tìm thấy kết quả nào",
 
   Male: "Nam",
   Female: "Nữ",
@@ -162,6 +164,17 @@ export default {
   bankName: "Ngân hàng",
   amount: "Giá trị",
   paymentMethod: "Phương thức thanh toán",
+  paymentStatus: "Trạng thái thanh toán",
+  paymentDate: "Ngày thanh toán",
+  paymentHistory: "Lịch sử thanh toán",
+  paymentPending: "Chờ thanh toán",
+  paymentSuccess: "Thanh toán thành công",
+  paymentDetail: "Chi tiết thanh toán",
+  paymentWaiting: "Đang chờ thanh toán",
   description: "Chi tiết",
   qrCode: "QR Code",
+
+  holderInfo: "Thông tin chủ căn hộ",
+  holderName: "Tên chủ căn hộ",
+  goback: "Quay lại",
 };
