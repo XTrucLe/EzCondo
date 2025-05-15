@@ -174,6 +174,9 @@ export default {
   paymentWaiting: "Đang chờ thanh toán",
   description: "Chi tiết",
   qrCode: "QR Code",
+  scanQRCode: "Quét mã QR",
+  scanQRCodeSuccess: "Quét mã QR thành công",
+  waitingPayment: "Đang chờ thanh toán",
 
   holderInfo: "Thông tin chủ căn hộ",
   holderName: "Tên chủ căn hộ",

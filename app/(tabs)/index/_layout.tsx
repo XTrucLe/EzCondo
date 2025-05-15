@@ -73,6 +73,10 @@ export default function HomeLayout() {
         name="list_fees"
         options={{ headerShown: true, headerTitle: "" }}
       />
+      <Stack.Screen
+        name="paymentQR"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
     </Stack>
   );
 }

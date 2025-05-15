@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import { View, FlatList, StyleSheet, Text } from "react-native";
 import FeeCard from "@/components/ui/FeeCard";
 import { getElectricFees } from "@/services/feeServices";
 import { useRoute } from "@react-navigation/native";
@@ -32,18 +32,22 @@ export default function BillListScreen() {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={data}
-        keyExtractor={(item) =>
-          "electricBillId" in item
-            ? String(item.electricBillId)
-            : "waterBillId" in item
-            ? String(item.waterBillId)
-            : ""
-        }
-        renderItem={({ item }) => <FeeCard item={item} mode={mode} />}
-        contentContainerStyle={styles.listContent}
-      />
+      {!data || data.length === 0 ? (
+        <Text style={styles.emptyText}>Không có dữ liệu hóa đơn</Text>
+      ) : (
+        <FlatList
+          data={data}
+          keyExtractor={(item) =>
+            "electricBillId" in item
+              ? String(item.electricBillId)
+              : "waterBillId" in item
+              ? String(item.waterBillId)
+              : ""
+          }
+          renderItem={({ item }) => <FeeCard item={item} mode={mode} />}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
     </View>
   );
 }
@@ -55,5 +59,11 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
+  },
+  emptyText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "#888",
   },
 });

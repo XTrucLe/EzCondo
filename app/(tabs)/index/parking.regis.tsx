@@ -74,6 +74,7 @@ const VehicleCardForm = () => {
     let noMoto =
       formData.vehicleType === "motorcycle" ? Number(formData.cardCount) : 0;
     let noCar = formData.vehicleType === "car" ? Number(formData.cardCount) : 0;
+    console.log("🚗🚗🚗", noMoto, noCar);
 
     try {
       const response = await regisParking(noMoto, noCar);
@@ -92,6 +93,17 @@ const VehicleCardForm = () => {
         ]);
     } catch (error) {
       console.error("Error submitting form data:", error);
+      Alert.alert("Thông báo", "Đăng ký thẻ xe thất bại!", [
+        {
+          text: "OK",
+          onPress: () => {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "(tabs)" }],
+            });
+          },
+        },
+      ]);
     }
     console.log("Form data submitted:", formData);
   };

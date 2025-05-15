@@ -73,6 +73,8 @@ export const endpoints = {
     createElectricPayment: `${API_BASE}/Payment/Create-QR-Electric-Payment`,
     createpParkingPayment: `${API_BASE}/Payment/Create-QR-Parking-Payment`,
     checkStatusPayment: `${API_BASE}/Payment/Check-Payment-Status`,
+    getPaymentNeed: `${API_BASE}/Payment/Need-My-Payment`,
+    getPaymentHistory: `${API_BASE}/Payment/My-History-Payment`,
   },
   parking: {
     requestParking: `${API_BASE}/ParkingLot/Create-Parking-Lot`,

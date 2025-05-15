@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import {
   View,
   Text,
@@ -6,53 +6,101 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
 import { getServiceDetail } from "@/services/servicesService";
 
+const iconSize = 30;
+const iconColor = "#3674B5"; // Màu sắc cho icon
+
 type UtilityItemProps = {
   id: string;
   name: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  navigatePage?: string;
+  icon: ReactNode; // icon là component React
+  navigatePage?: string | object;
 };
 
 const utilitiesList: UtilityItemProps[] = [
-  { id: "1", name: "Bãi đậu xe", icon: "car", navigatePage: "parking" },
-  { id: "2", name: "Điện - Nước", icon: "flash", navigatePage: "seviceFees" },
+  {
+    id: "1",
+    name: "Bãi đậu xe",
+    icon: <Ionicons name="car" size={iconSize} color={iconColor} />,
+    navigatePage: "parking",
+  },
+  {
+    id: "2",
+    name: "Điện",
+    icon: <Ionicons name="flash" size={iconSize} color={iconColor} />,
+    navigatePage: "seviceFees",
+  },
   {
     id: "3",
+    name: "Nước",
+    icon: <Ionicons name="water" size={iconSize} color={iconColor} />,
+    navigatePage: "water",
+  },
+  {
+    id: "4",
     name: "Thành viên",
-    icon: "person",
+    icon: <Ionicons name="person" size={iconSize} color={iconColor} />,
     navigatePage: "apartmentMember",
   },
 ];
 
 const servicesList: UtilityItemProps[] = [
-  { id: "swim", name: "Hồ bơi", icon: "walk", navigatePage: "detail" },
-  { id: "5", name: "Phòng Gym", icon: "barbell", navigatePage: "defaultPage" },
+  {
+    id: "swim",
+    name: "Hồ bơi",
+    icon: (
+      <FontAwesome6 name="person-swimming" size={iconSize} color={iconColor} />
+    ),
+    navigatePage: "pool",
+  },
+  {
+    id: "13",
+    name: "Phòng xông hơi",
+    icon: <FontAwesome5 name="hot-tub" size={iconSize} color={iconColor} />,
+    navigatePage: "steamRoom",
+  },
+  {
+    id: "5",
+    name: "Phòng Gym",
+    icon: <Ionicons name="barbell" size={iconSize} color={iconColor} />,
+    navigatePage: "fitnessCenter",
+  },
+  {
+    id: "11",
+    name: "Khu vui chơi trẻ em",
+    icon: <Ionicons name="play-circle" size={iconSize} color={iconColor} />,
+    navigatePage: "childrenPlayground",
+  },
+  {
+    id: "12",
+    name: "Giặt ủi",
+    icon: <Ionicons name="shirt-outline" size={iconSize} color={iconColor} />,
+    navigatePage: "laundry",
+  },
   {
     id: "6",
     name: "Báo cáo sự cố",
-    icon: "alert-circle",
+    icon: <Ionicons name="alert-circle" size={iconSize} color={iconColor} />,
     navigatePage: "incident",
   },
   {
     id: "7",
     name: "Thanh toán dịch vụ",
-    icon: "cash",
+    icon: <Ionicons name="cash" size={iconSize} color={iconColor} />,
     navigatePage: "list_fees",
   },
   {
-    id: "8",
-    name: "Thông báo",
-    icon: "notifications",
-    navigatePage: "defaultPage",
+    id: "support",
+    name: "Hỗ trợ",
+    icon: <Ionicons name="help-circle" size={iconSize} color={iconColor} />,
+    navigatePage: "support",
   },
-  { id: "9", name: "Hỗ trợ", icon: "help-circle", navigatePage: "members" },
 ];
 
 const UtilityItem: React.FC<UtilityItemProps> = ({
@@ -90,6 +138,8 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
         return;
       }
       navigation.navigate("detail", { name, data });
+    } else if (navigatePage == "water") {
+      navigation.navigate("seviceFees", { mode: "water" });
     } else {
       navigation.navigate(navigatePage);
     }
@@ -97,9 +147,7 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
 
   return (
     <TouchableOpacity style={styles.item} onPress={handleNavigate}>
-      <View style={[styles.iconContainer, { backgroundColor }]}>
-        <Ionicons name={icon} size={30} color={iconColor} />
-      </View>
+      <View style={[styles.iconContainer, { backgroundColor }]}>{icon}</View>
       <Text style={[styles.text, { color: textColor }]}>{name}</Text>
     </TouchableOpacity>
   );

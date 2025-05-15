@@ -32,12 +32,14 @@ const FeeCard = ({ item, mode }: Props) => {
     <TouchableOpacity
       style={[styles.card, paid ? styles.cardPaid : styles.cardUnpaid]}
       onPress={() => navigation.navigate("feeDetail", { item, mode })}
-      activeOpacity={0.8}
+      activeOpacity={0.85}
     >
       {/* Header: Icon + Title + Amount */}
       <View style={styles.header}>
         <View style={styles.titleWrap}>
-          <Ionicons name={iconName} size={24} color="#4A90E2" />
+          <View style={styles.iconWrap}>
+            <Ionicons name={iconName} size={18} color="#ffffff" />
+          </View>
           <Text style={styles.title}>{typeLabel}</Text>
         </View>
         <Text style={styles.amount}>{amount.toLocaleString()}₫</Text>
@@ -55,7 +57,12 @@ const FeeCard = ({ item, mode }: Props) => {
         <View
           style={[styles.badge, paid ? styles.badgePaid : styles.badgeUnpaid]}
         >
-          <Text style={styles.badgeText}>
+          <Text
+            style={[
+              styles.badgeText,
+              paid ? { color: "#2ecc71" } : { color: "#e74c3c" },
+            ]}
+          >
             {paid ? translation.paid : translation.unpaid}
           </Text>
         </View>
@@ -72,40 +79,47 @@ export default FeeCard;
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
+    marginBottom: 14,
+    backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   cardUnpaid: {
-    backgroundColor: "#fff5f5",
     borderLeftWidth: 4,
-    borderLeftColor: "#e74c3c",
+    borderLeftColor: "#e74c3c33", // light red
   },
   cardPaid: {
-    backgroundColor: "#f5fff9",
     borderLeftWidth: 4,
-    borderLeftColor: "#2ecc71",
+    borderLeftColor: "#2ecc7133", // light green
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   titleWrap: {
     flexDirection: "row",
     alignItems: "center",
   },
+  iconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#4A90E2",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   title: {
-    marginLeft: 8,
+    marginLeft: 10,
     fontSize: 16,
     fontWeight: "600",
-    color: "#333",
+    color: "#222",
   },
   amount: {
     fontSize: 16,
@@ -115,12 +129,12 @@ const styles = StyleSheet.create({
   subInfo: {
     fontSize: 14,
     color: "#666",
-    marginBottom: 12,
+    marginBottom: 14,
+    lineHeight: 20,
   },
   highlight: {
     color: "#333",
     fontWeight: "500",
-    lineHeight: 20,
   },
   footer: {
     flexDirection: "row",
@@ -129,8 +143,9 @@ const styles = StyleSheet.create({
   },
   badge: {
     paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 10,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
   },
   badgeUnpaid: {
     backgroundColor: "#fdecea",
@@ -141,7 +156,6 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#333",
   },
   dateText: {
     fontSize: 12,

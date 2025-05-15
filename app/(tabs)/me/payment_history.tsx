@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
+import { getPaymentHistory, getPaymentNeed } from "@/services/paymentService";
 
 // Sample clean payment data
 const paymentHistory = [
@@ -115,6 +116,17 @@ const PaymentHistoryScreen = () => {
     setFilteredData(filtered);
   };
 
+  useEffect(() => {
+    const fetch = async () => {
+      // Simulate fetching data from an API
+      const response = await getPaymentNeed();
+      console.log(response);
+
+      const response1 = await getPaymentHistory();
+      console.log("Payment history: ", response1);
+    };
+    fetch();
+  }, []);
   const getStatusColor = (status: string) => {
     switch (status) {
       case "success":

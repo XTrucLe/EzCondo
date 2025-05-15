@@ -72,3 +72,31 @@ export const createParkingPayment = async (parkingBillId: string) => {
     throw error;
   }
 };
+
+export const getPaymentNeed = async () => {
+  try {
+    const response = await request({
+      method: "get",
+      url: endpoints.payment.getPaymentNeed,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching payment need:", error);
+    throw error;
+  }
+};
+
+export const getPaymentHistory = async () => {
+  try {
+    const response = await request({
+      method: "get",
+      url: endpoints.payment.getPaymentHistory,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching payment history:", error);
+    throw error;
+  }
+};

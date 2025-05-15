@@ -163,6 +163,11 @@ export default {
 
   description: "Description",
   qrCode: "QR Code",
+  scanQRCode: "Scan QR Code",
+  scanQRCodeSuccess: "Scan QR Code Success",
+  waitingPayment: "Waiting for Payment",
+  paymentVerified: "Payment Verified",
+  paymentVerifiedSuccess: "Payment Verified Successfully",
 
   holderInfo: "Holder Information",
   holderName: "Holder Name",
