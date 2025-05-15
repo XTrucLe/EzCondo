@@ -36,7 +36,6 @@ export default function TabLayout() {
   }, [verified, loading, navigationState]);
 
   const dispalyScreens = ["(tabs)", "index", "services", "notifications", "me"];
-  console.log("segment", segment[segment.length - 1]);
 
   const isTabDisplay =
     !navigationState?.key ||
@@ -91,7 +90,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="notifications" color={color} />
           ),
-          headerShown: true,
+          headerShown: false,
           headerTitle: translation.notification,
         }}
       />

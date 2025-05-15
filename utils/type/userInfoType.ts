@@ -12,6 +12,13 @@ export type UserInfoProps = {
   status?: string;
 };
 
+export type UserInfoFormProps = {
+  fullName: string;
+  no?: string;
+  email: string;
+  apartmentNumber?: string;
+};
+
 export const formFields = {
   fullName: {
     label: "fullName",

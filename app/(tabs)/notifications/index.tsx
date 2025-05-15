@@ -1,17 +1,7 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  View,
-  Text,
   useWindowDimensions,
   StyleSheet,
-  Animated,
-  TouchableOpacity,
   ScrollView,
   RefreshControl,
 } from "react-native";
@@ -21,6 +11,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { getNotification } from "@/services/notificationService";
 import { NotificationBoxType } from "@/utils/type/notificationBoxType";
 import CustomTabBar from "@/components/ui/custome/CustomTabBar";
+import { useNavigation } from "expo-router";
 
 type TabScreenProps = {
   data: NotificationBoxType[];
@@ -36,28 +27,38 @@ const TabViewScreen = ({
   refreshing,
   onRefresh,
   onReadLocalUpdate,
-}: TabScreenProps) => (
-  <ScrollView
-    style={styles.screen}
-    refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    }
-  >
-    {data
-      .filter((n) => n.type.toLowerCase().includes(filterKey || ""))
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-      .map((item) => (
-        <NotificationBox
-          key={item.id}
-          {...item}
-          onReadLocalUpdate={onReadLocalUpdate}
-        />
-      ))}
-  </ScrollView>
-);
+}: TabScreenProps) => {
+  const navigation = useNavigation<any>();
+
+  const handlePress = (itemId: String) => {
+    navigation.navigate("notification_details", {
+      notice: data.find((item) => item.id === itemId),
+    });
+  };
+  return (
+    <ScrollView
+      style={styles.screen}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      {data
+        .filter((n) => n.type.toLowerCase().includes(filterKey || ""))
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        .map((item) => (
+          <NotificationBox
+            key={item.id}
+            {...item}
+            onReadLocalUpdate={onReadLocalUpdate}
+            onPress={handlePress}
+          />
+        ))}
+    </ScrollView>
+  );
+};
 
 const NotificationTabs = () => {
   const layout = useWindowDimensions();
@@ -82,16 +83,19 @@ const NotificationTabs = () => {
     try {
       const response = await getNotification();
 
-      const formattedNotifications: NotificationBoxType[] =
-        response.notifications.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          content: item.content,
-          type: item.type,
-          isRead: item.isRead,
-          createdAt: item.createdAt,
-          createdBy: item.createdBy,
-        }));
+      const formattedNotifications: NotificationBoxType[] = response
+        ? response.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            content: item.content,
+            type: item.type,
+            images: item.images,
+            isRead: item.isRead,
+            createdAt: item.createdAt,
+            createdBy: item.createdBy,
+            date: item.date || item.createdAt,
+          }))
+        : [];
       setNotifications(formattedNotifications);
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -109,7 +113,7 @@ const NotificationTabs = () => {
       )
     );
   }, []);
-
+  // Hàm này sẽ được gọi khi người dùng kéo để làm mới
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchNotifications();

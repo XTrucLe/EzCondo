@@ -13,11 +13,13 @@ export const getServices = async () => {
   }
 };
 
-export const getServiceDetail = async (serviceName: string) => {
+export const getServiceDetail = async (serviceName?: string) => {
   try {
     const response = await request({
       method: "get",
-      url: `${endpoints.service.getServiceDetail}?serviceName=${serviceName}`,
+      url: `${endpoints.service.getServiceDetail}?serviceName=${
+        serviceName ? serviceName : ""
+      }&status=true`,
     });
 
     return response.data;

@@ -8,23 +8,12 @@ import {
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { openBankApp } from "@/components/BankLinking";
-
-// Types
-type Bill = {
-  id: string;
-  room: string;
-  owner: string;
-  type: string;
-  month: string;
-  createdDate: string;
-  readDate: string;
-  startReading: number;
-  endReading: number;
-  usage: number;
-  amount: number;
-  status: "paid" | "unpaid";
-  dueDate: string;
-};
+import { ElectricFee, WaterFee } from "@/utils/type/FeeType";
+import { useLoading } from "@/hooks/useLoading";
+import {
+  createElectricPayment,
+  createWaterPayment,
+} from "@/services/paymentService";
 
 type InfoRowProps = {
   label: string;
@@ -43,6 +32,11 @@ const STATUS_CONFIG = {
     text: "Chưa thanh toán",
     color: "#EF4444", // red-500
     icon: "⚠️",
+  },
+  overdue: {
+    text: "Quá hạn",
+    color: "#FBBF24", // yellow-500
+    icon: "⏳",
   },
 };
 
@@ -64,38 +58,91 @@ const PaymentButton = ({ onPress }: { onPress: () => void }) => (
 export default function BillDetailScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { bill } = route.params as { bill: Bill };
-
-  const handlePayment = () => {
-    // Xử lý thanh toán
-    // navigation.navigate("Payment", { billId: bill.id });
+  const { startLoading, stopLoading } = useLoading();
+  const { item, mode } = route.params as {
+    item: WaterFee | ElectricFee;
+    mode: "water" | "electric";
   };
 
-  const statusConfig = STATUS_CONFIG[bill.status];
+  const statusInfo = STATUS_CONFIG[item.status as keyof typeof STATUS_CONFIG];
 
-  const detailRows = [
-    { label: "Mã hóa đơn:", value: bill.id },
-    { label: "Căn hộ:", value: bill.room },
-    { label: "Chủ hộ:", value: bill.owner },
-    { label: "Dịch vụ:", value: bill.type },
-    { label: "Tháng:", value: bill.month },
-    { label: "Ngày tạo:", value: bill.createdDate },
-    { label: "Sử dụng:", value: `${bill.usage} kWh` },
-    { label: "Số tiền:", value: `${bill.amount.toLocaleString()} đ` },
-  ];
+  const handlePayment = async () => {
+    startLoading();
+    try {
+      let response;
+
+      if (mode === "water") {
+        const waterItem = item as WaterFee;
+        response = await createWaterPayment(waterItem.waterBillId);
+      }
+
+      if (mode === "electric") {
+        const electricItem = item as ElectricFee;
+        response = await createElectricPayment(electricItem.electricBillId);
+      }
+    } catch (error) {
+      console.error("Error opening bank app:", error);
+    } finally {
+      stopLoading();
+    }
+  };
+
+  const renderSpecificFields = () => {
+    if (mode === "electric") {
+      const elecItem = item as ElectricFee;
+      return (
+        <>
+          <InfoRow
+            label="Chỉ số điện cũ"
+            value={elecItem.pre_electric_number}
+          />
+          <InfoRow
+            label="Chỉ số điện mới"
+            value={elecItem.current_electric_number}
+          />
+        </>
+      );
+    } else if (mode === "water") {
+      const waterItem = item as WaterFee;
+      return (
+        <>
+          <InfoRow label="Chỉ số nước cũ" value={waterItem.pre_water_number} />
+          <InfoRow
+            label="Chỉ số nước mới"
+            value={waterItem.current_water_number}
+          />
+        </>
+      );
+    }
+    return null;
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>📄 Chi tiết Hóa đơn</Text>
 
-        {detailRows.map((item, index) => (
-          <InfoRow
-            key={`${item.label}-${index}`}
-            label={item.label}
-            value={item.value}
-          />
-        ))}
+        <InfoRow label="Tên cư dân" value={item.fullName} />
+        <InfoRow label="Căn hộ" value={item.apartmentNumber} />
+        <InfoRow label="Số điện thoại" value={item.phoneNumber} />
+        <InfoRow label="Email" value={item.email} />
+        <InfoRow label="Số công tơ" value={item.meterNumber} />
+        <InfoRow label="Kỳ thanh toán" value={item.paymentTerm} />
+        <InfoRow label="Số tiêu thụ" value={item.consumption} />
+        {renderSpecificFields()}
+        <InfoRow
+          label="Thành tiền"
+          value={`${item.price.toLocaleString()} VNĐ`}
+          valueStyle={{ color: "#1e40af" }}
+        />
+        <View style={[styles.row, styles.statusContainer]}>
+          <Text style={{ fontSize: 16 }}>{statusInfo.icon}</Text>
+          <Text style={[styles.statusText, { color: statusInfo.color }]}>
+            {statusInfo.text}
+          </Text>
+        </View>
+
+        {item.status !== "paid" && <PaymentButton onPress={() => {}} />}
       </View>
     </ScrollView>
   );

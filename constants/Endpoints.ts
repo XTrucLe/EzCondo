@@ -39,6 +39,7 @@ export const endpoints = {
   notification: {
     getNotification: `${API_BASE}/Notification/user-get-notifications`,
     readNotification: `${API_BASE}/Notification/notifications/mark-as-read`,
+    getNoticeImages: `${API_BASE}/Notification/get-notification-images-by-id`,
   },
 
   fee: {
@@ -47,9 +48,11 @@ export const endpoints = {
     getFeeHistory: `${API_BASE}/Fee/get-fee-history`,
   },
   electric: {
-    getElectricFee: `${API_BASE}/Electric/get-electric-fee`,
+    getElectricFee: `${API_BASE}/Electric/Get-My-Electric-Detail`,
   },
-
+  water: {
+    getWaterFee: `${API_BASE}/Water/Get-My-Water-Detail`,
+  },
   service: {
     getServices: `${API_BASE}/Services/get-services`,
     getServiceDetail: `${API_BASE}/Services/get-all-services`,
@@ -65,7 +68,15 @@ export const endpoints = {
     getIncidentHistory: `${API_BASE}/Incident/get-incident-history`,
   },
   payment: {
-    createPayment: `${API_BASE}/Payment/Create-QR-Payment`,
+    createPayment: `${API_BASE}/Payment/Create-QR-Booking-Payment`,
+    createWaterPayment: `${API_BASE}/Payment/Create-QR-Water-Payment`,
+    createElectricPayment: `${API_BASE}/Payment/Create-QR-Electric-Payment`,
+    createpParkingPayment: `${API_BASE}/Payment/Create-QR-Parking-Payment`,
     checkStatusPayment: `${API_BASE}/Payment/Check-Payment-Status`,
+  },
+  parking: {
+    requestParking: `${API_BASE}/ParkingLot/Create-Parking-Lot`,
+    getMyParking: `${API_BASE}/ParkingLot/Get-My-Parking-Lot`,
+    getCardsDetails: `${API_BASE}/ParkingLot/Get-Parking-Lot-Detail`,
   },
 };

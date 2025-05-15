@@ -69,6 +69,10 @@ export default function HomeLayout() {
         name="feeDetail"
         options={{ headerShown: true, headerTitle: "" }}
       />
+      <Stack.Screen
+        name="list_fees"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
     </Stack>
   );
 }

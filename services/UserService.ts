@@ -56,8 +56,6 @@ export const regisFCMToken = async (
   status: boolean
 ) => {
   try {
-    console.log("regisFCMToken", fcmToken, deviceType, status);
-
     const response = await request({
       method: "post",
       url: endpoints.user?.regisFCMToken,

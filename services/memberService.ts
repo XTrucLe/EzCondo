@@ -7,7 +7,6 @@ export const getMembers = async () => {
       url: endpoints.household.getHousehold,
       method: "get",
     });
-    console.log("Members response:", response);
 
     return response.data;
   } catch (error) {

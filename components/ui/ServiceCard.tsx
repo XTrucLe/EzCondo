@@ -4,12 +4,13 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 export type Service = {
   id: string;
-  name: string;
+  serviceName: string;
   description: string;
-  price: number;
-  status: "registered" | "unregistered";
-  registerDate?: string;
-  expireDate?: string;
+  priceOfMonth: number;
+  priceOfYear: number;
+  typeOfMonth: boolean;
+  typeOfYear: boolean;
+  status: "active" | "inactive";
 };
 
 type Props = {
@@ -17,55 +18,47 @@ type Props = {
 };
 
 const ServiceCard = ({ service }: Props) => {
-  const isRegistered = service.status === "registered";
   const navigation = useNavigation<any>();
-  const handleNext = () => {
+
+  const handleRegister = () => {
     navigation.navigate("subscription", { service });
   };
+
   return (
     <View style={styles.card}>
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>{service.name}</Text>
-        <Text
-          style={[
-            styles.status,
-            isRegistered ? styles.registered : styles.unregistered,
-          ]}
-        >
-          {isRegistered ? "Đã đăng ký" : "Chưa đăng ký"}
-        </Text>
-      </View>
+      <Text style={styles.title}>{service.serviceName}</Text>
 
-      <Text style={styles.description}>{service.description}</Text>
-      <Text style={styles.price}>
-        💰 {service.price.toLocaleString()}đ / tháng
+      <Text style={styles.label}>Mô tả:</Text>
+      <Text style={styles.text}>{service.description}</Text>
+
+      <Text style={styles.label}>Tình trạng:</Text>
+      <Text
+        style={[
+          styles.status,
+          service.status === "active" ? styles.active : styles.inactive,
+        ]}
+      >
+        {service.status === "active" ? "Hoạt động" : "Ngưng hoạt động"}
       </Text>
 
-      {isRegistered && (
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>
-            📅 Đăng ký: {service.registerDate}
-          </Text>
-          <Text style={styles.infoText}>⏳ Hạn dùng: {service.expireDate}</Text>
-        </View>
-      )}
-
-      <View style={styles.buttonRow}>
-        {isRegistered ? (
-          <>
-            <TouchableOpacity style={styles.primaryButton}>
-              <Text style={styles.buttonText}>Gia hạn</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.dangerButton}>
-              <Text style={styles.buttonText}>Hủy</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <TouchableOpacity style={styles.primaryButton} onPress={handleNext}>
-            <Text style={styles.buttonText}>Đăng ký ngay</Text>
-          </TouchableOpacity>
+      <View style={styles.priceRow}>
+        {service.typeOfMonth && (
+          <Text style={styles.price}>Tháng: {service.priceOfMonth}đ</Text>
+        )}
+        {service.typeOfYear && (
+          <Text style={styles.price}>Năm: {service.priceOfYear}đ</Text>
         )}
       </View>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleRegister}
+        disabled={service.status !== "active"}
+      >
+        <Text style={styles.buttonText}>
+          {service.status === "active" ? "Đăng ký" : "Không khả dụng"}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -73,81 +66,63 @@ const ServiceCard = ({ service }: Props) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
+    borderRadius: 10,
     padding: 16,
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 2,
     marginBottom: 16,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 12,
     color: "#333",
   },
-  status: {
-    fontSize: 12,
-    fontWeight: "600",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  registered: {
-    backgroundColor: "#d1e7dd",
-    color: "#0f5132",
-  },
-  unregistered: {
-    backgroundColor: "#f8d7da",
-    color: "#842029",
-  },
-  description: {
+  label: {
     fontSize: 14,
+    fontWeight: "600",
+    marginTop: 8,
     color: "#555",
-    marginBottom: 6,
+  },
+  text: {
+    fontSize: 14,
+    color: "#444",
+    marginTop: 2,
+  },
+  status: {
+    marginTop: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    fontSize: 13,
+    fontWeight: "600",
+    alignSelf: "flex-start",
+  },
+  active: {
+    backgroundColor: "#e6f4ea",
+    color: "#1e7d32",
+  },
+  inactive: {
+    backgroundColor: "#fdecea",
+    color: "#c62828",
+  },
+  priceRow: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    marginTop: 12,
   },
   price: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#007BFF",
-    marginBottom: 8,
-  },
-  infoBox: {
-    backgroundColor: "#f1f1f1",
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  infoText: {
-    fontSize: 13,
+    fontWeight: "600",
     color: "#333",
-    marginBottom: 2,
   },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    gap: 12,
-    marginTop: 8,
-  },
-  primaryButton: {
+  button: {
     backgroundColor: "#007BFF",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 8,
-  },
-  dangerButton: {
-    backgroundColor: "#dc3545",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    marginTop: 16,
+    alignItems: "center",
+    opacity: 1,
   },
   buttonText: {
     color: "#fff",

@@ -28,6 +28,7 @@ export default function ServiceScreen() {
           {...props}
           indicatorStyle={{ backgroundColor: "#007aff" }}
           style={{ backgroundColor: "#fff" }}
+          inactiveColor="#000"
           activeColor="#3674B5"
         />
       )}

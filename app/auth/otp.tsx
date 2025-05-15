@@ -41,6 +41,19 @@ const VerifyOTPScreen = () => {
     }
   }, [timer]);
 
+  useEffect(() => {
+    const handleInput = () => {
+      if (otp.every((digit) => digit !== "")) {
+        handleVerifyOTP();
+      }
+    };
+    handleInput();
+    return () => {
+      // Cleanup function to clear the interval if the component unmounts
+      setCanResend(false);
+    };
+  }, [otp]);
+
   const handleResendOTP = async () => {
     setTimer(60);
     setCanResend(false);

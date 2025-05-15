@@ -30,3 +30,45 @@ export const checkStatusPayment = async (paymentId: string) => {
     throw error;
   }
 };
+
+export const createWaterPayment = async (waterBillId: string) => {
+  try {
+    const response = await request({
+      method: "post",
+      url: `${endpoints.payment.createWaterPayment}?waterBillId=${waterBillId}`,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating water payment:", error);
+    throw error;
+  }
+};
+
+export const createElectricPayment = async (electricBillId: string) => {
+  try {
+    const response = await request({
+      method: "post",
+      url: `${endpoints.payment.createElectricPayment}?electricBillId=${electricBillId}`,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating electric payment:", error);
+    throw error;
+  }
+};
+
+export const createParkingPayment = async (parkingBillId: string) => {
+  try {
+    const response = await request({
+      method: "post",
+      url: `${endpoints.payment.createpParkingPayment}?parkingId=${parkingBillId}`,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating parking payment:", error);
+    throw error;
+  }
+};

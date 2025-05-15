@@ -33,6 +33,7 @@ export default {
   add: "Add",
   remove: "Remove",
   confirm: "Confirm",
+  regis: "Register",
 
   //validate
   required: "This field is required",
@@ -166,4 +167,20 @@ export default {
   holderInfo: "Holder Information",
   holderName: "Holder Name",
   goback: "Go Back",
+
+  dueDate: "Due Date",
+  unpaid: "Unpaid",
+  paid: "Paid",
+  fee: "Fee",
+  feeCard: "Fee Card",
+  room: "Room",
+  owner: "Owner",
+
+  electricFee: "Electric Fee",
+  waterFee: "Water Fee",
+  electricFeeHistory: "Electric Fee History",
+  waterFeeHistory: "Water Fee History",
+  electricFeeDetail: "Electric Fee Detail",
+  waterFeeDetail: "Water Fee Detail",
+  electricFeeHistoryDetail: "Electric Fee History Detail",
 };

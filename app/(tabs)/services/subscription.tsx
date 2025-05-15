@@ -40,38 +40,54 @@ const ServiceSubscriptionScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { service } = useRoute().params as { service: Service };
   const [selectedDuration, setSelectedDuration] = useState(1);
+  const selectedPlan = "month"; // or "year", depending on your logic
   const { formatDate, addMonths } = useDateUtils();
+
   const [regisService, setRegisService] = useState({
     ...service,
-    registerDate: new Date(Date.now()),
-    expireDate: addMonths(new Date(Date.now()), 1),
+    registerDate: new Date(),
+    expireDate: addMonths(new Date(), 1),
+    price: service.priceOfMonth,
   });
 
   const durations = [
-    { label: "1 tháng", value: 1 },
-    { label: "3 tháng", value: 3 },
-    { label: "6 tháng", value: 6 },
-    { label: "12 tháng", value: 12 },
+    { label: "1", value: 1 },
+    { label: "3", value: 3 },
+    { label: "6", value: 6 },
+    { label: "12", value: 12 },
   ];
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || new Date();
     setShowDatePicker(false);
+
+    // Tính giá dựa trên số tháng chọn
+    const price =
+      selectedDuration === 12
+        ? service.priceOfYear // Nếu chọn 12 tháng, tính theo giá năm
+        : selectedDuration * service.priceOfMonth; // Nếu chọn các tháng còn lại, nhân với giá tháng
+
     setRegisService((prev) => ({
       ...prev,
       registerDate: currentDate,
       expireDate: addMonths(currentDate, selectedDuration),
+      price: price, // Cập nhật giá
     }));
   };
 
   const handleChangeDuration = (value: number) => {
     setSelectedDuration(value);
 
-    const newExpireDate = addMonths(regisService.registerDate, value);
+    // Tính giá tương tự như trên
+    const price =
+      value === 12
+        ? service.priceOfYear // Nếu chọn 12 tháng, tính theo giá năm
+        : value * service.priceOfMonth; // Nếu chọn các tháng còn lại, nhân với giá tháng
+
     setRegisService((prev) => ({
       ...prev,
-      price: service.price * value,
-      expireDate: newExpireDate,
+      price: price,
+      expireDate: addMonths(prev.registerDate, value),
     }));
   };
 
@@ -79,39 +95,21 @@ const ServiceSubscriptionScreen = () => {
     const newBookingData = {
       serviceId: regisService.id,
       startDate: regisService.registerDate,
-      forMonthOrYear: "month",
+      forMonthOrYear: selectedPlan,
       totalMonth: selectedDuration,
     };
-    console.log(newBookingData);
 
     try {
       startLoading();
-      // Bước 1: Gọi API tạo booking
       const bookingId = await createBooking(newBookingData);
-      console.log("Booking ID:", bookingId);
+      if (!bookingId) throw new Error("Không tạo được booking");
 
-      if (!bookingId) {
-        throw new Error("Không tạo được booking!");
-      }
-
-      // Bước 2: Gọi API tạo payment, sau khi booking thành công
       const { data } = await paymentService.createPayment(bookingId);
+      if (!data) throw new Error("Không tạo được payment");
 
-      if (!data) {
-        throw new Error("Không tạo được payment!");
-      }
-      // let data = {
-      //   accountNumber: "1234567890",
-      //   accountOwner: "Nguyen Van A",
-      //   amount: "1,000,000 VND",
-      //   description: "Thanh toán phí dịch vụ tháng 4",
-      //   qrCode: "https://example.com/qrcode1.png",
-      // };
-      // Bước 3: Khi tất cả thành công, mới navigate
       navigation.navigate("QRcode", { data });
     } catch (error) {
-      console.error("Lỗi khi đặt chỗ hoặc thanh toán:", error);
-      // Bạn có thể show Alert hoặc Toast ở đây
+      console.error("Lỗi:", error);
       Alert.alert(translation.error, translation.error);
     } finally {
       stopLoading();
@@ -124,10 +122,14 @@ const ServiceSubscriptionScreen = () => {
         <Text style={styles.title}>Đăng ký / Gia hạn dịch vụ</Text>
 
         <View style={styles.infoSection}>
-          <InfoRow label="Tên dịch vụ:" value={service.name} />
+          <InfoRow label="Tên dịch vụ:" value={service.serviceName} />
           <InfoRow
-            label="Phí dịch vụ:"
-            value={`${service.price.toLocaleString("vi-VN")}đ`}
+            label="Phí theo tháng:"
+            value={`${service.priceOfMonth.toLocaleString("vi-VN")}đ`}
+          />
+          <InfoRow
+            label="Phí theo năm:"
+            value={`${service.priceOfYear.toLocaleString("vi-VN")}đ`}
           />
           <InfoRow
             label="Ngày bắt đầu:"
@@ -135,7 +137,7 @@ const ServiceSubscriptionScreen = () => {
             onPress={() => setShowDatePicker(true)}
           />
           <InfoRow
-            label="Hết hạn hiện tại:"
+            label="Ngày hết hạn:"
             value={formatDate(regisService.expireDate)}
           />
         </View>
@@ -157,7 +159,7 @@ const ServiceSubscriptionScreen = () => {
                   selectedDuration === item.value && styles.selectedOptionText,
                 ]}
               >
-                {item.label}
+                {item.label} {"tháng"}
               </Text>
             </TouchableOpacity>
           ))}
@@ -182,7 +184,6 @@ const ServiceSubscriptionScreen = () => {
           display="default"
           onChange={handleDateChange}
           minimumDate={new Date()}
-          maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
         />
       )}
     </View>

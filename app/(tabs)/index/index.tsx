@@ -108,7 +108,7 @@ const Header = ({
             {userInfo?.fullName}
           </Text>
           <Text style={[styles.apartment, { color: textColor }]}>
-            Căn hộ: {userInfo?.apartmentNumber}
+            {translation.apartment}: {userInfo?.apartmentNumber}
           </Text>
         </View>
       </Animated.View>

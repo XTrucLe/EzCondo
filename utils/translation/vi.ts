@@ -33,6 +33,7 @@ export default {
   add: "Thêm",
   remove: "Xóa",
   confirm: "Xác nhận",
+  regis: "Đăng ký",
 
   apartmentMember: "Thành viên căn hộ",
   swimming: "Bể bơi",
@@ -177,4 +178,20 @@ export default {
   holderInfo: "Thông tin chủ căn hộ",
   holderName: "Tên chủ căn hộ",
   goback: "Quay lại",
+
+  dueDate: "Ngày đến hạn",
+  unpaid: "Chưa thanh toán",
+  paid: "Đã thanh toán",
+  fee: "Phí",
+  feeCard: "Thẻ phí",
+  room: "Phòng",
+  owner: "Chủ hộ",
+
+  electricFee: "Phí điện",
+  waterFee: "Phí nước",
+  electricFeeHistory: "Lịch sử phí điện",
+  waterFeeHistory: "Lịch sử phí nước",
+  electricFeeDetail: "Chi tiết phí điện",
+  waterFeeDetail: "Chi tiết phí nước",
+  electricFeeHistoryDetail: "Chi tiết lịch sử phí điện",
 };

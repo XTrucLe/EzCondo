@@ -6,17 +6,17 @@ import {
   Dimensions,
   StyleSheet,
   Text,
-  TouchableOpacity,
   Animated,
   Clipboard,
   Alert,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import { Feather } from "@expo/vector-icons";
 import { checkStatusPayment } from "@/services/paymentService";
+import { useNavigation } from "expo-router";
 
 export default function QRScreen() {
   const { data } = useRoute().params as { data: PaymentType };
+  const navigation = useNavigation<any>();
   const [paymentData, setPaymentData] = useState<PaymentType>();
   const { width } = Dimensions.get("window");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -30,22 +30,42 @@ export default function QRScreen() {
   useEffect(() => {
     if (paymentData) {
       setIsPolling(true);
+
       const interval = setInterval(async () => {
-        console.log(1);
+        console.log("Polling...");
 
-        const response = await checkStatusPayment(data?.paymentId);
-        console.log(response);
-        if (response == "true") {
-          setIsPolling(false);
-          [
-            {
-              text: "OK",
-              onPress: () => console.log("OK Pressed"),
-            },
-          ];
+        try {
+          const response = await checkStatusPayment(paymentData?.paymentId);
+          console.log(response);
+
+          if (response) {
+            setIsPolling(false);
+            clearInterval(interval); // Dừng polling khi nhận được phản hồi
+
+            // Thực hiện thông báo thành công
+            Alert.alert(
+              "Thanh toán thành công",
+              "Bạn có thể tiếp tục sử dụng dịch vụ.",
+              [
+                {
+                  text: "OK",
+                  onPress: () =>
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: "services" }],
+                    }),
+                },
+              ]
+            );
+          }
+        } catch (error) {
+          console.error("Lỗi khi kiểm tra thanh toán:", error);
+          setIsPolling(false); // Dừng polling khi có lỗi
+          clearInterval(interval); // Dừng interval khi có lỗi
         }
-      }, 10000);
+      }, 10000); // Gọi mỗi 10 giây
 
+      // Cleanup function
       return () => {
         clearInterval(interval);
         setIsPolling(false);
@@ -122,21 +142,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#f8f8f8", // Màu nền tổng thể
   },
   qrCodeContainer: {
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
   },
+  qrCodeWrapper: {
+    backgroundColor: "#fff", // Nền trắng quanh QR Code
+    borderRadius: 15, // Góc bo tròn
+    padding: 15, // Padding để QR Code không chạm cạnh
+    shadowColor: "#000", // Tạo bóng
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5, // Tạo bóng cho Android
+    justifyContent: "center",
+    alignItems: "center",
+  },
   informationContainer: {
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
-    borderRadius: 5,
+    borderRadius: 10,
     margin: 20,
     width: "90%",
     marginBottom: 40,
+    padding: 20,
   },
   infoRow: {
     flexDirection: "row",

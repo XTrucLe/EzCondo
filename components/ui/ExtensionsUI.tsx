@@ -1,20 +1,26 @@
+import React from "react";
 import {
   View,
   Text,
-  useColorScheme,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
 } from "react-native";
-import React from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
+
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
-import { useNavigation } from "expo-router";
-import { request } from "@/services/apiService";
 import { getServiceDetail } from "@/services/servicesService";
 
-const utilitiesList = [
+type UtilityItemProps = {
+  id: string;
+  name: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  navigatePage?: string;
+};
+
+const utilitiesList: UtilityItemProps[] = [
   { id: "1", name: "Bãi đậu xe", icon: "car", navigatePage: "parking" },
   { id: "2", name: "Điện - Nước", icon: "flash", navigatePage: "seviceFees" },
   {
@@ -25,7 +31,7 @@ const utilitiesList = [
   },
 ];
 
-const servicesList = [
+const servicesList: UtilityItemProps[] = [
   { id: "swim", name: "Hồ bơi", icon: "walk", navigatePage: "detail" },
   { id: "5", name: "Phòng Gym", icon: "barbell", navigatePage: "defaultPage" },
   {
@@ -38,7 +44,7 @@ const servicesList = [
     id: "7",
     name: "Thanh toán dịch vụ",
     icon: "cash",
-    navigatePage: "defaultPage",
+    navigatePage: "list_fees",
   },
   {
     id: "8",
@@ -49,25 +55,19 @@ const servicesList = [
   { id: "9", name: "Hỗ trợ", icon: "help-circle", navigatePage: "members" },
 ];
 
-interface UtilityItemProps {
-  id: string;
-  name: string;
-  icon: any;
-  navigatePage?: string;
-}
-
 const UtilityItem: React.FC<UtilityItemProps> = ({
   id,
   name,
   icon,
   navigatePage,
 }) => {
+  const navigation = useNavigation<any>();
+
   const textColor = useThemeColor({}, "text");
   const backgroundColor = useThemeColor({}, "cardBackground");
   const iconColor = useThemeColor({}, "icon");
-  const navigation = useNavigation<any>();
 
-  const handleCheckServiceDetail = async () => {
+  const fetchServiceDetail = async () => {
     try {
       const [res1, res2] = await Promise.all([
         getServiceDetail(id.toLowerCase()),
@@ -84,12 +84,12 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
     if (!navigatePage) return;
 
     if (id.toLowerCase().includes("swim")) {
-      const response = await handleCheckServiceDetail();
-      if (!response || !response.length) {
+      const data = await fetchServiceDetail();
+      if (!data?.length) {
         alert("Coming soon");
         return;
       }
-      navigation.navigate("detail", { name, data: response });
+      navigation.navigate("detail", { name, data });
     } else {
       navigation.navigate(navigatePage);
     }
@@ -105,30 +105,34 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
   );
 };
 
-const renderUtilityGrid = (data: UtilityItemProps[], noRow = 1) => (
-  <View style={styles.gridContainer}>
-    {[0, 1].map((row) => (
-      <View key={row} style={styles.row}>
-        {data
-          .filter((_, index) => index % noRow === row)
-          .map((item) => (
+const renderGrid = (data: UtilityItemProps[], column = 2) => {
+  const rows = Array.from({ length: column }, (_, rowIndex) =>
+    data.filter((_, index) => index % column === rowIndex)
+  );
+
+  return (
+    <View style={styles.gridContainer}>
+      {rows.map((row, index) => (
+        <View key={index} style={styles.row}>
+          {row.map((item) => (
             <UtilityItem key={item.id} {...item} />
           ))}
-      </View>
-    ))}
-  </View>
-);
+        </View>
+      ))}
+    </View>
+  );
+};
 
-const ExtensionsUI = () => {
+const ExtensionsUI: React.FC = () => {
   return (
     <View style={styles.container}>
-      <ThemedText type="subtitle">Tiện ích</ThemedText>
+      <ThemedText type="subtitle"></ThemedText>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollStyle}
       >
-        {renderUtilityGrid(utilitiesList)}
+        {renderGrid(utilitiesList, 1)}
       </ScrollView>
 
       <ThemedText type="subtitle">Dịch vụ</ThemedText>
@@ -137,7 +141,7 @@ const ExtensionsUI = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollStyle}
       >
-        {renderUtilityGrid(servicesList, 2)}
+        {renderGrid(servicesList, 2)}
       </ScrollView>
     </View>
   );
