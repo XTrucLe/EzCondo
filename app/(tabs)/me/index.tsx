@@ -17,6 +17,7 @@ import useAuthStore from "@/hooks/useAuth";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useLanguage } from "@/hooks/useLanguage";
 import { userDefaultImage } from "@/constants/ImageLink";
+import { ScrollView } from "react-native";
 
 // Types
 type SettingItem = {
@@ -179,69 +180,73 @@ const ProfileScreen = () => {
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
     >
-      {/* Profile Card */}
-      <TouchableOpacity onPress={() => navigation.navigate("profile" as never)}>
-        <Card
-          style={[
-            styles.profileCard,
-            { backgroundColor: theme.cardBackground },
-          ]}
+      <ScrollView style={{ flex: 1 }}>
+        {/* Profile Card */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("profile" as never)}
         >
-          <View style={styles.profileInfo}>
-            <Avatar.Image
-              size={60}
-              source={
-                userInfo?.avatar ? { uri: userInfo.avatar } : userDefaultImage
-              }
-            />
-            <View style={{ marginLeft: 15 }}>
-              <Text style={[styles.name, { color: theme.text }]}>
-                {userInfo?.fullName}
-              </Text>
-              <Text style={{ color: theme.text }}>
-                Căn hộ: {userInfo?.apartmentNumber}
-              </Text>
+          <Card
+            style={[
+              styles.profileCard,
+              { backgroundColor: theme.cardBackground },
+            ]}
+          >
+            <View style={styles.profileInfo}>
+              <Avatar.Image
+                size={60}
+                source={
+                  userInfo?.avatar ? { uri: userInfo.avatar } : userDefaultImage
+                }
+              />
+              <View style={{ marginLeft: 15 }}>
+                <Text style={[styles.name, { color: theme.text }]}>
+                  {userInfo?.fullName}
+                </Text>
+                <Text style={{ color: theme.text }}>
+                  Căn hộ: {userInfo?.apartmentNumber}
+                </Text>
+              </View>
+              <List.Icon
+                icon="chevron-right"
+                color={theme.icon}
+                style={{ position: "absolute", right: 10 }}
+              />
             </View>
-            <List.Icon
-              icon="chevron-right"
-              color={theme.icon}
-              style={{ position: "absolute", right: 10 }}
-            />
-          </View>
-        </Card>
-      </TouchableOpacity>
+          </Card>
+        </TouchableOpacity>
 
-      {/* Payment Settings Section */}
-      <List.Section>
-        <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
-          {translation.paymentHistory}
-        </List.Subheader>
-        {paymentSettings.map(renderSettingItem)}
-      </List.Section>
+        {/* Payment Settings Section */}
+        <List.Section>
+          <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
+            {translation.paymentHistory}
+          </List.Subheader>
+          {paymentSettings.map(renderSettingItem)}
+        </List.Section>
 
-      {/* Settings Sections */}
-      <List.Section>
-        <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
-          {translation.generalSetting}
-        </List.Subheader>
-        {generalSettings.map(renderSettingItem)}
-      </List.Section>
+        {/* Settings Sections */}
+        <List.Section>
+          <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
+            {translation.generalSetting}
+          </List.Subheader>
+          {generalSettings.map(renderSettingItem)}
+        </List.Section>
 
-      <List.Section>
-        <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
-          {translation.support}
-        </List.Subheader>
-        {supportSettings.map(renderSettingItem)}
-      </List.Section>
+        <List.Section>
+          <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
+            {translation.support}
+          </List.Subheader>
+          {supportSettings.map(renderSettingItem)}
+        </List.Section>
 
-      {/* Logout Button */}
-      <Button
-        mode="contained"
-        onPress={handleLogout}
-        style={[styles.logoutButton, { backgroundColor: theme.error }]}
-      >
-        {translation.logout}
-      </Button>
+        {/* Logout Button */}
+        <Button
+          mode="contained"
+          onPress={handleLogout}
+          style={[styles.logoutButton, { backgroundColor: theme.error }]}
+        >
+          {translation.logout}
+        </Button>
+      </ScrollView>
     </SafeAreaView>
   );
 };

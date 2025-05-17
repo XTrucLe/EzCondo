@@ -8,22 +8,13 @@ export type PaymentType = {
 };
 
 export type PaymentHistoryType = {
-  id: number;
-  fullname: string;
-  apartmentNumber: string;
-  type: "electric" | "water" | "service";
   amount: number;
-  method: string;
-  status: "success" | "pending" | "failed";
-  transactionId?: string;
-  createDate: string;
-  readingDate?: string;
-  totalComsumption?: number;
-  meterNumber?: string;
-  serviceName?: string;
-  serviceStartDate?: string;
-  serviceEndDate?: string;
-  servicePrice?: number;
+  apartmentNumber: string;
+  createDate: string; 
+  fullName: string;
+  paymentId: string;
+  status: "completed" | "pending" | "failed"| "overdue"; 
+  type: string; 
 };
 
 export type PaymentStatus = "completed" | "pending" | "failed"; // Có thể mở rộng
@@ -45,3 +36,16 @@ export type PaymentWaitingType = {
   waterId?: string | null;
   parkingId?: string | null;
 };
+
+[
+  {
+    amount: 5000,
+    apartmentNumber: "102",
+    createDate: "2025-05-17T05:46:49.813",
+    fullName: "Lê Xuân Trúc",
+
+    paymentId: "c3aaacb4-6943-415a-976c-5d799a6287fd",
+    status: "completed",
+    type: "Booking Pool",
+  },
+];

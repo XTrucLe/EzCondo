@@ -66,14 +66,14 @@ export default function HomeLayout() {
         name="seviceFees"
         options={{
           headerShown: true,
-          headerTitle: () => <Text> Hóa đơn </Text>,
+          headerTitle: "Chi phí dịch vụ",
         }}
       />
       <Stack.Screen
         name="feeDetail"
         options={{
           headerShown: true,
-          headerTitle: () => <Text>Chi tiết hóa đơn </Text>,
+          headerTitle: "Chi tiết chi phí",
         }}
       />
       <Stack.Screen

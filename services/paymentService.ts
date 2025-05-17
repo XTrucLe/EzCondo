@@ -9,7 +9,7 @@ export const paymentService = {
         url: `${endpoints.payment.createPayment}?bookingId=${bookingId}`,
       });
 
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error creating payment:", error);
       throw error;

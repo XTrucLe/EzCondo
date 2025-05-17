@@ -10,6 +10,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import { getPaymentHistory, getPaymentNeed } from "@/services/paymentService";
+import { PaymentHistoryType } from "@/utils/type/paymentType";
+import useDateUtils from "@/hooks/useDateUtils";
 
 // Sample clean payment data
 const paymentHistory = [
@@ -103,33 +105,44 @@ const paymentHistory = [
 ];
 
 const PaymentHistoryScreen = () => {
+  const { formatDate } = useDateUtils();
   const navigation = useNavigation<any>();
   const [searchQuery, setSearchQuery] = useState("");
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryType[]>(
+    []
+  );
   const [filteredData, setFilteredData] = useState(paymentHistory);
+
+  useEffect(() => {
+    const fetchPaymentHistory = async () => {
+      try {
+        const response = await getPaymentHistory();
+        setPaymentHistory(response);
+        setFilteredData(response);
+      } catch (error) {
+        console.error("Error fetching payment history:", error);
+      }
+    };
+
+    fetchPaymentHistory();
+  }, []);
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
     const lowerText = text.toLowerCase();
-    const filtered = paymentHistory.filter((item) =>
-      `${item.transactionId || item.id}`.toLowerCase().includes(lowerText)
+    const filtered = paymentHistory.filter(
+      (item) =>
+        item.paymentId?.toLowerCase().includes(lowerText) ||
+        item.fullName?.toLowerCase().includes(lowerText) ||
+        item.apartmentNumber?.toLowerCase().includes(lowerText) ||
+        item.type?.toLowerCase().includes(lowerText)
     );
     setFilteredData(filtered);
   };
 
-  useEffect(() => {
-    const fetch = async () => {
-      // Simulate fetching data from an API
-      const response = await getPaymentNeed();
-      console.log(response);
-
-      const response1 = await getPaymentHistory();
-      console.log("Payment history: ", response1);
-    };
-    fetch();
-  }, []);
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "success":
+      case "completed":
         return "#28a745";
       case "pending":
         return "#ffc107";
@@ -143,28 +156,27 @@ const PaymentHistoryScreen = () => {
   const formatCurrency = (amount: number) =>
     amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
-  const renderPaymentItem = ({ item }: any) => (
+  const renderPaymentItem = ({ item }: { item: PaymentHistoryType }) => (
     <TouchableOpacity
       style={styles.item}
       onPress={() => navigation.navigate("payment_detail", { payment: item })}
     >
       <View style={styles.left}>
         <Text style={styles.title}>
-          {item.transactionId || `HĐ #${item.id}`} - {item.type.toUpperCase()}
+          {item.paymentId.slice(-5) || `HĐ #${item.paymentId.slice(-5)}`} -{" "}
+          {item.type.toUpperCase()}
         </Text>
-        <Text style={styles.subText}>{item.createDate}</Text>
         <Text style={styles.subText}>
-          {item.apartmentNumber} • {item.fullname}
+          {formatDate(new Date(item.createDate))}
+        </Text>
+        <Text style={styles.subText}>
+          {item.apartmentNumber} • {item.fullName}
         </Text>
       </View>
       <View style={styles.right}>
         <Text style={styles.amount}>{formatCurrency(item.amount)}</Text>
         <Text style={[styles.status, { color: getStatusColor(item.status) }]}>
-          {item.status === "success"
-            ? "Đã thanh toán"
-            : item.status === "pending"
-            ? "Chờ xử lý"
-            : "Thất bại"}
+          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
         </Text>
       </View>
     </TouchableOpacity>
@@ -190,7 +202,7 @@ const PaymentHistoryScreen = () => {
 
       <FlatList
         data={filteredData}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item.paymentId}`}
         renderItem={renderPaymentItem}
         contentContainerStyle={{ paddingBottom: 20 }}
       />

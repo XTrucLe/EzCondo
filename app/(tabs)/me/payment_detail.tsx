@@ -23,7 +23,7 @@ const PaymentDetailScreen = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "success":
+      case "completed":
         return "Đã thanh toán";
       case "pending":
         return "Chờ xử lý";
@@ -36,7 +36,7 @@ const PaymentDetailScreen = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "success":
+      case "completed":
         return "#28a745";
       case "pending":
         return "#ffc107";
@@ -49,42 +49,6 @@ const PaymentDetailScreen = () => {
 
   const formatCurrency = (amount: number) =>
     amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
-
-  const renderDetails = () => {
-    switch (payment.type) {
-      case "electric":
-        return (
-          <>
-            <DetailRow label="Mã công tơ" value={payment.meterNumber} />
-            <DetailRow label="Ngày ghi chỉ số" value={payment.readingDate} />
-            <DetailRow
-              label="Số điện tiêu thụ"
-              value={`${payment.totalComsumption} kWh`}
-            />
-          </>
-        );
-      case "service":
-        return (
-          <>
-            <DetailRow label="Tên dịch vụ" value={payment.serviceName} />
-            <DetailRow
-              label="Thời gian sử dụng"
-              value={`${payment.serviceStartDate} → ${payment.serviceEndDate}`}
-            />
-            <DetailRow
-              label="Giá dịch vụ"
-              value={formatCurrency(payment.servicePrice || 0)}
-            />
-          </>
-        );
-      default:
-        return (
-          <Text style={styles.note}>
-            Chưa có chi tiết thanh toán cụ thể cho loại này.
-          </Text>
-        );
-    }
-  };
 
   const DetailRow = ({
     label,
@@ -119,22 +83,21 @@ const PaymentDetailScreen = () => {
 
           <DetailRow
             label="Mã giao dịch"
-            value={payment.transactionId || `HĐ #${payment.id}`}
+            value={
+              payment.paymentId.slice(-5) ||
+              `HĐ #${payment.paymentId.slice(-5)}`
+            }
           />
           <DetailRow label="Ngày tạo" value={payment.createDate} />
           <DetailRow label="Căn hộ" value={payment.apartmentNumber} />
-          <DetailRow label="Người thanh toán" value={payment.fullname} />
-          <DetailRow label="Hình thức" value={payment.method} />
+          <DetailRow label="Người thanh toán" value={payment.fullName} />
+          <DetailRow label="Hình thức" value={"QR code"} />
           <DetailRow
             label="Trạng thái"
             value={getStatusLabel(payment.status)}
             color={getStatusColor(payment.status)}
           />
           <DetailRow label="Tổng tiền" value={formatCurrency(payment.amount)} />
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.header}>Chi tiết bổ sung</Text>
-          {renderDetails()}
         </View>
       </ScrollView>
     </View>

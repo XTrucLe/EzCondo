@@ -18,12 +18,13 @@ import {
   getPaymentNeed,
   paymentService,
 } from "@/services/paymentService";
+import ModalCustome from "@/components/ui/custome/ModalCustome";
 
 const apiMap: { [key: string]: (id: string) => void } = {
   booking: paymentService.createPayment,
-  electricId: createElectricPayment,
-  waterId: createWaterPayment,
-  parkingId: createParkingPayment,
+  electric: createElectricPayment,
+  water: createWaterPayment,
+  parking: createParkingPayment,
 };
 
 const PendingPaymentsScreen = () => {
@@ -39,6 +40,8 @@ const PendingPaymentsScreen = () => {
   const [data, setData] = useState<PaymentWaitingType[]>([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [modalData, setModalData] = useState();
 
   const navigation = useNavigation<any>();
 
@@ -72,13 +75,16 @@ const PendingPaymentsScreen = () => {
     try {
       for (const [key, value] of Object.entries(item))
         if (value != null && key != "paymentId" && key.includes("Id")) {
-          const func = apiMap[key];
+          const func = apiMap[key.replace("Id", "")];
+
           const response = await func(value as string);
           navigation.navigate("paymentQR", {
             data: response,
           });
         }
-    } catch (error) {}
+    } catch (error) {
+      console.log("createPaymentQR -> error", error);
+    }
   };
 
   // Render each item, chỉ hiển thị các hóa đơn có status là "pending"
@@ -111,9 +117,10 @@ const PendingPaymentsScreen = () => {
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {item?.title ?? "Hoá đơn dịch vụ"}
+                {item?.title ??
+                  "Hoá đơn " + item?.type?.replace(/booking/gi, "").trim()}
               </Text>
-              <Text style={styles.cardSubtitle}>Hạn: {item?.dueDate}</Text>
+              <Text style={styles.cardSubtitle}>Hạn: {item?.createDate}</Text>
             </View>
 
             <View style={styles.rightActions}>
@@ -172,6 +179,13 @@ const PendingPaymentsScreen = () => {
       >
         {snackbarMessage}
       </Snackbar>
+      <ModalCustome
+        visible={showSnackbar}
+        data={{ message: snackbarMessage }}
+        setVisible={setShowSnackbar}
+        okClose={true}
+        okEvent={() => setShowSnackbar(false)}
+      />
     </SafeAreaView>
   );
 };

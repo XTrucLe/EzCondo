@@ -17,10 +17,10 @@ import {
 } from "react-native";
 import { FAB } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { userDefaultImage } from "@/constants/ImageLink";
+import { homeHeaderImage, userDefaultImage } from "@/constants/ImageLink";
 
 const MAX_HEADER_HEIGHT = 200;
-const MIN_HEADER_HEIGHT = 130;
+const MIN_HEADER_HEIGHT = 100;
 
 type UserHomeProps = {
   fullName: string;
@@ -55,7 +55,6 @@ const Header = ({
       setUserInfo({
         fullName: user?.fullName || "Người dùng",
         apartmentNumber: user?.apartmentNumber || "Chưa cập nhật",
-        // image: user?.image || userInformation.image,
       });
     };
     fetchUserInfo();
@@ -81,9 +80,8 @@ const Header = ({
   });
 
   return (
-    <Animated.View
-      style={[styles.header, { height: headerHeight, backgroundColor }]}
-    >
+    <Animated.View style={[styles.header, { height: headerHeight }]}>
+      <Image source={homeHeaderImage} style={styles.headerImageBg}></Image>
       <Text style={[styles.wellcomeText, { color: wellcomeTextColor }]}>
         {textTime}
       </Text>
@@ -104,22 +102,13 @@ const Header = ({
         </TouchableOpacity>
 
         <View style={styles.userInfo}>
-          <Text style={[styles.userName, { color: textColor }]}>
+          <Text style={[styles.userName, { color: "#fff", fontSize: 18 }]}>
             {userInfo?.fullName}
           </Text>
-          <Text style={[styles.apartment, { color: textColor }]}>
+          <Text style={[styles.apartment, { color: "#fff" }]}>
             {translation.apartment}: {userInfo?.apartmentNumber}
           </Text>
         </View>
-      </Animated.View>
-
-      <Animated.View
-        style={[
-          styles.paymentPanel,
-          { transform: [{ translateY: panelTranslateY }] },
-        ]}
-      >
-        <PaymentPanel serviceAmount={250000} walletBalance={500000} />
       </Animated.View>
     </Animated.View>
   );
@@ -160,7 +149,10 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bgColor }}>
       <View style={styles.headerContainer}>
-        <Header onImagePress={() => {}} scrollY={scrollY} />
+        <Header
+          onImagePress={() => navigation.navigate("me", { screen: "profile" })}
+          scrollY={scrollY}
+        />
       </View>
 
       <Animated.ScrollView
@@ -198,6 +190,7 @@ const styles = StyleSheet.create({
   },
   header: {
     position: "absolute",
+
     top: 0,
     left: 0,
     right: 0,
@@ -205,6 +198,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
+  },
+  headerImageBg: {
+    width: "110%",
+    height: "110%",
+    position: "absolute",
+    objectFit: "fill",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: -1,
   },
   wellcomeText: {
     position: "absolute",
