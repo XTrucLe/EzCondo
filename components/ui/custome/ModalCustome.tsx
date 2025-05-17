@@ -16,14 +16,24 @@ type ModalCustomeProps = {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   data?: Record<string, any>;
+  okClose?: boolean;
+  okEvent?: () => void;
 };
 
-const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
+const ModalCustome = ({
+  visible,
+  setVisible,
+  data,
+  okClose,
+  okEvent,
+}: ModalCustomeProps) => {
   const { translation } = useLanguage();
 
   const renderValue = (key: string, value: any) => {
     const keyLower = key.toLowerCase();
-    const isMoneyKey = ["amount", "price", "total"].includes(keyLower);
+    const isMoneyKey = ["amount", "price", "total"].some((k) =>
+      keyLower.includes(k)
+    );
 
     if (keyLower === "status") {
       let statusStyle = styles.statusDefault;
@@ -80,13 +90,26 @@ const ModalCustome = ({ visible, setVisible, data }: ModalCustomeProps) => {
               <Text>{translation.nodata}</Text>
             )}
           </ScrollView>
+          <View style={styles.footerButtons}>
+            {okClose && (
+              <TouchableOpacity
+                style={[styles.closeButton, styles.confirmButton]}
+                onPress={() => {
+                  okEvent && okEvent();
+                  setVisible(false);
+                }}
+              >
+                <Text style={styles.closeButtonText}>Xác nhận</Text>
+              </TouchableOpacity>
+            )}
 
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>Đóng</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>
@@ -180,11 +203,22 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
   },
+  footerButtons: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+    gap: 10,
+    marginTop: 15,
+    width: "100%",
+  },
 
   closeButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  confirmButton: {
+    backgroundColor: "#4CAF50",
   },
 });
 

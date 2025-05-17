@@ -11,18 +11,19 @@ import { useNavigation } from "expo-router";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
-import { getServiceDetail } from "@/services/servicesService";
 
+// Constants
 const iconSize = 30;
-const iconColor = "#3674B5"; // Màu sắc cho icon
+const iconColor = "#3674B5";
 
 type UtilityItemProps = {
   id: string;
   name: string;
-  icon: ReactNode; // icon là component React
+  icon: ReactNode;
   navigatePage?: string | object;
 };
 
+// Danh sách tiện ích hệ thống
 const utilitiesList: UtilityItemProps[] = [
   {
     id: "1",
@@ -50,9 +51,10 @@ const utilitiesList: UtilityItemProps[] = [
   },
 ];
 
+// Danh sách dịch vụ
 const servicesList: UtilityItemProps[] = [
   {
-    id: "swim",
+    id: "Pool",
     name: "Hồ bơi",
     icon: (
       <FontAwesome6 name="person-swimming" size={iconSize} color={iconColor} />
@@ -60,25 +62,25 @@ const servicesList: UtilityItemProps[] = [
     navigatePage: "pool",
   },
   {
-    id: "13",
+    id: "Steam room",
     name: "Phòng xông hơi",
     icon: <FontAwesome5 name="hot-tub" size={iconSize} color={iconColor} />,
     navigatePage: "steamRoom",
   },
   {
-    id: "5",
+    id: "Fitness",
     name: "Phòng Gym",
     icon: <Ionicons name="barbell" size={iconSize} color={iconColor} />,
     navigatePage: "fitnessCenter",
   },
   {
-    id: "11",
+    id: "Children",
     name: "Khu vui chơi trẻ em",
     icon: <Ionicons name="play-circle" size={iconSize} color={iconColor} />,
     navigatePage: "childrenPlayground",
   },
   {
-    id: "12",
+    id: "Laundry",
     name: "Giặt ủi",
     icon: <Ionicons name="shirt-outline" size={iconSize} color={iconColor} />,
     navigatePage: "laundry",
@@ -103,6 +105,33 @@ const servicesList: UtilityItemProps[] = [
   },
 ];
 
+// Xử lý điều hướng chuyên biệt
+const getNextPageHandler = (
+  id: string,
+  name: string,
+  navigatePage: any,
+  navigation: any
+) => {
+  return async () => {
+    if (!navigatePage) return;
+
+    // Nếu navigatePage là 'water' ⇒ điều hướng đến bảng giá nước
+    if (navigatePage === "water") {
+      navigation.navigate("seviceFees", { mode: "water" });
+      return;
+    }
+
+    // Nếu ID không chứa số ⇒ điều hướng đến màn hình chi tiết (theo id)
+    if (!/\d/.test(id)) {
+      navigation.navigate("detail", { name: id });
+      return;
+    }
+
+    // Mặc định điều hướng đến trang được truyền vào
+    navigation.navigate(navigatePage);
+  };
+};
+
 const UtilityItem: React.FC<UtilityItemProps> = ({
   id,
   name,
@@ -110,43 +139,13 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
   navigatePage,
 }) => {
   const navigation = useNavigation<any>();
-
   const textColor = useThemeColor({}, "text");
   const backgroundColor = useThemeColor({}, "cardBackground");
-  const iconColor = useThemeColor({}, "icon");
 
-  const fetchServiceDetail = async () => {
-    try {
-      const [res1, res2] = await Promise.all([
-        getServiceDetail(id.toLowerCase()),
-        getServiceDetail(name.toLowerCase()),
-      ]);
-      return res1?.length ? res1 : res2;
-    } catch (error) {
-      console.error("Error fetching service detail:", error);
-      return null;
-    }
-  };
-
-  const handleNavigate = async () => {
-    if (!navigatePage) return;
-
-    if (id.toLowerCase().includes("swim")) {
-      const data = await fetchServiceDetail();
-      if (!data?.length) {
-        alert("Coming soon");
-        return;
-      }
-      navigation.navigate("detail", { name, data });
-    } else if (navigatePage == "water") {
-      navigation.navigate("seviceFees", { mode: "water" });
-    } else {
-      navigation.navigate(navigatePage);
-    }
-  };
+  const onPress = getNextPageHandler(id, name, navigatePage, navigation);
 
   return (
-    <TouchableOpacity style={styles.item} onPress={handleNavigate}>
+    <TouchableOpacity style={styles.item} onPress={onPress}>
       <View style={[styles.iconContainer, { backgroundColor }]}>{icon}</View>
       <Text style={[styles.text, { color: textColor }]}>{name}</Text>
     </TouchableOpacity>
@@ -174,7 +173,7 @@ const renderGrid = (data: UtilityItemProps[], column = 2) => {
 const ExtensionsUI: React.FC = () => {
   return (
     <View style={styles.container}>
-      <ThemedText type="subtitle"></ThemedText>
+      <ThemedText type="subtitle">Tiện ích</ThemedText>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

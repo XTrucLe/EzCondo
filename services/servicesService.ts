@@ -34,10 +34,18 @@ export const getServiceImages = async (serviceId: string) => {
       method: "get",
       url: `${endpoints.service.getServiceImages}?serviceId=${serviceId}`,
     });
-    console.log(response);
 
     return response.data;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getUserBookingStatus = async (serviceId: string) => {
+  try {
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
   }
 };

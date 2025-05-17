@@ -17,9 +17,12 @@ export default function BillListScreen() {
       try {
         if (mode === "water") {
           const response = await getWaterFee();
+          console.log("Water fees:", response);
+
           setData(response);
         } else {
           const response = await getElectricFees();
+          console.log("Electric fees:", response);
           setData(response);
         }
       } catch (error) {

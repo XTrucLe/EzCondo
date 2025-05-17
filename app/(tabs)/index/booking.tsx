@@ -6,20 +6,27 @@ import {
   TextInput,
   StyleSheet,
   Animated,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from "@react-navigation/native";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useNavigation } from "expo-router";
+import ModalCustome from "@/components/ui/custome/ModalCustome";
+import { paymentService } from "@/services/paymentService";
+import { useLoading } from "@/hooks/useLoading";
+import { createBooking } from "@/services/bookingService";
 
 const BookingScreen = () => {
   const { translation } = useLanguage();
   const navigation = useNavigation<any>();
+  const { startLoading, stopLoading } = useLoading();
   // Lấy giá tháng và năm từ route params
-  const { monthPrice, yearPrice } = useRoute().params as {
+  const { monthPrice, yearPrice, serviceId } = useRoute().params as {
     monthPrice: number;
     yearPrice: number;
+    serviceId: string;
   };
 
   const [selectedPackage, setSelectedPackage] = useState("month"); // Gói tháng/năm
@@ -29,9 +36,17 @@ const BookingScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false); // Toggle lịch
   const animation = new Animated.Value(0);
   const [totalPrice, setTotalPrice] = useState(0); // Lưu giá trị tổng
+  const [modalData, setModalData] = useState({
+    startDate: "",
+    endDate: "",
+    numMonths: "",
+    totalPrice: 0,
+    selectedPackage: "",
+  });
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    console.log(monthPrice, yearPrice);
+    console.log(monthPrice, yearPrice, serviceId);
 
     let newEndDate = new Date(startDate);
     if (selectedPackage === "month") {
@@ -91,14 +106,47 @@ const BookingScreen = () => {
   };
 
   const handleBookNow = () => {
-    navigation.navigate("booking.confirm", {
+    setModalData({
       startDate: startDate.toLocaleDateString("vi-VN"),
       endDate: endDate.toLocaleDateString("vi-VN"),
       numMonths: selectedPackage === "month" ? numMonths : "1",
       totalPrice,
-      selectedPackage,
+      selectedPackage: translation[selectedPackage],
     });
+    setVisible(true);
   };
+
+  const acceptBooking = async () => {
+    const bookingData = {
+      serviceId: serviceId,
+      startDate: startDate,
+      forMonthOrYear: selectedPackage,
+      totalMonth: selectedPackage === "month" ? Number(numMonths) : 1,
+    };
+
+    startLoading();
+    try {
+      console.log("Booking data:", bookingData);
+      const response = await createBooking(bookingData);
+      const { data } = await paymentService.createPayment(response);
+
+      console.log("Payment data:", data);
+      if (!data) {
+        console.log("Không có dữ liệu thanh toán");
+        Alert.alert(translation.error, translation.nodata);
+        return;
+      }
+      navigation.navigate("paymentQR", {
+        data,
+      });
+    } catch (e) {
+      console.log(e);
+      Alert.alert(translation.error, translation.fail);
+    } finally {
+      stopLoading();
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -197,6 +245,14 @@ const BookingScreen = () => {
       <TouchableOpacity style={styles.bookButton} onPress={handleBookNow}>
         <Text style={styles.bookButtonText}>{translation.bookNow}</Text>
       </TouchableOpacity>
+
+      <ModalCustome
+        visible={visible}
+        data={modalData}
+        setVisible={setVisible}
+        okClose={true}
+        okEvent={acceptBooking}
+      />
     </View>
   );
 };

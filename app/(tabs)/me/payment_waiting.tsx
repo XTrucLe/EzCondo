@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,42 +7,24 @@ import {
   FlatList,
   Alert,
 } from "react-native";
-import { Card, Button, Avatar, Snackbar, IconButton } from "react-native-paper";
+import { Card, Avatar, Snackbar, IconButton } from "react-native-paper";
 import { useNavigation } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { PaymentWaitingType } from "@/utils/type/paymentType";
+import {
+  createElectricPayment,
+  createParkingPayment,
+  createWaterPayment,
+  getPaymentNeed,
+  paymentService,
+} from "@/services/paymentService";
 
-// Tạo kiểu dữ liệu cho hóa đơn
-type PaymentItem = {
-  id: string;
-  title: string;
-  amount: number;
-  dueDate: string;
-  status: "pending" | "paid";
+const apiMap: { [key: string]: (id: string) => void } = {
+  booking: paymentService.createPayment,
+  electricId: createElectricPayment,
+  waterId: createWaterPayment,
+  parkingId: createParkingPayment,
 };
-
-const mockData: PaymentItem[] = [
-  {
-    id: "1",
-    title: "Phí quản lý tháng 5",
-    amount: 500000,
-    dueDate: "10/05/2025",
-    status: "pending",
-  },
-  {
-    id: "2",
-    title: "Phí giữ xe ô tô",
-    amount: 800000,
-    dueDate: "12/05/2025",
-    status: "pending",
-  },
-  {
-    id: "3",
-    title: "Phí điện tháng 5",
-    amount: 300000,
-    dueDate: "05/05/2025",
-    status: "paid",
-  },
-];
 
 const PendingPaymentsScreen = () => {
   const theme = {
@@ -54,60 +36,111 @@ const PendingPaymentsScreen = () => {
     error: useThemeColor({}, "error"),
   };
 
+  const [data, setData] = useState<PaymentWaitingType[]>([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getPaymentNeed();
+        console.log("PendingPaymentsScreen -> response", response);
+
+        setData(response);
+      } catch (error) {}
+    };
+    fetchData();
+  }, []);
 
   // Handle single payment
-  const handlePay = (item: PaymentItem) => {
-    Alert.alert("Thanh toán", `Bạn muốn thanh toán "${item.title}"?`, [
+  const handlePay = (item: PaymentWaitingType) => {
+    Alert.alert("Thanh toán", `Bạn muốn thanh toán "${item.type}"?`, [
       { text: "Hủy", style: "cancel" },
       {
         text: "Xác nhận",
         onPress: () => {
-          setSnackbarMessage(`Thanh toán thành công "${item.title}"`);
-          setShowSnackbar(true);
+          createPaymentQR(item);
+          setSnackbarMessage("Đang tạo QR thanh toán...");
         },
       },
     ]);
   };
 
+  const createPaymentQR = async (item: PaymentWaitingType) => {
+    try {
+      for (const [key, value] of Object.entries(item))
+        if (value != null && key != "paymentId" && key.includes("Id")) {
+          const func = apiMap[key];
+          const response = await func(value as string);
+          navigation.navigate("paymentQR", {
+            data: response,
+          });
+        }
+    } catch (error) {}
+  };
+
   // Render each item, chỉ hiển thị các hóa đơn có status là "pending"
-  const renderItem = ({ item }: { item: PaymentItem }) => {
-    if (item.status === "paid") return null; // Bỏ qua những hóa đơn đã thanh toán
+  const renderItem = ({ item }: { item: PaymentWaitingType }) => {
+    // Bỏ qua hóa đơn đã thanh toán
+    if (item.status === "completed") return null;
+
+    const handlePress = () => handlePay(item);
 
     return (
       <Card
         style={[styles.card, { backgroundColor: theme.card }]}
-        elevation={5} // Tăng độ sâu để tạo cảm giác hiện đại
-        onPress={() => handlePay(item)}
+        elevation={2}
+        onPress={handlePress}
       >
-        <Card.Content>
+        <Card.Content style={styles.cardContent}>
           <View style={styles.cardHeader}>
-            <Avatar.Icon icon="file-document" size={50} color={theme.primary} />
-            <View style={styles.cardDetails}>
-              <Text style={[styles.cardTitle, { color: theme.text }]}>
-                {item.title}
-              </Text>
-              <Text style={[styles.cardSubtitle, { color: theme.primary }]}>
-                Hạn: {item.dueDate}
-              </Text>
+            <View style={styles.avatarContainer}>
+              <Avatar.Icon
+                icon="file-document"
+                size={44}
+                color={theme.primary}
+                style={{ backgroundColor: `${theme.primary}20` }}
+              />
             </View>
-            <IconButton
-              icon="chevron-right"
-              iconColor={theme.primary}
-              size={30}
-              onPress={() => handlePay(item)}
-            />
+
+            <View style={styles.cardDetails}>
+              <Text
+                style={[styles.cardTitle, { color: theme.text }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {item?.title ?? "Hoá đơn dịch vụ"}
+              </Text>
+              <Text style={styles.cardSubtitle}>Hạn: {item?.dueDate}</Text>
+            </View>
+
+            <View style={styles.rightActions}>
+              <IconButton
+                icon="chevron-right"
+                iconColor={theme.primary}
+                size={24}
+                onPress={handlePress}
+                style={styles.chevron}
+              />
+            </View>
           </View>
+
           <View style={styles.cardFooter}>
             <Text style={[styles.amount, { color: theme.text }]}>
               {item.amount.toLocaleString()}₫
             </Text>
-            <Text style={[styles.status, { color: theme.primary }]}>
-              Chờ thanh toán
-            </Text>
+            <View
+              style={[
+                styles.statusBadge,
+                { backgroundColor: `${theme.primary}20` },
+              ]}
+            >
+              <Text style={[styles.statusText, { color: theme.primary }]}>
+                Chờ thanh toán
+              </Text>
+            </View>
           </View>
         </Card.Content>
       </Card>
@@ -119,9 +152,16 @@ const PendingPaymentsScreen = () => {
       style={[styles.container, { backgroundColor: theme.background }]}
     >
       <FlatList
-        data={mockData.filter((item) => item.status === "pending")}
-        keyExtractor={(item) => item.id}
+        data={data}
+        keyExtractor={(item) => item.paymentId}
         renderItem={renderItem}
+        ListEmptyComponent={() => (
+          <View style={{ padding: 20 }}>
+            <Text style={{ textAlign: "center", color: theme.text }}>
+              Không có hóa đơn nào đang chờ thanh toán.
+            </Text>
+          </View>
+        )}
         contentContainerStyle={styles.listContent}
       />
 
@@ -155,42 +195,62 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   card: {
-    marginBottom: 15,
-    borderRadius: 20, // Làm viền card mềm mại hơn
-    overflow: "hidden", // Làm cho viền tròn mượt mà hơn
+    borderRadius: 12,
+    marginVertical: 6,
+    marginHorizontal: 16,
+    overflow: "hidden",
+  },
+  cardContent: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
   },
   cardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 12,
+  },
+  avatarContainer: {
+    marginRight: 12,
   },
   cardDetails: {
     flex: 1,
-    marginLeft: 15,
-    paddingRight: 10, // Đảm bảo khoảng cách đều cho card
+    justifyContent: "center",
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 2,
   },
   cardSubtitle: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 10,
+    fontSize: 13,
+    opacity: 0.8,
+  },
+  rightActions: {
+    marginLeft: "auto",
+  },
+  chevron: {
+    margin: -8,
   },
   cardFooter: {
-    marginTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.08)",
   },
   amount: {
     fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
+    fontWeight: "700",
   },
-  status: {
-    fontSize: 14,
+  statusBadge: {
+    borderRadius: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+  statusText: {
+    fontSize: 13,
     fontWeight: "500",
-    marginTop: 5,
   },
   actions: {
     justifyContent: "center",

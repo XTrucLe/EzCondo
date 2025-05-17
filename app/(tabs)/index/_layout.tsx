@@ -1,5 +1,6 @@
 import HeaderRightIcon from "@/components/ui/HeaderRightIcon";
 import { Stack } from "expo-router";
+import { Text } from "react-native";
 
 export default function HomeLayout() {
   return (
@@ -63,11 +64,17 @@ export default function HomeLayout() {
       />
       <Stack.Screen
         name="seviceFees"
-        options={{ headerShown: true, headerTitle: "" }}
+        options={{
+          headerShown: true,
+          headerTitle: () => <Text> Hóa đơn </Text>,
+        }}
       />
       <Stack.Screen
         name="feeDetail"
-        options={{ headerShown: true, headerTitle: "" }}
+        options={{
+          headerShown: true,
+          headerTitle: () => <Text>Chi tiết hóa đơn </Text>,
+        }}
       />
       <Stack.Screen
         name="list_fees"
@@ -75,6 +82,10 @@ export default function HomeLayout() {
       />
       <Stack.Screen
         name="paymentQR"
+        options={{ headerShown: true, headerTitle: "" }}
+      />
+      <Stack.Screen
+        name="payment"
         options={{ headerShown: true, headerTitle: "" }}
       />
     </Stack>

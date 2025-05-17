@@ -25,10 +25,18 @@ const InfoRow = ({
     {onPress ? (
       <TouchableOpacity onPress={onPress} style={styles.iconContainer}>
         <Ionicons name="pencil" size={20} color="#007BFF" />
-        <Text style={[styles.text, styles.clickableText]}>{value}</Text>
+        <Text style={[styles.text, styles.clickableText]} numberOfLines={1}>
+          {value}
+        </Text>
       </TouchableOpacity>
     ) : (
-      <Text style={styles.text}>{value}</Text>
+      <Text
+        style={[styles.text, { maxWidth: "70%" }]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
+        {value}
+      </Text>
     )}
   </View>
 );
@@ -119,7 +127,7 @@ const ServiceSubscriptionScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Đăng ký / Gia hạn dịch vụ</Text>
+        <Text style={styles.title}>Đăng ký dịch vụ</Text>
 
         <View style={styles.infoSection}>
           <InfoRow label="Tên dịch vụ:" value={service.serviceName} />
@@ -233,10 +241,14 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   iconContainer: {
+    position: "relative",
+    minWidth: 130,
+    maxWidth: "70%",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     flexDirection: "row-reverse",
-    alignItems: "center", // căn giữa icon và text
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: "#f0f0f0", // thêm chút nền nếu muốn
     borderRadius: 8,
   },
@@ -249,6 +261,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: "#222",
+    maxWidth: "100%",
   },
   clickableText: {
     color: "#007BFF",

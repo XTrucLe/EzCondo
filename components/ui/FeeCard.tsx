@@ -38,7 +38,7 @@ const FeeCard = ({ item, mode }: Props) => {
       <View style={styles.header}>
         <View style={styles.titleWrap}>
           <View style={styles.iconWrap}>
-            <Ionicons name={iconName} size={18} color="#ffffff" />
+            {/* <Ionicons name={iconName} size={18} color="#ffffff" /> */}
           </View>
           <Text style={styles.title}>{typeLabel}</Text>
         </View>

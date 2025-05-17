@@ -96,6 +96,8 @@ export default {
   year: "Năm",
   month: "Tháng",
   day: "Ngày",
+  startDate: "Ngày bắt đầu",
+  endDate: "Ngày kết thúc",
   search: "Tìm kiếm",
   searchPlaceholder: "Tìm kiếm...",
   searchResult: "Kết quả tìm kiếm",
@@ -156,7 +158,12 @@ export default {
   paidDate: "Ngày thanh toán",
   note: "Ghi chú",
   status: "Trạng thái",
-
+  selectedPackage: "Gói đã chọn",
+  selectedDate: "Ngày đã chọn",
+  numOfMonths: "Số tháng",
+  numMonths: "Số tháng",
+  monthPrice: "Giá tháng",
+  totalPrice: "Tổng giá",
   parkingCard: "Thẻ xe",
   parkingRegis: "Đăng ký xe",
 

@@ -50,6 +50,10 @@ export default function MeLayout() {
         name="changePassword"
         options={{ headerShown: true, title: "" }}
       />
+      <Stack.Screen
+        name="paymentQR"
+        options={{ headerShown: true, title: "" }}
+      />
     </Stack>
   );
 }

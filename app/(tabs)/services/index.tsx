@@ -10,7 +10,7 @@ export default function ServiceScreen() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "all", title: "Dịch vụ" },
-    { key: "payment_history", title: "Lịch sử thanh toán" },
+    { key: "payment_history", title: "Dịch vụ sử dụng" },
   ]);
 
   const renderScene = SceneMap({

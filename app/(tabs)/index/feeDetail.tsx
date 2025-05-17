@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { openBankApp } from "@/components/BankLinking";
@@ -38,6 +39,11 @@ const STATUS_CONFIG = {
     color: "#FBBF24", // yellow-500
     icon: "⏳",
   },
+  pending: {
+    text: "Chờ thanh toán",
+    color: "#3B82F6", // blue-500
+    icon: "⏳",
+  },
 };
 
 // Components
@@ -57,12 +63,15 @@ const PaymentButton = ({ onPress }: { onPress: () => void }) => (
 // Main Component
 export default function BillDetailScreen() {
   const route = useRoute();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { startLoading, stopLoading } = useLoading();
   const { item, mode } = route.params as {
     item: WaterFee | ElectricFee;
     mode: "water" | "electric";
   };
+
+  console.log("Item details:", item);
+  console.log("Mode:", mode);
 
   const statusInfo = STATUS_CONFIG[item.status as keyof typeof STATUS_CONFIG];
 
@@ -80,8 +89,11 @@ export default function BillDetailScreen() {
         const electricItem = item as ElectricFee;
         response = await createElectricPayment(electricItem.electricBillId);
       }
+
+      if (response) navigation.navigate("paymentQR", { data: response });
+      else Alert.alert("Thông báo", "Không có dữ liệu thanh toán");
     } catch (error) {
-      console.error("Error opening bank app:", error);
+      console.error("Error:", error);
     } finally {
       stopLoading();
     }
@@ -142,7 +154,7 @@ export default function BillDetailScreen() {
           </Text>
         </View>
 
-        {item.status !== "paid" && <PaymentButton onPress={() => {}} />}
+        {item.status !== "paid" && <PaymentButton onPress={handlePayment} />}
       </View>
     </ScrollView>
   );

@@ -6,92 +6,163 @@ import { ServiceDetailType } from "@/utils/type/serviceDetailType";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "react-native-paper";
 import { useNavigation } from "expo-router";
-import { getServiceImages } from "@/services/servicesService";
+import { getServiceDetail, getServiceImages } from "@/services/servicesService";
+import { checkHadBooking } from "@/services/bookingService";
+import { useLoading } from "@/hooks/useLoading";
 
 const ServicesDetailScreen = () => {
-  const { name, data } = useRoute().params as {
-    name: string;
-    data: ServiceDetailType[];
-  };
+  const { name } = useRoute().params as { name: string };
+  const { startLoading, stopLoading } = useLoading();
   const { translation } = useLanguage();
   const navigation = useNavigation<any>();
-  const [serviceDetails, setServiceDetails] = useState<ServiceDetailType>({
-    ...data[0],
-    images: [],
-  });
 
-  console.log("Service details:", serviceDetails.images);
+  const [serviceDetails, setServiceDetails] = useState<ServiceDetailType>();
+  const [bookingInfo, setBookingInfo] = useState<null | {
+    id: string;
+    paid: boolean;
+    date: string;
+  }>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchImages = async () => {
-      const image = await getServiceImages(serviceDetails.id);
-      setServiceDetails((prev) => ({ ...prev, images: image }));
-      console.log("Image data:", image);
+    const fetchData = async () => {
+      startLoading();
+      setIsLoading(true);
+      try {
+        const serviceDetails = await getServiceDetail(name);
+
+        const image = await getServiceImages(serviceDetails[0].id);
+        setServiceDetails({ ...serviceDetails[0], images: image });
+
+        const booking = await checkHadBooking(name);
+        if (booking) {
+          setBookingInfo(booking);
+        }
+      } catch (err) {
+        console.log("Không có booking hoặc lỗi khi tải dữ liệu:", err);
+      } finally {
+        setIsLoading(false);
+        stopLoading();
+      }
     };
 
-    fetchImages();
+    fetchData();
   }, []);
+
   const handleBooking = () => {
-    // Handle booking logic here
     navigation.navigate("booking", {
-      monthPrice: serviceDetails.priceOfMonth,
-      yearPrice: serviceDetails.priceOfYear,
+      monthPrice: serviceDetails?.priceOfMonth,
+      yearPrice: serviceDetails?.priceOfYear,
+      serviceId: serviceDetails?.id,
     });
-    console.log("Booking service:", serviceDetails.serviceName);
   };
+
+  const handlePayment = () => {
+    navigation.navigate("payment", { bookingId: bookingInfo?.id });
+  };
+
+  const handleViewBooking = () => {
+    navigation.navigate("bookingDetail", { bookingId: bookingInfo?.id });
+  };
+
+  if (!serviceDetails) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>{translation.loading}</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
-      <SlideShow item={serviceDetails.images || []} />
+      <SlideShow item={serviceDetails?.images || []} />
       <View style={styles.detailContainer}>
-        {/* Tiêu đề */}
-        <Text style={styles.title}>{serviceDetails.serviceName}</Text>
+        {/* Tiêu đề dịch vụ */}
+        <Text style={styles.title}>{serviceDetails?.serviceName}</Text>
 
-        {/* Giới thiệu */}
+        {/* Mô tả */}
         <Text style={styles.sectionTitle}>{translation.introduce}</Text>
-        <Text style={styles.description}>{serviceDetails.description}</Text>
+        <Text style={styles.description}>{serviceDetails?.description}</Text>
 
         {/* Giá cả */}
         <Text style={styles.sectionTitle}>💰 {translation.price}</Text>
         <View style={styles.priceTable}>
-          {serviceDetails.typeOfMonth && (
+          {serviceDetails?.typeOfMonth && (
             <Text style={styles.priceRow}>
               {translation.month}:{" "}
               <Text style={styles.price}>
-                {serviceDetails.priceOfMonth} VND
+                {serviceDetails?.priceOfMonth} VND
               </Text>
             </Text>
           )}
-          {serviceDetails.typeOfYear && (
+          {serviceDetails?.typeOfYear && (
             <Text style={styles.priceRow}>
               {translation.year}:{" "}
-              <Text style={styles.price}>{serviceDetails.priceOfYear} VND</Text>
+              <Text style={styles.price}>
+                {serviceDetails?.priceOfYear} VND
+              </Text>
             </Text>
           )}
         </View>
 
-        {/* Nút đặt lịch */}
-        <Button mode="contained" style={styles.button} onPress={handleBooking}>
-          {translation.bookNow}
-        </Button>
+        {/* Trạng thái booking */}
+        {bookingInfo === null && (
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={handleBooking}
+          >
+            {translation.bookNow}
+          </Button>
+        )}
+
+        {bookingInfo && !bookingInfo.paid && (
+          <View>
+            <Text style={styles.pendingText}>
+              Đã đặt lịch vào {bookingInfo.date}, nhưng chưa thanh toán.
+            </Text>
+            <Button
+              mode="contained"
+              style={styles.button}
+              onPress={handlePayment}
+            >
+              Thanh toán ngay
+            </Button>
+          </View>
+        )}
+
+        {bookingInfo && bookingInfo.paid && (
+          <View>
+            <Text style={styles.successText}>
+              Bạn đã đăng ký và thanh toán dịch vụ này.
+            </Text>
+            <Button
+              mode="contained"
+              style={styles.button}
+              onPress={handleViewBooking}
+            >
+              Xem chi tiết booking
+            </Button>
+          </View>
+        )}
       </View>
     </ScrollView>
   );
 };
 
 export default ServicesDetailScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f4f4f4",
-    paddingTop: -10,
     paddingHorizontal: 10,
   },
   detailContainer: {
     padding: 20,
     borderRadius: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    marginBottom: 20,
+    backgroundColor: "#fff",
+    marginBottom: 30,
   },
   title: {
     fontSize: 26,
@@ -110,36 +181,16 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     color: "#555",
-    marginBottom: 10,
-  },
-  descriptionText: {
-    fontSize: 16,
-    color: "#555",
-  },
-  facilityContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
-    marginBottom: 20,
-  },
-  facilityItem: {
-    alignItems: "center",
   },
   priceTable: {
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 10,
+    marginBottom: 20,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 2,
-    marginBottom: 20,
   },
   priceRow: {
     fontSize: 16,
@@ -151,12 +202,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#007AFF",
   },
-
   button: {
     backgroundColor: "#007AFF",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 30,
+    marginTop: 20,
+  },
+  pendingText: {
+    color: "orange",
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  successText: {
+    color: "green",
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: "center",
   },
 });

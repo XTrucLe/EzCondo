@@ -73,6 +73,19 @@ export const createParkingPayment = async (parkingBillId: string) => {
   }
 };
 
+export const createServicePayment = async (serviceBillId: string) => {
+  try {
+    const response = await request({
+      method: "post",
+      url: `${endpoints.payment.createServicePayment}?serviceBillId=${serviceBillId}`,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating service payment:", error);
+    throw error;
+  }
+};
 export const getPaymentNeed = async () => {
   try {
     const response = await request({

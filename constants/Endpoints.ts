@@ -18,6 +18,7 @@ export const endpoints = {
   },
   booking: {
     createBooking: `${API_BASE}/Booking/Add-Booking`,
+    getMyBooking: `${API_BASE}/Booking/Get-My-Booking`,
   },
   household: {
     getHousehold: `${API_BASE}/HouseHoldMember/get-my-house-hold-member`,
@@ -72,6 +73,7 @@ export const endpoints = {
     createWaterPayment: `${API_BASE}/Payment/Create-QR-Water-Payment`,
     createElectricPayment: `${API_BASE}/Payment/Create-QR-Electric-Payment`,
     createpParkingPayment: `${API_BASE}/Payment/Create-QR-Parking-Payment`,
+    createServicePayment: `${API_BASE}/Payment/Create-QR-Service-Payment`,
     checkStatusPayment: `${API_BASE}/Payment/Check-Payment-Status`,
     getPaymentNeed: `${API_BASE}/Payment/Need-My-Payment`,
     getPaymentHistory: `${API_BASE}/Payment/My-History-Payment`,

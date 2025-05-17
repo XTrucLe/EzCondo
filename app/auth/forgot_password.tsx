@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
@@ -41,7 +42,9 @@ const ForgotPasswordScreen = () => {
       navigation.navigate("otp", { email });
     } catch (err) {
       console.log("Error:", err);
-
+      Alert.alert("Lỗi", "Không thể gửi yêu cầu. Vui lòng thử lại!", [
+        { text: "OK", onPress: () => setError("") },
+      ]);
       setError("Không thể gửi yêu cầu. Vui lòng thử lại!");
     } finally {
       setLoading(false);
