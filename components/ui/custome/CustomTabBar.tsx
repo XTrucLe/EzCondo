@@ -118,14 +118,15 @@ const CustomTabBar: React.FC<CustomTabBarProps> = React.memo(
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
-    width: "90%",
+    width: "95%",
     alignSelf: "center",
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#e0e0e0",
     height: 48,
-    marginVertical: 12,
-    backgroundColor: "#f8f9fa",
+    marginTop: 48,
+    marginBottom: 12,
+    backgroundColor: "#fff",
   },
   activeIndicator: {
     position: "absolute",

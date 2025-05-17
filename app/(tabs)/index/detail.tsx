@@ -35,6 +35,8 @@ const ServicesDetailScreen = () => {
         setServiceDetails({ ...serviceDetails[0], images: image });
 
         const booking = await checkHadBooking(name);
+        console.log("Booking info:", booking);
+
         if (booking) {
           setBookingInfo(booking);
         }

@@ -1,6 +1,5 @@
 import ExtensionsUI from "@/components/ui/ExtensionsUI";
 import { SlideShow } from "@/components/ui/SlideShow";
-import { userInformation } from "@/constants/FakeDatabase";
 import { useLanguage } from "@/hooks/useLanguage";
 import useAuthStore from "@/hooks/useAuth";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -38,8 +37,6 @@ const Header = ({
   const theme = useColorScheme();
   const { user } = useAuthStore();
   const { translation } = useLanguage();
-  const backgroundColor = useThemeColor({}, "header");
-  const textColor = useThemeColor({}, "text");
   const textTime = isLightTime(new Date().getHours())
     ? `${translation.goodMorning}! 🌞`
     : `${translation.goodEvening}! 🌙`;
@@ -64,12 +61,6 @@ const Header = ({
   const headerHeight = scrollY.interpolate({
     inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
     outputRange: [MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT],
-    extrapolate: "clamp",
-  });
-
-  const panelTranslateY = scrollY.interpolate({
-    inputRange: [0, 100], // Khi scroll từ 0 -> 100px
-    outputRange: [0, 0], // Panel di chuyển lên 50px
     extrapolate: "clamp",
   });
 
@@ -111,34 +102,6 @@ const Header = ({
         </View>
       </Animated.View>
     </Animated.View>
-  );
-};
-
-const PaymentPanel = ({
-  serviceAmount,
-  walletBalance,
-}: {
-  serviceAmount: number;
-  walletBalance: number;
-}) => {
-  const panelBgColor = useThemeColor({}, "panelBackground");
-
-  return (
-    <View style={[styles.panel, { backgroundColor: panelBgColor }]}>
-      <View style={styles.section}>
-        <Text style={styles.label}>Cần thanh toán</Text>
-        <Text style={styles.amount}>{serviceAmount.toLocaleString()} vnđ</Text>
-      </View>
-      <View
-        style={[
-          styles.section,
-          { borderLeftWidth: 1, borderLeftColor: "#ddd" },
-        ]}
-      >
-        <Text style={styles.label}>Số dư ví</Text>
-        <Text style={styles.amount}>{walletBalance.toLocaleString()} vnđ</Text>
-      </View>
-    </View>
   );
 };
 

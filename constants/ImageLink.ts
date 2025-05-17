@@ -5,6 +5,6 @@ const enImg = require("./../assets/images/united-kingdom.png");
 
 const applicationImages = require("./../assets/images/EzCondoIcon.png");
 
-const homeHeaderImage = require("../assets/images/hinh-nen-30-4-29.png");
+const homeHeaderImage = require("../assets/images/header_img.png");
 
 export { applicationImages, userDefaultImage, viImg, enImg, homeHeaderImage };

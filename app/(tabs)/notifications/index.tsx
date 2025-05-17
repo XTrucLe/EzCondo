@@ -4,6 +4,7 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  View,
 } from "react-native";
 import { TabView, SceneMap } from "react-native-tab-view";
 import NotificationBox from "@/components/ui/notification/NotificationBox";
@@ -167,12 +168,14 @@ const NotificationTabs = () => {
       onIndexChange={setIndex}
       initialLayout={{ width: layout.width }}
       renderTabBar={(props) => (
-        <CustomTabBar
-          {...props}
-          setIndex={setIndex}
-          activeColor={activeColor}
-          inactiveColor={inactiveColor}
-        />
+        <View style={styles.header}>
+          <CustomTabBar
+            {...props}
+            setIndex={setIndex}
+            activeColor={activeColor}
+            inactiveColor={inactiveColor}
+          />
+        </View>
       )}
       style={[styles.container, { backgroundColor }]}
     />
@@ -182,6 +185,20 @@ const NotificationTabs = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 4.65,
+    elevation: 5,
   },
   screen: {
     flex: 1,

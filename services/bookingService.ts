@@ -33,10 +33,23 @@ export const getMyBooking = async () => {
 export const checkHadBooking = async (serviceName: string) => {
   try {
     const regisService = await getMyBooking();
-    const hadBooking = regisService.some(
+    if (!regisService || regisService.length === 0) return false;
+
+    // Tìm booking trùng tên service (nếu có nhiều booking khác nhau)
+    const matchedBooking = regisService.find(
       (item: any) => item.serviceName === serviceName
     );
-    return hadBooking;
+
+    const data = {
+      id: matchedBooking?.id ?? null,
+      hasBooking: Boolean(matchedBooking),
+      paid: matchedBooking?.status ?? null,
+      date: matchedBooking?.createdAt ?? null,
+    };
+
+    console.log("data", data);
+
+    return data;
   } catch (error) {
     console.error("Error checking booking:", error);
     throw error;

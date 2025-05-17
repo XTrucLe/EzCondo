@@ -13,10 +13,10 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import useAuthStore from "@/hooks/useAuth";
 import { AppState } from "react-native";
 import { requestUserPermission } from "@/utils/permision/PushNotification";
-import { getFCMToken } from "@/services/firebaseService";
 import { useNotificationListener } from "@/services/notificationHandler";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { PaperProvider } from "react-native-paper";
+import SplashPage from "@/components/ui/screen/SplashPage";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -59,7 +59,7 @@ export default function RootLayout() {
   }, [loaded]);
 
   if (!loaded) {
-    return null;
+    return <SplashPage />;
   }
 
   return (

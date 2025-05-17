@@ -6,61 +6,87 @@ import {
 } from "@/services/parkingService";
 import { ParkingCardType, ParkingType } from "@/utils/type/ParkingType";
 
-const ParkingCard = ({
-  item,
-  owner,
-}: {
+type ParkingCardProps = {
   item: ParkingCardType;
   owner: ParkingType;
-}) => {
-  const statusColorMap: Record<string, string> = {
-    active: "#2ecc71", // green
-    inactive: "#e74c3c", // red
-    pending: "#f39c12", // orange
+};
+
+const STATUS_CONFIG = {
+  active: { color: "#27ae60", text: "ĐANG HOẠT ĐỘNG", bg: "#e8f5e9" },
+  inactive: { color: "#e74c3c", text: "VÔ HIỆU", bg: "#ffebee" },
+  pending: { color: "#f39c12", text: "CHỜ DUYỆT", bg: "#fff3e0" },
+};
+
+type StatusKey = keyof typeof STATUS_CONFIG;
+
+const ParkingBadge: React.FC<{ status: string }> = ({ status }) => {
+  const config = STATUS_CONFIG[status as StatusKey] || {
+    color: "#7f8c8d",
+    text: "UNKNOWN",
+    bg: "#f5f5f5",
   };
 
-  const getStatusColor = (type: string) => statusColorMap[type] || "#7f8c8d"; // default gray
-
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>Thẻ Đỗ Xe</Text>
-      <View style={styles.row}>
-        <Text style={styles.label}>Mã thẻ:</Text>
-        <Text style={styles.value}>{item.id.slice(-7)}</Text>
+    <View style={[styles.badge, { backgroundColor: config.bg }]}>
+      <Text style={[styles.badgeText, { color: config.color }]}>
+        {config.text}
+      </Text>
+    </View>
+  );
+};
+
+export const ParkingPassDesign: React.FC<ParkingCardProps> = ({
+  item,
+  owner,
+}) => {
+  return (
+    <View style={styles.container}>
+      {/* Header Section */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>THẺ ĐỖ XE THÔNG MINH</Text>
+        <View style={styles.headerLine} />
       </View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Loại xe:</Text>
-        <Text style={styles.value}>{item.type.toLocaleUpperCase()}</Text>
-      </View>
+      {/* Main Content */}
+      <View style={styles.content}>
+        {/* ID Section with decorative element */}
+        <View style={styles.idContainer}>
+          <Text style={styles.idLabel}>MÃ THẺ</Text>
+          <Text style={styles.idValue}>{item.id.slice(-8).toUpperCase()}</Text>
+          <View style={styles.idDecoration} />
+        </View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Giá:</Text>
-        <Text style={styles.value}>{item.price.toLocaleString()} VNĐ</Text>
-      </View>
+        {/* Vehicle Info in two columns */}
+        <View style={styles.grid}>
+          <View style={styles.gridItem}>
+            <Text style={styles.gridLabel}>LOẠI XE</Text>
+            <Text style={styles.gridValue}>{item.type.toUpperCase()}</Text>
+          </View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Tình trạng:</Text>
-        <Text style={[styles.value, { color: getStatusColor(item.status) }]}>
-          {item.status.toUpperCase()}
-        </Text>
-      </View>
+          <View style={styles.gridItem}>
+            <Text style={styles.gridLabel}>GIÁ THẺ</Text>
+            <Text style={styles.gridValue}>
+              {item.price.toLocaleString("vi-VN")}₫
+            </Text>
+          </View>
+        </View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Trạng thái:</Text>
-        <Text style={styles.value}>{item.checking}</Text>
-      </View>
+        {/* Status Badge */}
+        <ParkingBadge status={item.status} />
 
-      <View style={styles.divider} />
+        {/* Owner Info with subtle separation */}
+        <View style={styles.ownerSection}>
+          <Text style={styles.ownerLabel}>CHỦ SỞ HỮU</Text>
+          <View style={styles.ownerInfo}>
+            <Text style={styles.ownerName}>{owner.name}</Text>
+            <Text style={styles.ownerApartment}>{owner.apartment}</Text>
+          </View>
+        </View>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Chủ sở hữu:</Text>
-        <Text style={styles.value}>{owner.name}</Text>
-      </View>
-
-      <View style={styles.row}>
-        <Text style={styles.label}>Căn hộ:</Text>
-        <Text style={styles.value}>{owner.apartment}</Text>
+        {/* Footer Decoration */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>HỆ THỐNG QUẢN LÝ BÃI ĐỖ XE</Text>
+        </View>
       </View>
     </View>
   );
@@ -115,7 +141,9 @@ const ParkingScreen = () => {
       <FlatList
         data={data.cards}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ParkingCard item={item} owner={data} />}
+        renderItem={({ item }) => (
+          <ParkingPassDesign item={item} owner={data} />
+        )}
         ListEmptyComponent={
           <Text style={{ textAlign: "center", fontSize: 16, color: "#888" }}>
             Không có thẻ đỗ xe nào được đăng ký.
@@ -135,65 +163,125 @@ export default ParkingScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    overflow: "hidden",
+    width: "100%",
+    maxWidth: 400,
+    alignSelf: "center",
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
   },
   header: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 16,
-    color: "#333",
+    backgroundColor: "#3498db",
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    alignItems: "center",
   },
-  card: {
-    backgroundColor: "#fdfdfd", // nhẹ hơn trắng tinh
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#e0e0e0", // viền nhẹ
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-  },
-
-  title: {
-    display: "flex",
-    alignSelf: "center",
-    fontSize: 20,
+  headerTitle: {
+    color: "white",
+    fontSize: 16,
     fontWeight: "700",
-    marginBottom: 28,
+    letterSpacing: 1,
+  },
+  headerLine: {
+    height: 2,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    width: "40%",
+    marginTop: 8,
+  },
+  content: {
+    padding: 24,
+    gap: 24,
+  },
+  idContainer: {
+    position: "relative",
+  },
+  idLabel: {
+    color: "#7f8c8d",
+    fontSize: 12,
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  idValue: {
     color: "#2c3e50",
+    fontSize: 24,
+    fontWeight: "700",
+    letterSpacing: 2,
+  },
+  idDecoration: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    width: 60,
+    height: 3,
+    backgroundColor: "#3498db",
+    opacity: 0.5,
+  },
+  grid: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  gridItem: {
+    flex: 1,
+  },
+  gridLabel: {
+    color: "#95a5a6",
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  gridValue: {
+    color: "#2c3e50",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "700",
     letterSpacing: 0.5,
   },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
+  ownerSection: {
+    borderTopWidth: 1,
+    borderTopColor: "#ecf0f1",
+    paddingTop: 16,
+    marginTop: 8,
+  },
+  ownerLabel: {
+    color: "#95a5a6",
+    fontSize: 12,
     marginBottom: 8,
   },
-
-  label: {
-    paddingLeft: 10,
-    width: 150,
-    color: "#7f8c8d",
-    fontWeight: "600",
-    fontSize: 15,
+  ownerInfo: {
+    gap: 4,
   },
-
-  value: {
+  ownerName: {
     color: "#2c3e50",
-    fontSize: 15,
-    fontWeight: "500",
-    paddingLeft: 60,
+    fontSize: 16,
+    fontWeight: "600",
   },
-
-  divider: {
-    height: 1,
-    backgroundColor: "#e5e5e5",
-    marginVertical: 12,
-    borderRadius: 1,
+  ownerApartment: {
+    color: "#7f8c8d",
+    fontSize: 14,
+  },
+  footer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#ecf0f1",
+    alignItems: "center",
+  },
+  footerText: {
+    color: "#bdc3c7",
+    fontSize: 10,
+    letterSpacing: 1,
   },
 });

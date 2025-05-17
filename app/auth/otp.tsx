@@ -93,7 +93,11 @@ const VerifyOTPScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Xác nhận OTP</Text>
-      <Text style={styles.subtitle}>Nhập mã OTP đã gửi đến email: {email}</Text>
+      <Text style={styles.subtitle}>
+        Nhập mã OTP đã gửi đến email:
+        {"\n"}
+        <Text style={{ fontWeight: "bold" }}>{email}</Text>
+      </Text>
 
       <View style={styles.otpContainer}>
         {otp.map((digit, index) => (
@@ -130,8 +134,9 @@ const VerifyOTPScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     padding: 20,
+    paddingTop: 100,
     backgroundColor: "#fff",
   },
   title: {
