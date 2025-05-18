@@ -150,10 +150,10 @@ const BookingScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <Text style={styles.header}>📅 Đặt Lịch Dịch Vụ</Text>
+      <Text style={styles.header}>📅 {translation.bookService}</Text>
 
       {/* Chọn Ngày Bắt Đầu */}
-      <Text style={styles.label}>Ngày bắt đầu:</Text>
+      <Text style={styles.label}>{translation.startDate}:</Text>
       <TouchableOpacity
         style={styles.datePicker}
         onPress={() => setShowDatePicker(true)}
@@ -177,7 +177,7 @@ const BookingScreen = () => {
       )}
 
       {/* Chọn Gói Dịch Vụ */}
-      <Text style={styles.label}>Chọn gói:</Text>
+      <Text style={styles.label}>{translation.selectedPackage}:</Text>
       <View style={styles.packageContainer}>
         <TouchableOpacity
           style={[
@@ -186,7 +186,7 @@ const BookingScreen = () => {
           ]}
           onPress={() => setSelectedPackage("month")}
         >
-          <Text style={styles.packageText}>Gói Tháng</Text>
+          <Text style={styles.packageText}>{translation.monthlyPackage}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -195,14 +195,14 @@ const BookingScreen = () => {
           ]}
           onPress={() => setSelectedPackage("year")}
         >
-          <Text style={styles.packageText}>Gói Năm</Text>
+          <Text style={styles.packageText}>{translation.yearlyPackage}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Input số tháng */}
       {selectedPackage === "month" && (
         <>
-          <Text style={styles.label}>Số tháng:</Text>
+          <Text style={styles.label}>{translation.numOfMonths}:</Text>
           <TextInput
             style={styles.input}
             keyboardType="numeric"
@@ -215,11 +215,11 @@ const BookingScreen = () => {
       )}
 
       {/* Hiển thị giá trị tổng */}
-      <Text style={styles.label}>Tổng giá:</Text>
+      <Text style={styles.label}>{translation.totalPrice}:</Text>
       <Text style={styles.totalPrice}>₫ {totalPrice.toLocaleString()}</Text>
 
       {/* Ngày kết thúc */}
-      <Text style={styles.label}>📆 Ngày kết thúc:</Text>
+      <Text style={styles.label}>📆 {translation.endDate}:</Text>
       <Animated.View
         style={[
           styles.endDateContainer,

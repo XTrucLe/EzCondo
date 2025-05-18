@@ -1,8 +1,10 @@
+import { useLanguage } from "@/hooks/useLanguage";
 import messaging from "@react-native-firebase/messaging";
 import * as Notification from "expo-notifications";
 import { Alert } from "react-native";
 
 export const requestUserPermission = async () => {
+  const { translation } = useLanguage();
   const authStatus = await messaging().requestPermission();
   const status = await Notification.requestPermissionsAsync();
   const enabled =
@@ -12,8 +14,6 @@ export const requestUserPermission = async () => {
   if (enabled) {
     console.log("✅ Quyền thông báo đã được cấp");
   } else {
-    Alert.alert(
-      "⚠️ Bạn cần cấp quyền nhận thông báo để sử dụng tính năng này."
-    );
+    Alert.alert(translation.notice, translation.requireNotificationPermission);
   }
 };

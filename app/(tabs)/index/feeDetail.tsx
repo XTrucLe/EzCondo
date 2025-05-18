@@ -15,6 +15,7 @@ import {
   createElectricPayment,
   createWaterPayment,
 } from "@/services/paymentService";
+import useDateUtils from "@/hooks/useDateUtils";
 
 type InfoRowProps = {
   label: string;
@@ -63,6 +64,7 @@ const PaymentButton = ({ onPress }: { onPress: () => void }) => (
 // Main Component
 export default function BillDetailScreen() {
   const route = useRoute();
+  const { formatDate } = useDateUtils();
   const navigation = useNavigation<any>();
   const { startLoading, stopLoading } = useLoading();
   const { item, mode } = route.params as {
@@ -139,7 +141,10 @@ export default function BillDetailScreen() {
         <InfoRow label="Số điện thoại" value={item.phoneNumber} />
         <InfoRow label="Email" value={item.email} />
         <InfoRow label="Số công tơ" value={item.meterNumber} />
-        <InfoRow label="Kỳ thanh toán" value={item.paymentTerm} />
+        <InfoRow
+          label="Kỳ thanh toán"
+          value={formatDate(new Date(item.paymentTerm), "MM/yyyy")}
+        />
         <InfoRow label="Số tiêu thụ" value={item.consumption} />
         {renderSpecificFields()}
         <InfoRow

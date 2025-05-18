@@ -40,54 +40,41 @@ export const ParkingPassDesign: React.FC<ParkingCardProps> = ({
   owner,
 }) => {
   return (
-    <View style={styles.container}>
-      {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>THẺ ĐỖ XE THÔNG MINH</Text>
-        <View style={styles.headerLine} />
-      </View>
-
-      {/* Main Content */}
-      <View style={styles.content}>
-        {/* ID Section with decorative element */}
-        <View style={styles.idContainer}>
-          <Text style={styles.idLabel}>MÃ THẺ</Text>
-          <Text style={styles.idValue}>{item.id.slice(-8).toUpperCase()}</Text>
-          <View style={styles.idDecoration} />
-        </View>
-
-        {/* Vehicle Info in two columns */}
-        <View style={styles.grid}>
-          <View style={styles.gridItem}>
-            <Text style={styles.gridLabel}>LOẠI XE</Text>
-            <Text style={styles.gridValue}>{item.type.toUpperCase()}</Text>
-          </View>
-
-          <View style={styles.gridItem}>
-            <Text style={styles.gridLabel}>GIÁ THẺ</Text>
-            <Text style={styles.gridValue}>
-              {item.price.toLocaleString("vi-VN")}₫
-            </Text>
-          </View>
-        </View>
-
-        {/* Status Badge */}
+    <View style={styles.card}>
+      {/* Header */}
+      <View style={styles.headerRow}>
+        <Text style={styles.cardId}>{item.id.slice(-6).toUpperCase()}</Text>
         <ParkingBadge status={item.status} />
+      </View>
 
-        {/* Owner Info with subtle separation */}
-        <View style={styles.ownerSection}>
-          <Text style={styles.ownerLabel}>CHỦ SỞ HỮU</Text>
-          <View style={styles.ownerInfo}>
-            <Text style={styles.ownerName}>{owner.name}</Text>
-            <Text style={styles.ownerApartment}>{owner.apartment}</Text>
-          </View>
+      {/* Vehicle Info */}
+      <View style={styles.infoRow}>
+        <View style={styles.infoItem}>
+          <Text style={styles.label}>Loại xe</Text>
+          <Text style={styles.value}>{item.type.toUpperCase()}</Text>
         </View>
-
-        {/* Footer Decoration */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>HỆ THỐNG QUẢN LÝ BÃI ĐỖ XE</Text>
+        <View style={styles.infoItem}>
+          <Text style={styles.label}>Giá</Text>
+          <Text style={styles.value}>
+            {item.price.toLocaleString("vi-VN")}₫
+          </Text>
         </View>
       </View>
+
+      {/* Owner */}
+      <View style={styles.ownerRow}>
+        <View>
+          <Text style={styles.label}>Chủ sở hữu</Text>
+          <Text style={styles.ownerName}>{owner.name}</Text>
+        </View>
+        <View style={{ alignItems: "center", marginRight: 8 }}>
+          <Text style={styles.label}>Căn hộ</Text>
+          <Text style={styles.ownerApartment}>{owner.apartment}</Text>
+        </View>
+      </View>
+
+      {/* Footer */}
+      <Text style={styles.footerNote}>THẺ ĐỖ XE THÔNG MINH</Text>
     </View>
   );
 };
@@ -163,17 +150,15 @@ export default ParkingScreen;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
+    flex: 1,
+    backgroundColor: "#f0f0f0",
     borderRadius: 16,
     overflow: "hidden",
     width: "100%",
-    maxWidth: 400,
     alignSelf: "center",
     elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
   },
   header: {
     backgroundColor: "#3498db",
@@ -193,95 +178,75 @@ const styles = StyleSheet.create({
     width: "40%",
     marginTop: 8,
   },
-  content: {
-    padding: 24,
-    gap: 24,
-  },
-  idContainer: {
-    position: "relative",
-  },
-  idLabel: {
-    color: "#7f8c8d",
-    fontSize: 12,
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  idValue: {
-    color: "#2c3e50",
-    fontSize: 24,
-    fontWeight: "700",
-    letterSpacing: 2,
-  },
-  idDecoration: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    width: 60,
-    height: 3,
-    backgroundColor: "#3498db",
-    opacity: 0.5,
-  },
-  grid: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  gridItem: {
-    flex: 1,
-  },
-  gridLabel: {
-    color: "#95a5a6",
-    fontSize: 12,
-    marginBottom: 4,
-  },
-  gridValue: {
-    color: "#2c3e50",
-    fontSize: 16,
-    fontWeight: "600",
-  },
   badge: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
     alignSelf: "flex-start",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
   },
   badgeText: {
     fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 0.5,
+    fontWeight: "bold",
   },
-  ownerSection: {
-    borderTopWidth: 1,
-    borderTopColor: "#ecf0f1",
-    paddingTop: 16,
-    marginTop: 8,
+  card: {
+    backgroundColor: "#f9f9f9",
+    borderRadius: 16,
+    padding: 16,
+    marginVertical: 8,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
-  ownerLabel: {
-    color: "#95a5a6",
-    fontSize: 12,
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
-  ownerInfo: {
-    gap: 4,
+  cardId: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#3c3c3c",
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  infoItem: {
+    flex: 1,
+  },
+  label: {
+    fontSize: 12,
+    color: "#999",
+    marginBottom: 2,
+  },
+  value: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+  },
+  ownerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    marginBottom: 10,
   },
   ownerName: {
-    color: "#2c3e50",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#222",
   },
   ownerApartment: {
-    color: "#7f8c8d",
-    fontSize: 14,
+    fontSize: 13,
+    color: "#666",
   },
-  footer: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#ecf0f1",
-    alignItems: "center",
-  },
-  footerText: {
-    color: "#bdc3c7",
-    fontSize: 10,
-    letterSpacing: 1,
+  footerNote: {
+    textAlign: "center",
+    fontSize: 12,
+    color: "#aaa",
+    marginTop: 4,
   },
 });

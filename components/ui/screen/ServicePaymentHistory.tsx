@@ -160,6 +160,8 @@ const getStatusConfig = (status: string) => {
   switch (status) {
     case "completed":
       return { label: "Completed", bgColor: styles.statusCompleted };
+    case "in_use":
+      return { label: "In Use", bgColor: styles.statusInUse };
     case "pending":
       return { label: "Pending", bgColor: styles.statusPending };
     case "cancelled":
@@ -197,7 +199,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   serviceName: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "600",
     color: "#111827",
     flex: 1,
@@ -214,6 +216,9 @@ const styles = StyleSheet.create({
   },
   statusCompleted: {
     backgroundColor: "#ecfdf5",
+  },
+  statusInUse: {
+    backgroundColor: "#e0f2fe",
   },
   statusPending: {
     backgroundColor: "#fffbeb",

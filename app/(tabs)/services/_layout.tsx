@@ -1,5 +1,3 @@
-import HeaderLeftIcon from "@/components/ui/HeaderLeftIcon";
-import HeaderRightIcon from "@/components/ui/HeaderRightIcon";
 import { Stack } from "expo-router";
 
 export default function ServiceLayout() {
@@ -8,14 +6,8 @@ export default function ServiceLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTitle: "Dịch vụ và tiện ích",
-          headerRight: () => (
-            <HeaderRightIcon
-              iconName="apps-sharp"
-              navigationScreen="listServices"
-            />
-          ),
         }}
       />
       <Stack.Screen name="listServices" options={{ headerShown: true }} />

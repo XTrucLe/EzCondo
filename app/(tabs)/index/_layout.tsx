@@ -1,18 +1,23 @@
 import HeaderRightIcon from "@/components/ui/HeaderRightIcon";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Stack } from "expo-router";
 import { Text } from "react-native";
 
 export default function HomeLayout() {
+  const { translation } = useLanguage();
   return (
     <Stack initialRouteName="index" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
-      <Stack.Screen name="members" options={{ headerShown: true }} />
+      <Stack.Screen
+        name="members"
+        options={{ headerShown: true, headerTitle: "Thành viên" }}
+      />
       <Stack.Screen name="add_member" options={{ headerShown: true }} />
       <Stack.Screen
         name="incident"
         options={{
           headerShown: true,
-          headerTitle: "Báo cáo sự cố",
+          headerTitle: translation.incident,
         }}
       />
       <Stack.Screen
@@ -28,12 +33,12 @@ export default function HomeLayout() {
               />
             );
           },
-          headerTitle: "Danh sách thẻ đỗ xe",
+          headerTitle: translation.parkingCardList,
         }}
       />
       <Stack.Screen
         name="parking.regis"
-        options={{ headerShown: true, headerTitle: "Đăng ký thẻ xe" }}
+        options={{ headerShown: true, headerTitle: translation.parkingRegis }}
       />
 
       <Stack.Screen
@@ -51,12 +56,19 @@ export default function HomeLayout() {
       />
       <Stack.Screen
         name="apartmentMember"
-        options={{ headerShown: true, headerTitle: "" }}
+        options={{
+          headerShown: true,
+          headerTitle: translation.apartmentMember,
+        }}
       />
 
       <Stack.Screen
         name="chatbot"
-        options={{ headerShown: true, headerTitle: "" }}
+        options={{
+          headerShown: true,
+          headerTitle: translation.chatbotTitle,
+          headerTitleAlign: "center",
+        }}
       />
       <Stack.Screen
         name="chatbotHome"
@@ -66,14 +78,14 @@ export default function HomeLayout() {
         name="seviceFees"
         options={{
           headerShown: true,
-          headerTitle: "Chi phí dịch vụ",
+          headerTitle: translation.serviceFees,
         }}
       />
       <Stack.Screen
         name="feeDetail"
         options={{
           headerShown: true,
-          headerTitle: "Chi tiết chi phí",
+          headerTitle: translation.serviceDetail,
         }}
       />
       <Stack.Screen

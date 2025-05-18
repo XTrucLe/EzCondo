@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import {
-  View,
   Text,
   TextInput,
   Image,
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  ScrollView,
+  Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { Button } from "react-native-paper";
+import { Button, Card, Title } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import PickerCustome from "@/components/ui/custome/PickerCustome";
@@ -50,6 +51,8 @@ const ReportIssueScreen = () => {
         name: asset.fileName || `photo_${Date.now()}.jpg`,
         type: "image/jpeg",
       };
+      console.log("newImage", newImage);
+
       setMediaList((prev) => [...prev, newImage].slice(0, MAX_MEDIA));
     }
   };
@@ -59,9 +62,12 @@ const ReportIssueScreen = () => {
   };
 
   const handleSubmit = async () => {
-    console.log(form);
-    if (!form.title || !form.description) {
-      alert("Vui lòng nhập tiêu đề và mô tả sự cố.");
+    if (!form.title) {
+      Alert.alert(translation.error, translation.inputTitle);
+      return;
+    }
+    if (!form.description) {
+      Alert.alert(translation.error, translation.inputDescription);
       return;
     }
     startLoading();
@@ -74,29 +80,35 @@ const ReportIssueScreen = () => {
           formData.append("Images", media as any);
         });
 
-        const response = await sendIncidentImage(formData);
-        console.log(response);
-
+        await sendIncidentImage(formData);
         navigation.goBack();
-        alert("Báo cáo đã được gửi!");
+        Alert.alert(translation.success, translation.successReport);
       }
     } catch (error) {
       console.error("Error sending incident:", error);
-      alert("Đã xảy ra lỗi khi gửi báo cáo. Vui lòng thử lại.");
+      Alert.alert(translation.error, translation.failReport);
     } finally {
       stopLoading();
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Tiêu đề:</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Title style={styles.screenTitle}>🛠 {translation.sendIncident}</Title>
+
+      <Text style={styles.label}>{translation.incidentTitle}</Text>
       <TextInput
         value={form.title}
         onChangeText={(text) => setForm({ ...form, title: text })}
         style={styles.input}
+        inputMode="text"
+        autoCapitalize="none"
+        maxLength={100}
+        autoCorrect={false}
+        placeholder={translation.inputTitle}
       />
-      <Text style={styles.label}>Loại sự cố:</Text>
+
+      <Text style={styles.label}>{translation.incidentType}</Text>
       <PickerCustome
         options={[...IncidentTypes]}
         onValueChange={(val) => setForm({ ...form, type: val })}
@@ -104,40 +116,45 @@ const ReportIssueScreen = () => {
         translation={translation}
       />
 
-      <Text style={styles.label}>Mô tả sự cố:</Text>
+      <Text style={styles.label}>{translation.descriptionDetail}</Text>
       <TextInput
         value={form.description}
         onChangeText={(text) => setForm({ ...form, description: text })}
-        style={styles.input}
+        inputMode="text"
+        autoCapitalize="none"
+        maxLength={500}
+        autoCorrect={false}
+        style={[styles.input, { minHeight: 80 }]}
         multiline
+        placeholder={translation.inputDescription}
       />
 
-      <Text style={styles.label}>Hình ảnh/ Video sự việc:</Text>
+      <Text style={styles.label}>{translation.incidentImage}</Text>
       <FlatList
         data={[...mediaList, null].slice(0, MAX_MEDIA)}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(_, index) => index.toString()}
         numColumns={NUM_COLUMNS}
-        key={NUM_COLUMNS}
-        renderItem={({ item }) =>
+        renderItem={({ item, index }) =>
           item ? (
-            <View style={styles.mediaPreview}>
-              <Text
-                style={styles.mediaRemove}
-                onPress={() => removeMedia(mediaList.indexOf(item))}
+            <Card style={styles.mediaCard}>
+              <TouchableOpacity
+                style={styles.removeBtn}
+                onPress={() => removeMedia(index)}
               >
-                X
-              </Text>
-
-              <Image
-                source={{ uri: item.uri }}
-                style={{ width: "100%", height: "100%", borderRadius: 5 }}
-              />
-            </View>
+                <AntDesign name="closecircle" size={20} color="#f00" />
+              </TouchableOpacity>
+              <Image source={{ uri: item.uri }} style={styles.mediaImage} />
+            </Card>
           ) : (
-            <TouchableOpacity style={styles.mediaPicker} onPress={pickMedia}>
-              <AntDesign name="plus" size={40} color="#ccc" />
+            <TouchableOpacity style={styles.mediaCard} onPress={pickMedia}>
+              <AntDesign name="plus" size={30} color="#ccc" />
             </TouchableOpacity>
           )
+        }
+        ListEmptyComponent={
+          <TouchableOpacity style={styles.mediaCard} onPress={pickMedia}>
+            <AntDesign name="plus" size={30} color="#ccc" />
+          </TouchableOpacity>
         }
       />
 
@@ -145,10 +162,12 @@ const ReportIssueScreen = () => {
         mode="contained"
         onPress={handleSubmit}
         style={styles.submitButton}
+        contentStyle={{ paddingVertical: 8 }}
+        icon="send"
       >
-        Gửi báo cáo
+        {translation.sendIncident}
       </Button>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -156,60 +175,62 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
+  },
+  screenTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#444",
   },
   label: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontWeight: "600",
     marginBottom: 5,
+    color: "#555",
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-    backgroundColor: "#fff",
+    borderRadius: 8,
+    backgroundColor: "#fafafa",
+    marginBottom: 15,
   },
-  mediaPicker: {
-    width: 105,
-    height: 105,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
+  mediaCard: {
+    position: "relative",
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    margin: 5,
     justifyContent: "center",
     alignItems: "center",
-    margin: 5,
-    marginVertical: 10,
-    backgroundColor: "#fff",
+    elevation: 2,
+    overflow: "hidden",
   },
-  mediaPreview: {
-    width: 105,
-    height: 105,
-    borderRadius: 5,
-    margin: 5,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
+  mediaImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
   },
-  mediaRemove: {
+  removeBtn: {
     position: "absolute",
-    lineHeight: 20,
-    top: 5,
-    right: 5,
-    fontSize: 10,
-    fontWeight: "bold",
+    top: 2,
+    right: 2,
+    width: 22,
+    height: 22,
+    borderRadius: 18,
     backgroundColor: "#fff",
-    color: "#000",
-    textAlign: "center",
-    textAlignVertical: "center",
-    borderRadius: 10,
-    width: 20,
-    height: 20,
-    zIndex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    zIndex: 10,
+    borderWidth: 2,
   },
   submitButton: {
     marginTop: 20,
+    borderRadius: 8,
   },
 });
 

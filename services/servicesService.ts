@@ -50,4 +50,16 @@ export const getUserBookingStatus = async (serviceId: string) => {
   }
 };
 
+export const getAllOtherService = async () => {
+  try {
+    const response = await request({
+      method: "get",
+      url: `${endpoints.otherService.getAllService}`,
+    });
+    console.log(response.data);
 
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

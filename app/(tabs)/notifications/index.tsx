@@ -13,6 +13,7 @@ import { getNotification } from "@/services/notificationService";
 import { NotificationBoxType } from "@/utils/type/notificationBoxType";
 import CustomTabBar from "@/components/ui/custome/CustomTabBar";
 import { useNavigation } from "expo-router";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type TabScreenProps = {
   data: NotificationBoxType[];
@@ -63,6 +64,7 @@ const TabViewScreen = ({
 
 const NotificationTabs = () => {
   const layout = useWindowDimensions();
+  const { translation } = useLanguage();
   const [index, setIndex] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<NotificationBoxType[]>([]);
@@ -73,9 +75,9 @@ const NotificationTabs = () => {
 
   const routes = useMemo(
     () => [
-      { key: "notifications", title: "Thông báo" },
-      { key: "fees", title: "Phí" },
-      { key: "news", title: "Tin tức" },
+      { key: "notifications", title: translation.notification },
+      { key: "fees", title: translation.fees },
+      { key: "news", title: translation.news },
     ],
     []
   );

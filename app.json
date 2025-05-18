@@ -4,7 +4,7 @@
     "slug": "EzCondo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/EzCondoIcon.png",
+    "icon": "./assets/images/.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "androidStatusBar": {
@@ -24,7 +24,7 @@
     "android": {
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/EzCondoIcon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.trucle0505.EzCondo",
@@ -37,9 +37,16 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store",
-      "@react-native-firebase/app",
-      "@react-native-firebase/messaging",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/EzCondoIcon.png",
+          "imageWidth": 300,
+          "enableFullScreenImage_legacy": true,
+          "resizeMode": "cover",
+          "backgroundColor": "#ffffff"
+        }
+      ],
       "expo-secure-store",
       "expo-image-picker",
       "expo-notifications"

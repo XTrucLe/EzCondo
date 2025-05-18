@@ -14,6 +14,7 @@ const FeeCard = ({ item, mode }: Props) => {
   const navigation = useNavigation<any>();
   const { translation } = useLanguage.getState();
   const paid = item.status === "paid";
+  console.log(mode);
 
   const iconName = mode === "water" ? "water" : "flash";
   const typeLabel =
@@ -38,7 +39,7 @@ const FeeCard = ({ item, mode }: Props) => {
       <View style={styles.header}>
         <View style={styles.titleWrap}>
           <View style={styles.iconWrap}>
-            {/* <Ionicons name={iconName} size={18} color="#ffffff" /> */}
+            <Ionicons name={iconName} size={18} color="#ffffff" />
           </View>
           <Text style={styles.title}>{typeLabel}</Text>
         </View>

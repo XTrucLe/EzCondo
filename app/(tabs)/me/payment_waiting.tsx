@@ -19,6 +19,7 @@ import {
   paymentService,
 } from "@/services/paymentService";
 import ModalCustome from "@/components/ui/custome/ModalCustome";
+import { getAllOtherService } from "@/services/servicesService";
 
 const apiMap: { [key: string]: (id: string) => void } = {
   booking: paymentService.createPayment,
@@ -40,14 +41,13 @@ const PendingPaymentsScreen = () => {
   const [data, setData] = useState<PaymentWaitingType[]>([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [visible, setVisible] = useState(false);
-  const [modalData, setModalData] = useState();
 
   const navigation = useNavigation<any>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        await getAllOtherService();
         const response = await getPaymentNeed();
         console.log("PendingPaymentsScreen -> response", response);
 

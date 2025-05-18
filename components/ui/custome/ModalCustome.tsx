@@ -1,15 +1,14 @@
 import { useLanguage } from "@/hooks/useLanguage";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Modal,
-  ScrollView,
   Image,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
-import { Button } from "react-native-paper";
 import { formatVND } from "./../../../hooks/useFormat";
 
 type ModalCustomeProps = {
@@ -29,44 +28,50 @@ const ModalCustome = ({
 }: ModalCustomeProps) => {
   const { translation } = useLanguage();
 
-  const renderValue = (key: string, value: any) => {
+  const closeModal = () => setVisible(false);
+
+  const statusMap: Record<string, { label: string; style: any }> = {
+    success: { label: "Thành công", style: styles.statusSuccess },
+    failed: { label: "Thất bại", style: styles.statusFailed },
+  };
+
+  const renderValue = useCallback((key: string, value: any) => {
     const keyLower = key.toLowerCase();
     const isMoneyKey = ["amount", "price", "total"].some((k) =>
       keyLower.includes(k)
     );
 
     if (keyLower === "status") {
-      let statusStyle = styles.statusDefault;
-      let statusText = value;
-
-      if (value === "success") {
-        statusStyle = styles.statusSuccess;
-        statusText = "Thành công";
-      } else if (value === "failed") {
-        statusStyle = styles.statusFailed;
-        statusText = "Thất bại";
-      }
-
+      const status = statusMap[value] || {
+        label: value || "N/A",
+        style: styles.statusDefault,
+      };
       return (
-        <View style={[styles.statusBadge, statusStyle]}>
-          <Text style={styles.statusText}>{statusText}</Text>
+        <View style={[styles.statusBadge, status.style]}>
+          <Text style={styles.statusText}>{status.label}</Text>
         </View>
       );
     }
 
     return (
       <Text style={[styles.value, isMoneyKey && styles.money]}>
-        {isMoneyKey ? formatVND(value) : value || "N/A"}
+        {isMoneyKey ? formatVND(value) : value ?? "N/A"}
       </Text>
     );
-  };
+  }, []);
+
+  const dataEntries = data
+    ? Object.entries(data).filter(
+        ([key]) => !["avatar", "id", "regency"].includes(key)
+      )
+    : [];
 
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={visible}
-      onRequestClose={() => setVisible(false)}
+      onRequestClose={closeModal}
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
@@ -76,37 +81,43 @@ const ModalCustome = ({
             <Image source={{ uri: data.avatar }} style={styles.avatar} />
           )}
 
-          <ScrollView style={styles.modalBody}>
-            {data ? (
-              Object.entries(data)
-                .filter(([key]) => !["avatar", "id", "regency"].includes(key))
-                .map(([key, value]) => (
-                  <View key={key} style={styles.row}>
-                    <Text style={styles.label}>{translation[key] || key}:</Text>
-                    {renderValue(key, value)}
-                  </View>
-                ))
-            ) : (
-              <Text>{translation.nodata}</Text>
-            )}
-          </ScrollView>
-          <View style={styles.footerButtons}>
+          {dataEntries.length === 0 ? (
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              {translation.nodata || "Không có dữ liệu"}
+            </Text>
+          ) : (
+            <FlatList
+              style={styles.modalBody}
+              data={dataEntries}
+              keyExtractor={([key]) => key}
+              renderItem={({ item: [key, value] }) => (
+                <View style={styles.row} key={key}>
+                  <Text style={styles.label}>{translation[key] || key}:</Text>
+                  {renderValue(key, value)}
+                </View>
+              )}
+            />
+          )}
+
+          <View
+            style={[
+              styles.footerButtons,
+              { justifyContent: okClose ? "space-between" : "center" },
+            ]}
+          >
             {okClose && (
               <TouchableOpacity
                 style={[styles.closeButton, styles.confirmButton]}
                 onPress={() => {
                   okEvent && okEvent();
-                  setVisible(false);
+                  closeModal();
                 }}
               >
                 <Text style={styles.closeButtonText}>Xác nhận</Text>
               </TouchableOpacity>
             )}
 
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setVisible(false)}
-            >
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
               <Text style={styles.closeButtonText}>Đóng</Text>
             </TouchableOpacity>
           </View>
@@ -121,7 +132,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)", // Nền tối khi mở Modal
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
     width: "100%",
@@ -130,7 +141,7 @@ const styles = StyleSheet.create({
     padding: 25,
     borderRadius: 12,
     alignItems: "center",
-    elevation: 5, // Đổ bóng
+    elevation: 5,
   },
   modalTitle: {
     fontSize: 24,
@@ -144,7 +155,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalBody: {
-    maxHeight: 250, // Hỗ trợ cuộn nếu dữ liệu dài
+    maxHeight: 250,
     width: "100%",
     marginTop: 10,
   },
@@ -162,7 +173,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   value: {
-    flexShrink: 1, // Tránh tràn màn hình
+    flexShrink: 1,
     color: "#555",
     fontSize: 16,
   },
@@ -172,30 +183,24 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignSelf: "flex-end",
   },
-
   statusText: {
     fontSize: 13,
     fontWeight: "bold",
     color: "#fff",
   },
-
   statusSuccess: {
     backgroundColor: "#4CAF50",
   },
-
   statusFailed: {
     backgroundColor: "#F44336",
   },
-
   statusDefault: {
     backgroundColor: "#9E9E9E",
   },
-
   money: {
     color: "#007aff",
     fontWeight: "bold",
   },
-
   closeButton: {
     marginTop: 15,
     backgroundColor: "#007aff",
@@ -205,13 +210,11 @@ const styles = StyleSheet.create({
   },
   footerButtons: {
     flexDirection: "row-reverse",
-    justifyContent: "space-between",
     paddingHorizontal: 15,
     gap: 10,
     marginTop: 15,
     width: "100%",
   },
-
   closeButtonText: {
     color: "#fff",
     fontSize: 16,

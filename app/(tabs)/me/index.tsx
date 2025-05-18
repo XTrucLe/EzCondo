@@ -203,7 +203,7 @@ const ProfileScreen = () => {
                   {userInfo?.fullName}
                 </Text>
                 <Text style={{ color: theme.text }}>
-                  Căn hộ: {userInfo?.apartmentNumber}
+                  {translation.apartment}: {userInfo?.apartmentNumber}
                 </Text>
               </View>
               <List.Icon

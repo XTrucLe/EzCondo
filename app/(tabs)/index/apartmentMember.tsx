@@ -17,14 +17,17 @@ interface UserCardProps {
   user: Member;
   isHouseholder?: boolean;
   onPress: () => void;
+  translation?: any;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => (
+const UserCard: React.FC<UserCardProps> = ({ user, onPress, translation }) => (
   <TouchableOpacity style={styles.card} onPress={onPress}>
     <Image source={userDefaultImage} style={styles.avatar} />
     <View style={styles.info}>
       <Text style={styles.name}>{user.fullName}</Text>
-      <Text style={styles.dob}>🎂 Ngày sinh: {user.dateOfBirth}</Text>
+      <Text style={styles.dob}>
+        🎂 {translation.dateOfBirth}: {user.dateOfBirth}
+      </Text>
     </View>
   </TouchableOpacity>
 );
@@ -94,6 +97,7 @@ export default function ApartmentMember() {
             setSelectedUser(member);
             setVisible(true);
           }}
+          translation={translation}
         />
       ))}
 

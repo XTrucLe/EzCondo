@@ -80,7 +80,7 @@ const VehicleCardForm = () => {
       const response = await regisParking(noMoto, noCar);
 
       if (response)
-        Alert.alert("Thông báo", "Đăng ký thẻ xe thành công!", [
+        Alert.alert(translation.notice, translation.sucessRegis, [
           {
             text: "OK",
             onPress: () => {
@@ -93,7 +93,7 @@ const VehicleCardForm = () => {
         ]);
     } catch (error) {
       console.error("Error submitting form data:", error);
-      Alert.alert("Thông báo", "Đăng ký thẻ xe thất bại!", [
+      Alert.alert(translation.notice, translation.faildRegis, [
         {
           text: "OK",
           onPress: () => {

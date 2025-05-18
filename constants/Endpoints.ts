@@ -54,7 +54,9 @@ export const endpoints = {
   water: {
     getWaterFee: `${API_BASE}/Water/Get-My-Water-Detail`,
   },
-  otherService: {},
+  otherService: {
+    getAllService: `${API_BASE}/OtherService/get-all-other-service`,
+  },
   service: {
     getServices: `${API_BASE}/Services/get-services`,
     getServiceDetail: `${API_BASE}/Services/get-all-services`,

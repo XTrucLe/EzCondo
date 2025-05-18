@@ -53,7 +53,7 @@ const UTILITIES_LIST: UtilityItemProps[] = [
     id: "2",
     name: "Điện",
     icon: <Ionicons name="flash" size={ICON_SIZE} color="white" />,
-    navigatePage: "serviceFees",
+    navigatePage: "seviceFees",
     color: "#FECA57", // Bright yellow
   },
   {

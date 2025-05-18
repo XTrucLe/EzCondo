@@ -13,6 +13,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { Text, TextInput, Button, Checkbox } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -113,7 +114,12 @@ const LoginScreen = () => {
       stopLoading();
     } catch (error) {
       console.error(error);
-      alert((error as any).message);
+      Alert.alert(
+        translation.error,
+        translation.checkInfo,
+        [{ text: translation.ok, onPress: () => {} }],
+        { cancelable: false }
+      );
       stopLoading();
     }
   };

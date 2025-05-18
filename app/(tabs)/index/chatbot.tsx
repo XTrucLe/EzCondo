@@ -8,7 +8,11 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Message {
   id: string;
@@ -78,12 +82,16 @@ const ChatbotScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <FlatList
         data={messages}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={styles.chatContainer}
+        inverted
       />
       {isLoading && <TypingIndicator />}
       <View style={styles.inputContainer}>
@@ -92,18 +100,26 @@ const ChatbotScreen = () => {
           value={input}
           onChangeText={setInput}
           placeholder="Nhập tin nhắn..."
+          placeholderTextColor="#999"
         />
         <TouchableOpacity
           style={styles.sendButton}
           onPress={handleSend}
           disabled={isLoading}
         >
-          <Text style={{ color: "#fff", fontWeight: "bold" }}>
-            {isLoading ? "Đang gửi..." : "Gửi"}
-          </Text>
+          <Ionicons
+            name="send-sharp"
+            size={20}
+            color="#fff"
+            style={{
+              transform: [{ rotate: "-45deg" }],
+              marginLeft: 4,
+              marginBottom: 2,
+            }}
+          />
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -114,23 +130,14 @@ const TypingIndicator = () => {
     const interval = setInterval(() => {
       setDots((prev) => (prev.length < 3 ? prev + "." : ""));
     }, 500);
-
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <Text
-      style={{
-        fontStyle: "italic",
-        color: "gray",
-        marginLeft: 8,
-        marginBottom: 10,
-        padding: 10,
-        borderRadius: 8,
-      }}
-    >
-      🤖 Đang nhập{dots}
-    </Text>
+    <View style={styles.typingContainer}>
+      <ActivityIndicator size="small" color="#999" />
+      <Text style={styles.typingText}>🤖 Đang nhập{dots}</Text>
+    </View>
   );
 };
 
@@ -139,42 +146,71 @@ export default ChatbotScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "#fafafa",
+  },
+  chatContainer: {
+    padding: 16,
+    flexDirection: "column-reverse",
   },
   message: {
-    maxWidth: "75%",
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
+    maxWidth: "80%",
+    padding: 12,
+    borderRadius: 16,
+    marginBottom: 12,
   },
   userMsg: {
     alignSelf: "flex-end",
     backgroundColor: "#1e88e5",
+    borderBottomRightRadius: 4,
   },
   botMsg: {
     alignSelf: "flex-start",
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#eeeeee",
+    borderBottomLeftRadius: 4,
   },
   msgText: {
     color: "#000",
+    fontSize: 16,
   },
   inputContainer: {
     flexDirection: "row",
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: "#ccc",
+    padding: 12,
+    paddingBottom: 20,
     backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#e0e0e0",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: -2 },
   },
   input: {
     flex: 1,
-    padding: 10,
-    backgroundColor: "#f6f6f6",
-    borderRadius: 8,
+    backgroundColor: "#f2f2f2",
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    fontSize: 16,
     marginRight: 8,
   },
   sendButton: {
     backgroundColor: "#1e88e5",
-    padding: 10,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  typingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  typingText: {
+    color: "#666",
+    fontStyle: "italic",
+    marginLeft: 8,
   },
 });
