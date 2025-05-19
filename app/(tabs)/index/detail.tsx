@@ -9,6 +9,7 @@ import { useNavigation } from "expo-router";
 import { getServiceDetail, getServiceImages } from "@/services/servicesService";
 import { checkHadBooking } from "@/services/bookingService";
 import { useLoading } from "@/hooks/useLoading";
+import { formatVND } from "@/hooks/useFormat";
 
 const ServicesDetailScreen = () => {
   const { name } = useRoute().params as { name: string };
@@ -90,20 +91,20 @@ const ServicesDetailScreen = () => {
         <Text style={styles.sectionTitle}>💰 {translation.price}</Text>
         <View style={styles.priceTable}>
           {serviceDetails?.typeOfMonth && (
-            <Text style={styles.priceRow}>
-              {translation.month}:{" "}
-              <Text style={styles.price}>
-                {serviceDetails?.priceOfMonth} VND
+            <View style={styles.priceRow}>
+              <Text style={styles.priceLabel}>{translation.month}</Text>
+              <Text style={styles.priceValue}>
+                {formatVND(serviceDetails?.priceOfMonth)}
               </Text>
-            </Text>
+            </View>
           )}
           {serviceDetails?.typeOfYear && (
-            <Text style={styles.priceRow}>
-              {translation.year}:{" "}
-              <Text style={styles.price}>
-                {serviceDetails?.priceOfYear} VND
+            <View style={styles.priceRow}>
+              <Text style={styles.priceLabel}>{translation.year}</Text>
+              <Text style={styles.priceValue}>
+                {formatVND(serviceDetails?.priceOfYear)}
               </Text>
-            </Text>
+            </View>
           )}
         </View>
 
@@ -195,12 +196,21 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   priceRow: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingBottom: 6,
   },
-  price: {
+  priceLabel: {
     fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+  },
+  priceValue: {
+    fontSize: 18,
     fontWeight: "bold",
     color: "#007AFF",
   },

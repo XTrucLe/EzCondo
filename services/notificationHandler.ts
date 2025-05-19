@@ -11,17 +11,28 @@ Notifications.setNotificationHandler({
 });
 
 // ✅ Hàm xử lý hiển thị thông báo (Foreground & Background)
-const handleNotificationListener = async (title?: string, message?: string) => {
+const handleNotificationListener = async (
+  title?: string,
+  message?: string,
+  image?: string
+) => {
   try {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: title || "📩 Thông báo từ EzCondo",
-        body: message || "Chào mừng bạn đến với Ứng dụng!",
-        launchImageName: "default",
+    const content: Notifications.NotificationContentInput = {
+      title: title || "📩 Thông báo từ EzCondo",
+
+      body: message || "Chào mừng bạn đến với Ứng dụng!",
+      data: {
+        image: image || "",
       },
+      sound: "default",
+      priority: Notifications.AndroidNotificationPriority.HIGH,
+    };
+
+    await Notifications.scheduleNotificationAsync({
+      content,
       trigger: null, // Hiển thị ngay lập tức
     });
-    console.log("📬 Đã hiển thị thông báo:", title, message);
+    console.log("📬 Đã hiển thị thông báo:", title, message, image);
   } catch (error) {
     console.error("❌ Lỗi khi hiển thị thông báo:", error);
   }
@@ -34,7 +45,8 @@ export const listenForForegroundMessages = () => {
     if (remoteMessage.notification) {
       handleNotificationListener(
         remoteMessage.notification.title,
-        remoteMessage.notification.body
+        remoteMessage.notification.body,
+        remoteMessage.notification.image
       );
     }
   });

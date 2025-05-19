@@ -117,8 +117,9 @@ const CustomTabBar: React.FC<CustomTabBarProps> = React.memo(
 
 const styles = StyleSheet.create({
   tabContainer: {
+    position: "relative",
     flexDirection: "row",
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
     borderRadius: 10,
     borderWidth: 1,

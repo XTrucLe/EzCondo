@@ -1,62 +1,93 @@
+import { formatVND } from "@/hooks/useFormat";
+import { useLanguage } from "@/hooks/useLanguage";
+import { ServiceDetailType } from "@/utils/type/serviceDetailType";
 import { useNavigation } from "expo-router";
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
-export type Service = {
-  id: string;
-  serviceName: string;
-  description: string;
-  priceOfMonth: number;
-  priceOfYear: number;
-  typeOfMonth: boolean;
-  typeOfYear: boolean;
-  status: "active" | "inactive";
-};
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 type Props = {
-  service: Service;
+  service: ServiceDetailType;
 };
 
 const ServiceCard = ({ service }: Props) => {
   const navigation = useNavigation<any>();
+  const { translation } = useLanguage();
 
   const handleRegister = () => {
     navigation.navigate("subscription", { service });
   };
 
+  const firstImage = service.images?.[0]?.imgPath;
+
   return (
     <View style={styles.card}>
+      {firstImage && (
+        <Image
+          source={{ uri: firstImage }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      )}
+
       <Text style={styles.title}>{service.serviceName}</Text>
 
-      <Text style={styles.label}>Mô tả:</Text>
-      <Text style={styles.text}>{service.description}</Text>
-
-      <Text style={styles.label}>Tình trạng:</Text>
-      <Text
-        style={[
-          styles.status,
-          service.status === "active" ? styles.active : styles.inactive,
-        ]}
-      >
-        {service.status === "active" ? "Hoạt động" : "Ngưng hoạt động"}
+      <Text style={styles.label}>{translation.serviceDescription}</Text>
+      <Text style={styles.text} numberOfLines={3} ellipsizeMode="tail">
+        {service.description}
       </Text>
+
+      <View style={styles.statusContainer}>
+        <Text style={styles.label}>{translation.status}</Text>
+        <View style={styles.statusRow}>
+          <Icon
+            name={
+              service.status === "active"
+                ? "checkbox-marked-circle"
+                : "close-circle"
+            }
+            size={18}
+            color={service.status === "active" ? "#28a745" : "#dc3545"}
+            style={{ marginRight: 6 }}
+          />
+          <Text
+            style={[
+              styles.statusText,
+              service.status === "active" ? styles.active : styles.inactive,
+            ]}
+          >
+            {service.status === "active"
+              ? translation.statusActive
+              : translation.statusInactive}
+          </Text>
+        </View>
+      </View>
 
       <View style={styles.priceRow}>
         {service.typeOfMonth && (
-          <Text style={styles.price}>Tháng: {service.priceOfMonth}đ</Text>
+          <Text style={styles.price}>
+            {translation.month}: {formatVND(service.priceOfMonth)}
+          </Text>
         )}
         {service.typeOfYear && (
-          <Text style={styles.price}>Năm: {service.priceOfYear}đ</Text>
+          <Text style={styles.price}>
+            {translation.year}: {formatVND(service.priceOfYear)}
+          </Text>
         )}
       </View>
 
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          service.status !== "active" && styles.buttonDisabled,
+        ]}
         onPress={handleRegister}
         disabled={service.status !== "active"}
       >
         <Text style={styles.buttonText}>
-          {service.status === "active" ? "Đăng ký" : "Không khả dụng"}
+          {service.status === "active"
+            ? translation.regis
+            : translation.notAvailable}
         </Text>
       </TouchableOpacity>
     </View>
@@ -66,68 +97,73 @@ const ServiceCard = ({ service }: Props) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    borderRadius: 12,
+    margin: 10,
+    padding: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  image: {
+    width: "100%",
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 10,
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 12,
+    marginBottom: 4,
+  },
+  text: {
+    fontSize: 14,
     color: "#333",
+  },
+  statusContainer: {
+    marginTop: 12,
+  },
+  statusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    marginTop: 8,
     color: "#555",
   },
-  text: {
+  statusText: {
+    fontWeight: "700",
     fontSize: 14,
-    color: "#444",
-    marginTop: 2,
-  },
-  status: {
-    marginTop: 4,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 6,
-    fontSize: 13,
-    fontWeight: "600",
-    alignSelf: "flex-start",
   },
   active: {
-    backgroundColor: "#e6f4ea",
-    color: "#1e7d32",
+    color: "#28a745", // xanh lá (green)
   },
   inactive: {
-    backgroundColor: "#fdecea",
-    color: "#c62828",
+    color: "#dc3545", // đỏ (red)
   },
+
   priceRow: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-    marginTop: 12,
+    marginTop: 8,
   },
   price: {
     fontSize: 14,
-    fontWeight: "600",
     color: "#333",
   },
   button: {
-    backgroundColor: "#007BFF",
+    marginTop: 12,
+    backgroundColor: "#007bff",
     paddingVertical: 10,
     borderRadius: 8,
-    marginTop: 16,
     alignItems: "center",
-    opacity: 1,
+  },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
   },
   buttonText: {
     color: "#fff",
     fontWeight: "600",
-    fontSize: 14,
   },
 });
 

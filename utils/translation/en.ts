@@ -44,6 +44,8 @@ export default {
   home: "Home",
   services: "Services",
   notification: "Notification",
+  fees: "Fees",
+  news: "News",
   profile: "Profile",
   setting: "Setting",
   goback: "Go Back",
@@ -95,6 +97,7 @@ export default {
   statusWaiting: "Waiting",
   statusProcessing: "Processing",
   statusSuccess: "Success",
+  notAvailable: "Not Available",
 
   // Apartment/Housing
   apartment: "Apartment",
@@ -215,9 +218,11 @@ export default {
   failRegis: "Register failed",
   successReport: "Report successfully",
   failReport: "Report failed",
+  reportSuccess: "Report success",
   successUpdate: "Update successfully",
   failUpdate: "Update failed",
   successCreate: "Create successfully",
+  sucessRegis: "Registration successful",
 
   // Validation
   required: "This field is required",

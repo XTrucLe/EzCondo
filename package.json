@@ -7,7 +7,7 @@
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "eas-build": "eas build -p android --profile production",
+    "build-product": "eas build -p android --profile production",
     "build-dev": "eas build -p android --profile development",
     "web": "expo start --web",
     "test": "jest --watchAll",

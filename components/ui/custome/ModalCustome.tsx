@@ -75,7 +75,9 @@ const ModalCustome = ({
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>📋 Thông tin chi tiết</Text>
+          <Text style={styles.modalTitle}>
+            📋 {translation.descriptionDetail}
+          </Text>
 
           {data?.avatar && (
             <Image source={{ uri: data.avatar }} style={styles.avatar} />

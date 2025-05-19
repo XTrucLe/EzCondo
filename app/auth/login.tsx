@@ -116,7 +116,7 @@ const LoginScreen = () => {
       console.error(error);
       Alert.alert(
         translation.error,
-        translation.checkInfo,
+        (error as any).message || translation.loginError,
         [{ text: translation.ok, onPress: () => {} }],
         { cancelable: false }
       );

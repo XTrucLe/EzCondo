@@ -4,7 +4,7 @@ import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
 const width = Dimensions.get("window").width;
 export type SlideType = {
   id?: string;
-  imagePath?: string;
+  imgPath?: string;
 };
 
 type SlideProps = {

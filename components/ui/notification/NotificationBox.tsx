@@ -38,6 +38,7 @@ const NotificationBox: React.FC<BoxProps> = ({
   const getTimeAgo = (date: string): string => {
     const now = new Date();
     const created = new Date(date);
+    created.setHours(created.getHours() + 7); // Chuyển đổi sang giờ Việt Nam
     const diffMs = now.getTime() - created.getTime();
     const diffSec = Math.floor(diffMs / 1000);
     const diffMin = Math.floor(diffSec / 60);

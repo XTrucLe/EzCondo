@@ -145,7 +145,7 @@ export default {
   reportImage: "Ảnh",
   incidentImage: "Hình ảnh sự cố",
   descriptionDetail: "Mô tả chi tiết",
-
+  notAvailable: "Không khả dụng",
   // Booking
   booking: "Đặt chỗ",
   startDate: "Ngày bắt đầu",
@@ -250,6 +250,8 @@ export default {
   inputIncidentType: "Vui lòng chọn loại sự cố",
   errorReport: "Có lỗi xảy ra trong quá trình báo cáo",
   errorLogin: "Có lỗi xảy ra trong quá trình đăng nhập",
+  errorRegis: "Có lỗi xảy ra trong quá trình đăng ký",
+  sucessRegis: "Đăng ký thành công",
 
   // API errors
   apiError: "Lỗi kết nối đến server!",
