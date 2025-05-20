@@ -11,3 +11,10 @@ export type ServiceDetailType = {
   priceOfYear: number;
   status: "active" | "inactive";
 };
+
+export type OtherServiceType = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+};

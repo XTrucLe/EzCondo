@@ -84,6 +84,14 @@ export default {
   startDate: "Start Date",
   endDate: "End Date",
   startTime: "Start Time",
+  justNow: "Just Now",
+  minuteAgo: "minutes ago",
+  hourAgo: "hours ago",
+  yesterday: "yesterday",
+  dayAgo: "days ago",
+  weekAgo: "weeks ago",
+  monthAgo: "months ago",
+  yearAgo: "years ago",
 
   // Statuses
   statusActive: "Active",

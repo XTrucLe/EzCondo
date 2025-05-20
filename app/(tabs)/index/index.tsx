@@ -44,7 +44,6 @@ const Header = ({
   const [userInfo, setUserInfo] = useState<UserHomeProps>({
     fullName: "Người dùng",
     apartmentNumber: "Chưa cập nhật",
-    // image: userInformation.image,
   });
 
   useEffect(() => {
@@ -52,6 +51,7 @@ const Header = ({
       setUserInfo({
         fullName: user?.fullName || "Người dùng",
         apartmentNumber: user?.apartmentNumber || "Chưa cập nhật",
+        image: user?.avatar || "",
       });
     };
     fetchUserInfo();

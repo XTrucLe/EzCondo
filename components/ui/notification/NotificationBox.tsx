@@ -45,11 +45,11 @@ const NotificationBox: React.FC<BoxProps> = ({
     const diffHour = Math.floor(diffMin / 60);
     const diffDay = Math.floor(diffHour / 24);
 
-    if (diffSec < 60) return "Mới đây";
-    if (diffMin < 60) return `${diffMin} phút trước`;
-    if (diffHour < 24) return `${diffHour} giờ trước`;
-    if (diffDay === 1) return `Hôm qua`;
-    return `${diffDay} ngày trước`;
+    if (diffSec < 60) return translation.justNow;
+    if (diffMin < 60) return `${diffMin} ${translation.minutesAgo}`;
+    if (diffHour < 24) return `${diffHour} ${translation.hoursAgo}`;
+    if (diffDay === 1) return translation.yesterday;
+    return `${diffDay} ${translation.daysAgo}`;
   };
 
   const displayCreator = createdBy ?? "Hệ thống";

@@ -4,7 +4,7 @@
     "slug": "EzCondo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/appLogo.png",
+    "icon": "./assets/images/iconBlue.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "androidStatusBar": {

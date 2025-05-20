@@ -59,6 +59,7 @@ export default {
   fullName: "Họ và tên",
   phoneNumber: "Số điện thoại",
   email: "Email",
+  no: "CMND/CCCD",
   password: "Mật khẩu",
   citizenId: "Số CMND/CCCD",
   dateOfBirth: "Ngày sinh",
@@ -207,6 +208,14 @@ export default {
   goodMorning: "Chào buổi sáng",
   goodAfternoon: "Chào buổi chiều",
   goodEvening: "Chào buổi tối",
+  justNow: "Vừa xong",
+  yesterday: "Hôm qua",
+  minutesAgo: "phút trước",
+  hoursAgo: "giờ trước",
+  daysAgo: "ngày trước",
+  weeksAgo: "tuần trước",
+  monthsAgo: "tháng trước",
+  yearsAgo: "năm trước",
 
   // Validation messages
   required: "Trường này không được để trống",

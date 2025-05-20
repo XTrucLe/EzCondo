@@ -118,10 +118,10 @@ const SERVICES_LIST: UtilityItemProps[] = [
     color: SERVICE_COLORS[5],
   },
   {
-    id: "payment",
+    id: "6",
     name: "Thanh toán",
     icon: <Ionicons name="cash" size={ICON_SIZE} color="white" />,
-    navigatePage: "list_fees",
+    navigatePage: "detail_fee",
     color: SERVICE_COLORS[6],
   },
   {

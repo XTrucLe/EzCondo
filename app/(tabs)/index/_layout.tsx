@@ -100,6 +100,10 @@ export default function HomeLayout() {
         name="payment"
         options={{ headerShown: true, headerTitle: "" }}
       />
+      <Stack.Screen
+        name="detail_fee"
+        options={{ headerShown: true, headerTitle: translation.fees }}
+      />
     </Stack>
   );
 }

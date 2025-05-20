@@ -15,7 +15,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Card } from "react-native-paper";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "expo-router";
-import { updateProfile } from "@/services/UserService";
+import { updateAvatar, updateProfile } from "@/services/UserService";
 import useAuthStore from "@/hooks/useAuth";
 import { userDefaultImage } from "@/constants/ImageLink";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -27,13 +27,13 @@ import InputField from "@/components/ui/custome/InputCustome";
 import PickerCustome from "@/components/ui/custome/PickerCustome";
 
 const EditProfileScreen = () => {
-  const { user } = useAuthStore();
-  const navigation = useNavigation();
+  const { user, loadUser } = useAuthStore();
+  const navigation = useNavigation<any>();
   const backgroundColor = useThemeColor({}, "background");
   const { translation } = useLanguage();
 
   // State
-  const [avatar, setAvatar] = useState(user?.avatar || "");
+  const [avatar, setAvatar] = useState<string | undefined>(user?.avatar);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<UserInfoProps>({
     id: user?.id || "N/A",
@@ -54,6 +54,8 @@ const EditProfileScreen = () => {
   // State để hiển thị DatePicker (lưu tên field đang chọn)
   const [showDatePicker, setShowDatePicker] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
+
+  const [avatarChange, setAvatarChange] = useState(false);
   // Chọn ảnh từ thư viện
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -65,6 +67,9 @@ const EditProfileScreen = () => {
 
     if (!result.canceled) {
       setAvatar(result.assets[0].uri);
+      if (result.assets[0].uri !== user?.avatar) {
+        setAvatarChange(true);
+      }
     }
   };
 
@@ -77,13 +82,33 @@ const EditProfileScreen = () => {
     setLoading(true);
     try {
       // Cập nhật thông tin người dùng
-      const updatedUser = await updateProfile({
+      await updateProfile({
         ...user,
         ...form,
       });
-      Alert.alert(translation.success, translation.successUpdate);
-      // Điều hướng về trang cá nhân hoặc trang trước đó
-      navigation.goBack();
+      if (avatarChange) {
+        const formData = new FormData();
+        formData.append("avatar", {
+          uri: avatar,
+          name: "avatar1.jpg",
+          type: "image/jpeg",
+        } as any);
+        await updateAvatar(formData);
+      }
+      await loadUser();
+
+      Alert.alert(
+        translation.success,
+        translation.successUpdate,
+        [
+          {
+            text: "OK",
+            onPress: () =>
+              navigation.reset({ index: 0, routes: [{ name: "me" }] }),
+          },
+        ],
+        { cancelable: false }
+      );
     } catch (error) {
       Alert.alert(translation.error, "Có lỗi xảy ra khi cập nhật thông tin!");
       console.log(error);

@@ -22,6 +22,7 @@ interface AuthState {
   loading: boolean;
   verified: boolean;
   user: UserInfoProps | null;
+  loadUser: () => Promise<void>;
   setUser: (user: UserInfoProps) => void;
   fcm: FCMTokenProps | null;
   logOutTimer: NodeJS.Timeout | null;
@@ -78,6 +79,17 @@ const useAuthStore = create<AuthState>((set, get) => ({
       set({ verified: !!token, user, fcm, loading: false });
     } catch (error) {
       console.error("Error loading token:", error);
+      set({ loading: false });
+    }
+  },
+
+  loadUser: async () => {
+    try {
+      set({ loading: true });
+      const user = await fetchUserInfo();
+      set({ user, loading: false });
+    } catch (error) {
+      console.error("Error loading user:", error);
       set({ loading: false });
     }
   },

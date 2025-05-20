@@ -18,6 +18,7 @@ import { IncidentTypes } from "@/utils/type/incidentTypes";
 import { useLanguage } from "@/hooks/useLanguage";
 import { sendIncident, sendIncidentImage } from "@/services/incidentService";
 import { useLoading } from "@/hooks/useLoading";
+import { StatusProps, StatusScreen } from "@/components/ui/screen/StatusScreen";
 
 const MAX_MEDIA = 6;
 const NUM_COLUMNS = 3;
@@ -30,7 +31,6 @@ const ReportIssueScreen = () => {
     description: "",
     type: "security",
   });
-
   const [mediaList, setMediaList] = useState<
     { uri: string; name: string; type: string }[]
   >([]);

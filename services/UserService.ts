@@ -20,6 +20,7 @@ const getUserInfo = async () => {
     if (error) {
       return { error };
     }
+    console.log(data);
 
     return { data };
   } catch (error) {
@@ -38,6 +39,31 @@ const updateProfile = async (data: any) => {
       return { error: "Request failed" };
     }
     await fetchUserInfo();
+    const { data: responseData, error } = response;
+
+    if (error) {
+      return { error };
+    }
+
+    return { data: responseData };
+  } catch (error) {
+    throw new Error(error as any);
+  }
+};
+
+export const updateAvatar = async (data: FormData) => {
+  try {
+    const response = await request({
+      method: "post",
+      url: endpoints.user?.updateAvatar,
+      data,
+    });
+
+    if (!response) {
+      return { error: "Request failed" };
+    }
+    await fetchUserInfo();
+
     const { data: responseData, error } = response;
 
     if (error) {

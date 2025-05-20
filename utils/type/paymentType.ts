@@ -37,15 +37,3 @@ export type PaymentWaitingType = {
   parkingId?: string | null;
 };
 
-[
-  {
-    amount: 5000,
-    apartmentNumber: "102",
-    createDate: "2025-05-17T05:46:49.813",
-    fullName: "Lê Xuân Trúc",
-
-    paymentId: "c3aaacb4-6943-415a-976c-5d799a6287fd",
-    status: "completed",
-    type: "Booking Pool",
-  },
-];

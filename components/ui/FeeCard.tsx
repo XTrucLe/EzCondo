@@ -4,6 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import { useLanguage } from "@/hooks/useLanguage";
 import { ElectricFee, WaterFee } from "@/utils/type/FeeType";
+import { formatVND } from "@/hooks/useFormat";
+import useDateUtils from "@/hooks/useDateUtils";
 
 type Props = {
   item: ElectricFee | WaterFee;
@@ -12,6 +14,7 @@ type Props = {
 
 const FeeCard = ({ item, mode }: Props) => {
   const navigation = useNavigation<any>();
+  const { formatDate } = useDateUtils();
   const { translation } = useLanguage.getState();
   const paid = item.status === "paid";
   console.log(mode);
@@ -43,7 +46,7 @@ const FeeCard = ({ item, mode }: Props) => {
           </View>
           <Text style={styles.title}>{typeLabel}</Text>
         </View>
-        <Text style={styles.amount}>{amount.toLocaleString()}₫</Text>
+        <Text style={styles.amount}>{formatVND(amount)}</Text>
       </View>
 
       {/* Sub-info: Room & Owner */}
@@ -69,7 +72,7 @@ const FeeCard = ({ item, mode }: Props) => {
         </View>
         <Text style={styles.dateText}>
           {paid ? translation.paidDate : translation.dueDate}:{" "}
-          {item.paymentTerm}
+          {formatDate(new Date(item.paymentTerm))}
         </Text>
       </View>
     </TouchableOpacity>
