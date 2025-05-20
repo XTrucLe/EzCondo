@@ -1,6 +1,6 @@
 // Vietnamese translation for the application
 export default {
-  // Common UI
+  // ============ Common UI ============
   wellcome: "Chào mừng trở lại",
   login: "Đăng nhập",
   logout: "Đăng xuất",
@@ -26,14 +26,19 @@ export default {
   description: "Chi tiết",
   noInfo: "Không có thông tin",
   nodata: "Không có dữ liệu",
+  close: "Đóng", // Added common UI term
+  next: "Tiếp theo", // Added common UI term
+  previous: "Trước đó", // Added common UI term
 
-  //chatbot
+  // ============ Chatbot ============
   chatbot: "Chatbot",
   chatbotTitle: "Chatbot thông minh",
   chatbotDescription: "Hỏi tôi bất cứ điều gì về căn hộ của bạn",
   chatbotPlaceholder: "Hỏi tôi bất cứ điều gì...",
+  chatbotClear: "Xóa lịch sử", // Added chatbot term
+  chatbotSend: "Gửi", // Added chatbot term
 
-  // Navigation
+  // ============ Navigation ============
   home: "Trang chủ",
   services: "Dịch vụ",
   notification: "Thông báo",
@@ -42,8 +47,11 @@ export default {
   news: "Tin tức",
   profile: "Hồ sơ",
   setting: "Cài đặt",
+  dashboard: "Bảng điều khiển", // Added navigation term
+  documents: "Tài liệu", // Added navigation term
+  calendar: "Lịch", // Added navigation term
 
-  // Authentication
+  // ============ Authentication ============
   forgotPassword: "Quên mật khẩu",
   rememberMe: "Ghi nhớ",
   changePassword: "Đổi mật khẩu",
@@ -54,8 +62,20 @@ export default {
   confirmNewPassword: "Xác nhận mật khẩu mới",
   twoFactor: "Xác thực 2 lớp",
   samePass: "Mật khẩu mới không được trùng với mật khẩu cũ",
+  signUp: "Đăng ký tài khoản", // Added auth term
+  resetPassword: "Đặt lại mật khẩu", // Added auth term
+  authCode: "Mã xác thực", // Added auth term
+  verify: "Xác thực", // Added auth term
+  verifyEmail: "Xác thực email", // Added auth term
+  inputEmail: "Nhập email của bạn", // Added auth term
+  sendCode: "Gửi mã xác thực", // Added auth term
+  OTPHadSend: "Mã OTP đã được gửi đến email của bạn", // Added auth term
+  OTPResend: "Gửi lại mã OTP", // Added auth term
+  OTPInvalid: "Mã OTP không hợp lệ", // Added auth term
+  verifyOTP: "Xác thực mã OTP", // Added auth term
+  verifyOTPTittle: "Xác thực mã OTP",
 
-  // User information
+  // ============ User Information ============
   fullName: "Họ và tên",
   phoneNumber: "Số điện thoại",
   email: "Email",
@@ -71,8 +91,10 @@ export default {
   year: "Năm",
   month: "Tháng",
   day: "Ngày",
+  address: "Địa chỉ", // Added user info term
+  emergencyContact: "Liên hệ khẩn cấp", // Added user info term
 
-  // Apartment related
+  // ============ Apartment Related ============
   apartment: "Căn hộ",
   apartmentNumber: "Căn hộ",
   apartmentMember: "Thành viên căn hộ",
@@ -80,8 +102,12 @@ export default {
   holderName: "Tên chủ căn hộ",
   owner: "Chủ hộ",
   room: "Phòng",
+  floor: "Tầng", // Added apartment term
+  building: "Tòa nhà", // Added apartment term
+  area: "Diện tích", // Added apartment term
+  moveInDate: "Ngày chuyển vào", // Added apartment term
 
-  // Services
+  // ============ Services ============
   service: "Dịch vụ",
   serviceName: "Tên dịch vụ",
   serviceStatus: "Trạng thái dịch vụ",
@@ -99,7 +125,11 @@ export default {
   price: "Giá",
   bookNow: "Đặt ngay",
   bookService: "Đặt dịch vụ",
+  serviceProvider: "Nhà cung cấp dịch vụ", // Added service term
+  serviceHours: "Giờ hoạt động", // Added service term
+  serviceTerms: "Điều khoản dịch vụ", // Added service term
 
+  // Service Packages
   selectedPackage: "Gói đã chọn",
   monthlyPackage: "Gói hàng tháng",
   yearlyPackage: "Gói hàng năm",
@@ -108,30 +138,32 @@ export default {
   numMonths: "Số tháng",
   monthPrice: "Giá tháng",
   totalPrice: "Tổng giá",
-  pool: "Hồ bơi",
-  steamRoom: "Phòng xông hơi",
-  fitnessCenter: "Phòng Gym",
-  childrenPlayground: "Khu vui chơi trẻ em",
-  laundry: "Giặt ủi",
-  payment: "Thanh toán",
+  basicPackage: "Gói cơ bản", // Added service package term
+  premiumPackage: "Gói cao cấp", // Added service package term
 
-  // Nhóm dịch vụ
+  // Service Groups
   utilityServices: "Tiện ích",
   facilityServices: "Tiện nghi",
+  cleaningServices: "Dịch vụ dọn dẹp", // Added service group
+  maintenanceServices: "Dịch vụ bảo trì", // Added service group
 
-  // Facilities
+  // ============ Facilities ============
   swimming: "Bể bơi",
   gym: "Phòng gym",
   parking: "Bãi đỗ xe",
   parkingList: "Danh sách xe",
   parkingCardList: "Danh sách thẻ đỗ xe",
-
   parkingCard: "Thẻ xe",
   parkingRegis: "Đăng ký xe",
   electricity: "Điện",
   water: "Nước",
+  sauna: "Phòng xông hơi", // Added facility term
+  laundry: "Giặt là", // Added facility term
+  bbqArea: "Khu vực BBQ", // Added facility term
+  meetingRoom: "Phòng họp", // Added facility term
+  childrenPlayArea: "Khu vui chơi trẻ em", // Added facility term
 
-  // Incident reporting
+  // ============ Incident Reporting ============
   incident: "Báo cáo sự cố",
   incidentTitle: "Tiêu đề sự cố",
   sendIncident: "Gửi sự cố",
@@ -147,12 +179,20 @@ export default {
   incidentImage: "Hình ảnh sự cố",
   descriptionDetail: "Mô tả chi tiết",
   notAvailable: "Không khả dụng",
-  // Booking
+  incidentStatus: "Trạng thái sự cố", // Added incident term
+  incidentPriority: "Mức độ ưu tiên", // Added incident term
+
+  // ============ Booking ============
   booking: "Đặt chỗ",
   startDate: "Ngày bắt đầu",
   endDate: "Ngày kết thúc",
+  bookingCode: "Mã đặt chỗ", // Added booking term
+  bookingStatus: "Trạng thái đặt chỗ", // Added booking term
+  bookingHistory: "Lịch sử đặt chỗ", // Added booking term
 
-  // Payments
+  // ============ Payments ============
+  payment: "Thanh toán",
+  paymentFee: "Thanh toán phí",
   paymentMethod: "Phương thức thanh toán",
   paymentStatus: "Trạng thái thanh toán",
   paymentDate: "Ngày thanh toán",
@@ -165,8 +205,11 @@ export default {
   qrCode: "QR Code",
   scanQRCode: "Quét mã QR",
   scanQRCodeSuccess: "Quét mã QR thành công",
+  transactionId: "Mã giao dịch", // Added payment term
+  invoice: "Hóa đơn", // Added payment term
+  receipt: "Biên lai", // Added payment term
 
-  // Fees
+  // ============ Fees ============
   fee: "Phí",
   feeCard: "Thẻ phí",
   dueDate: "Ngày đến hạn",
@@ -178,16 +221,20 @@ export default {
   waterFeeHistory: "Lịch sử phí nước",
   electricFeeDetail: "Chi tiết phí điện",
   waterFeeDetail: "Chi tiết phí nước",
+  managementFee: "Phí quản lý", // Added fee term
+  lateFee: "Phí trễ hạn", // Added fee term
 
-  // Settings
+  // ============ Settings ============
   generalSetting: "Cài đặt chung",
   lightMode: "Chế độ sáng",
   darkMode: "Chế độ tối",
   language: "Ngôn ngữ",
   support: "Hỗ trợ",
   accountSetting: "Cài đặt tài khoản",
+  notificationSetting: "Cài đặt thông báo", // Added setting term
+  privacySetting: "Cài đặt bảo mật", // Added setting term
 
-  // Statuses
+  // ============ Statuses ============
   statusActive: "Đang hoạt động",
   statusInactive: "Ngừng hoạt động",
   statusPending: "Đang chờ duyệt",
@@ -203,8 +250,10 @@ export default {
   paymentSuccess: "Thanh toán thành công",
   paymentWaiting: "Đang chờ thanh toán",
   waitingPayment: "Đang chờ thanh toán",
+  statusExpired: "Đã hết hạn", // Added status term
+  statusVerified: "Đã xác minh", // Added status term
 
-  // Time greetings
+  // ============ Time Greetings ============
   goodMorning: "Chào buổi sáng",
   goodAfternoon: "Chào buổi chiều",
   goodEvening: "Chào buổi tối",
@@ -216,8 +265,10 @@ export default {
   weeksAgo: "tuần trước",
   monthsAgo: "tháng trước",
   yearsAgo: "năm trước",
+  today: "Hôm nay", // Added time term
+  tomorrow: "Ngày mai", // Added time term
 
-  // Validation messages
+  // ============ Validation Messages ============
   required: "Trường này không được để trống",
   invalid: "{fieldName} không hợp lệ",
   minLength: "{fieldName} phải có ít nhất {min} ký tự",
@@ -232,8 +283,10 @@ export default {
   invalidEmail: "Email không hợp lệ",
   requireNotificationPermission:
     "Vui lòng cấp quyền thông báo để sử dụng tính năng này",
+  invalidPhone: "Số điện thoại không hợp lệ", // Added validation term
+  fileTooLarge: "File quá lớn", // Added validation term
 
-  // System messages
+  // ============ System Messages ============
   success: "Thành công",
   fail: "Thất bại",
   error: "Có lỗi xảy ra",
@@ -261,8 +314,10 @@ export default {
   errorLogin: "Có lỗi xảy ra trong quá trình đăng nhập",
   errorRegis: "Có lỗi xảy ra trong quá trình đăng ký",
   sucessRegis: "Đăng ký thành công",
+  sessionExpired: "Phiên làm việc hết hạn", // Added system message
+  tryAgain: "Thử lại", // Added system message
 
-  // API errors
+  // ============ API Errors ============
   apiError: "Lỗi kết nối đến server!",
   not_found: "Không tồn tại user. Vui lòng kiểm tra lại email!",
   wrong_credentials: "Sai email hoặc mật khẩu",
@@ -280,8 +335,10 @@ export default {
   network: "Không thể kết nối, kiểm tra mạng!",
   unknown: "Đã xảy ra lỗi!",
   loginAnotherAccount: "Vui lòng đăng nhập tài khoản khác!",
+  timeout: "Hết thời gian chờ", // Added API error term
+  serverMaintenance: "Máy chủ đang bảo trì", // Added API error term
 
-  // Metadata
+  // ============ Metadata ============
   createBy: "Người tạo",
   createAt: "Ngày tạo",
   createdBy: "Người tạo",
@@ -289,4 +346,6 @@ export default {
   updateAt: "Ngày cập nhật",
   updateBy: "Người cập nhật",
   paidDate: "Ngày thanh toán",
+  modifiedAt: "Ngày chỉnh sửa", // Added metadata term
+  approvedBy: "Người phê duyệt", // Added metadata term
 };

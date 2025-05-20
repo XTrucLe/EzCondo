@@ -18,7 +18,11 @@ import { IncidentTypes } from "@/utils/type/incidentTypes";
 import { useLanguage } from "@/hooks/useLanguage";
 import { sendIncident, sendIncidentImage } from "@/services/incidentService";
 import { useLoading } from "@/hooks/useLoading";
-import { StatusProps, StatusScreen } from "@/components/ui/screen/StatusScreen";
+import {
+  StatusProps,
+  StatusScreen,
+  StatusType,
+} from "@/components/ui/screen/StatusScreen";
 
 const MAX_MEDIA = 6;
 const NUM_COLUMNS = 3;
@@ -26,6 +30,7 @@ const NUM_COLUMNS = 3;
 const ReportIssueScreen = () => {
   const { startLoading, stopLoading } = useLoading();
   const { translation } = useLanguage();
+  const [statusNow, setStatus] = useState<StatusType>("null");
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -67,8 +72,7 @@ const ReportIssueScreen = () => {
       return;
     }
     if (!form.description) {
-      Alert.alert(translation.error, translation.inputDescription);
-      return;
+      return Alert.alert(translation.error, translation.inputDescription);
     }
     startLoading();
     try {
@@ -81,8 +85,7 @@ const ReportIssueScreen = () => {
         });
 
         await sendIncidentImage(formData);
-        navigation.goBack();
-        Alert.alert(translation.success, translation.successReport);
+        setStatus("success");
       }
     } catch (error) {
       console.error("Error sending incident:", error);
@@ -99,7 +102,10 @@ const ReportIssueScreen = () => {
       <Text style={styles.label}>{translation.incidentTitle}</Text>
       <TextInput
         value={form.title}
-        onChangeText={(text) => setForm({ ...form, title: text })}
+        onChangeText={(text) => {
+          const sanitized = text.replace(/[^\p{L}0-9\s.,:]/gu, "");
+          setForm({ ...form, title: sanitized });
+        }}
         style={styles.input}
         inputMode="text"
         autoCapitalize="none"
@@ -119,7 +125,10 @@ const ReportIssueScreen = () => {
       <Text style={styles.label}>{translation.descriptionDetail}</Text>
       <TextInput
         value={form.description}
-        onChangeText={(text) => setForm({ ...form, description: text })}
+        onChangeText={(text) => {
+          const sanitized = text.replace(/[^\p{L}0-9\s.,:]/gu, "");
+          setForm({ ...form, description: sanitized });
+        }}
         inputMode="text"
         autoCapitalize="none"
         maxLength={500}
@@ -167,6 +176,7 @@ const ReportIssueScreen = () => {
       >
         {translation.sendIncident}
       </Button>
+      <StatusScreen type={statusNow} title={translation.success} />
     </ScrollView>
   );
 };

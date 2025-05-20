@@ -10,10 +10,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import { useRoute } from "@react-navigation/native";
 import useAuthStore from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
+import { forgotPassword } from "./../../services/authService";
 
 const ResetPasswordScreen = () => {
   const navigation = useNavigation();
   const { tokenMemory } = useRoute().params as any;
+  const { translation } = useLanguage();
   const { resetPassword } = useAuthStore();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -58,12 +61,12 @@ const ResetPasswordScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Đặt lại mật khẩu</Text>
+      <Text style={styles.title}>{translation.resetPassword}</Text>
 
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Mật khẩu mới"
+          placeholder={translation.newPassword}
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
@@ -83,7 +86,7 @@ const ResetPasswordScreen = () => {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Nhập lại mật khẩu"
+          placeholder={translation.confirmPassword}
           secureTextEntry={!showConfirmPassword}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
@@ -108,7 +111,7 @@ const ResetPasswordScreen = () => {
         disabled={loading}
       >
         <Text style={styles.buttonText}>
-          {loading ? "Đang xử lý..." : "Xác nhận"}
+          {loading ? translation.waiting : translation.confirm}
         </Text>
       </TouchableOpacity>
     </View>

@@ -8,7 +8,7 @@ export default function AuthLayout() {
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen
         name="forgot_password"
-        options={{ headerShown: true, headerTitle: "Quên mật khẩu" }}
+        options={{ headerShown: true, headerTitle: "" }}
       />
       <Stack.Screen
         name="otp"
@@ -16,7 +16,7 @@ export default function AuthLayout() {
       />
       <Stack.Screen
         name="reset_password"
-        options={{ headerShown: true, headerTitle: "Nhập mật khẩu mới" }}
+        options={{ headerShown: true, headerTitle: "" }}
       />
     </Stack>
   );

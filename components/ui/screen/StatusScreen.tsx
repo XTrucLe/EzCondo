@@ -11,6 +11,8 @@ import {
   TouchableOpacityProps,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export type StatusType =
   | "success"
@@ -98,7 +100,8 @@ export const StatusScreen: React.FC<StatusProps> = ({
 }) => {
   if (type == "null") return;
   const config = statusConfig[type];
-
+  const navigation = useNavigation<any>();
+  const { translation } = useLanguage();
   return (
     <View style={[styles.container, containerStyle]}>
       {type === "loading" ? (
@@ -128,6 +131,17 @@ export const StatusScreen: React.FC<StatusProps> = ({
               {...buttonProps}
             >
               <Text style={styles.buttonText}>{buttonText}</Text>
+            </TouchableOpacity>
+          )}
+          {type === "success" && (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.reset({ index: 0, routes: [{ name: "(tabs)" }] })
+              }
+              style={[styles.button, { backgroundColor: config.color }]}
+              {...buttonProps}
+            >
+              <Text style={styles.buttonText}>{translation.goback}</Text>
             </TouchableOpacity>
           )}
         </>

@@ -10,8 +10,13 @@ export default function ServiceLayout() {
           headerTitle: "Dịch vụ và tiện ích",
         }}
       />
-      <Stack.Screen name="listServices" options={{ headerShown: true }} />
-
+      <Stack.Screen
+        name="service_detail"
+        options={{
+          headerShown: true,
+          headerTitle: "",
+        }}
+      />
       <Stack.Screen name="bill" options={{ headerShown: true }} />
       <Stack.Screen
         name="subscription"

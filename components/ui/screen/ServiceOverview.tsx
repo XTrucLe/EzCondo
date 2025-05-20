@@ -1,9 +1,10 @@
 import { RefreshControl, ScrollView, StyleSheet, Text } from "react-native";
 import React, { useEffect } from "react";
-import ServiceCard, { Service } from "../ServiceCard";
+import ServiceCard from "../ServiceCard";
 import { useNavigation } from "expo-router";
 import { getServiceDetailAndImage } from "@/services/servicesService";
 import { ServiceDetailType } from "@/utils/type/serviceDetailType";
+import { StatusScreen } from "./StatusScreen";
 
 const ServiceOverview = () => {
   const navigation = useNavigation<any>();
@@ -44,7 +45,7 @@ const ServiceOverview = () => {
           <ServiceCard key={service.id} service={service} />
         ))
       ) : (
-        <Text>Không có dịch vụ nào.</Text>
+        <StatusScreen type="empty" />
       )}
     </ScrollView>
   );
@@ -53,5 +54,5 @@ const ServiceOverview = () => {
 export default ServiceOverview;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#F5F5F5" },
+  container: { flex: 1, padding: 10, backgroundColor: "#F5F5F5" },
 });

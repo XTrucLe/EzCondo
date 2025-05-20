@@ -1,4 +1,5 @@
 import useAuthStore from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
 import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React, { useState, useRef, useEffect } from "react";
@@ -8,10 +9,12 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 
 const VerifyOTPScreen = () => {
   const navigation = useNavigation<any>();
+  const { translation } = useLanguage();
   const { forgotPassword, verifyOTP } = useAuthStore();
   const { email } = useLocalSearchParams();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -66,13 +69,13 @@ const VerifyOTPScreen = () => {
       alert("Không thể gửi lại mã OTP. Vui lòng thử lại!");
       return;
     }
-    alert("Mã OTP đã được gửi lại!");
+    Alert.alert(translation.info, translation.OTPHadSend);
   };
 
   const handleVerifyOTP = async () => {
     const enteredOTP = otp.join("");
     if (enteredOTP.length !== 6) {
-      alert("Mã OTP không hợp lệ!");
+      Alert.alert(translation.error, translation.OTPInvalid);
       return;
     }
 
@@ -85,17 +88,31 @@ const VerifyOTPScreen = () => {
       });
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      alert("Không thể xác thực mã OTP. Vui lòng thử lại!");
+      Alert.alert(
+        translation.error,
+        translation.OTPInvalid,
+        [
+          {
+            text: translation.cancel,
+            onPress: () => navigation.navigate("login"),
+            style: "cancel",
+          },
+          {
+            text: translation.retry,
+            onPress: () => setOtp(["", "", "", "", "", ""]),
+          },
+        ],
+        { cancelable: false }
+      );
       return;
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Xác nhận OTP</Text>
+      <Text style={styles.title}>{translation.verifyOtp}</Text>
       <Text style={styles.subtitle}>
-        Nhập mã OTP đã gửi đến email:
-        {"\n"}
+        {translation.otpSentTo} {"\n"}
         <Text style={{ fontWeight: "bold" }}>{email}</Text>
       </Text>
 
@@ -119,12 +136,12 @@ const VerifyOTPScreen = () => {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleVerifyOTP}>
-        <Text style={styles.buttonText}>Xác nhận</Text>
+        <Text style={styles.buttonText}>{translation.confirm}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity disabled={!canResend} onPress={handleResendOTP}>
         <Text style={[styles.resendText, !canResend && { color: "#aaa" }]}>
-          {canResend ? "Gửi lại mã OTP" : `Gửi lại sau ${timer}s`}
+          {canResend ? translation.OTPResend : `Gửi lại sau ${timer}s`}
         </Text>
       </TouchableOpacity>
     </View>

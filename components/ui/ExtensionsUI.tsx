@@ -11,6 +11,7 @@ import { useNavigation } from "expo-router";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const SERVICE_COLORS = [
   "#75B4F3", // Mid Blue
@@ -44,28 +45,28 @@ type UtilityItemProps = {
 const UTILITIES_LIST: UtilityItemProps[] = [
   {
     id: "1",
-    name: "Bãi đậu xe",
+    name: "parking",
     icon: <Ionicons name="car" size={ICON_SIZE} color="white" />,
     navigatePage: "parking",
     color: "#FFA94D", // Vibrant orange
   },
   {
     id: "2",
-    name: "Điện",
+    name: "electricity",
     icon: <Ionicons name="flash" size={ICON_SIZE} color="white" />,
     navigatePage: "seviceFees",
     color: "#FECA57", // Bright yellow
   },
   {
     id: "3",
-    name: "Nước",
+    name: "water",
     icon: <Ionicons name="water" size={ICON_SIZE} color="white" />,
     navigatePage: "water",
     color: "#54A0FF", // Sky blue
   },
   {
     id: "4",
-    name: "Thành viên",
+    name: "apartmentMember",
     icon: <Ionicons name="person" size={ICON_SIZE} color="white" />,
     navigatePage: "apartmentMember",
     color: "#5F27CD", // Royal purple
@@ -75,7 +76,7 @@ const UTILITIES_LIST: UtilityItemProps[] = [
 const SERVICES_LIST: UtilityItemProps[] = [
   {
     id: "Pool",
-    name: "Hồ bơi",
+    name: "swimming",
     icon: (
       <FontAwesome6 name="person-swimming" size={ICON_SIZE} color="white" />
     ),
@@ -84,49 +85,49 @@ const SERVICES_LIST: UtilityItemProps[] = [
   },
   {
     id: "Steam room",
-    name: "Phòng xông hơi",
+    name: "sauna",
     icon: <FontAwesome5 name="hot-tub" size={ICON_SIZE} color="white" />,
     navigatePage: "steamRoom",
     color: SERVICE_COLORS[1],
   },
   {
     id: "Fitness",
-    name: "Phòng Gym",
+    name: "gym",
     icon: <Ionicons name="barbell" size={ICON_SIZE} color="white" />,
     navigatePage: "fitnessCenter",
     color: SERVICE_COLORS[2],
   },
   {
     id: "Children",
-    name: "Khu vui chơi trẻ em",
+    name: "childrenPlayArea",
     icon: <FontAwesome6 name="children" size={ICON_SIZE} color="white" />,
     navigatePage: "childrenPlayground",
     color: SERVICE_COLORS[3],
   },
   {
     id: "Laundry",
-    name: "Giặt ủi",
+    name: "laundry",
     icon: <Ionicons name="shirt-outline" size={ICON_SIZE} color="white" />,
     navigatePage: "laundry",
     color: SERVICE_COLORS[4],
   },
   {
     id: "5",
-    name: "Báo cáo sự cố",
+    name: "incident",
     icon: <Ionicons name="alert-circle" size={ICON_SIZE} color="white" />,
     navigatePage: "incident",
     color: SERVICE_COLORS[5],
   },
   {
     id: "6",
-    name: "Thanh toán",
+    name: "paymentFee",
     icon: <Ionicons name="cash" size={ICON_SIZE} color="white" />,
     navigatePage: "detail_fee",
     color: SERVICE_COLORS[6],
   },
   {
     id: "support",
-    name: "Hỗ trợ",
+    name: "support",
     icon: <Ionicons name="help-circle" size={ICON_SIZE} color="white" />,
     navigatePage: "support",
     color: SERVICE_COLORS[7],
@@ -141,6 +142,7 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
   color,
 }) => {
   const navigation = useNavigation<any>();
+  const { translation } = useLanguage();
   const textColor = useThemeColor({}, "text");
   const backgroundColor = useThemeColor({}, "cardBackground");
 
@@ -172,15 +174,17 @@ const UtilityItem: React.FC<UtilityItemProps> = ({
       >
         {icon}
       </View>
-      <Text style={[styles.text, { color: textColor }]}>{name}</Text>
+      <Text style={[styles.text, { color: textColor }]}>
+        {translation[name]}
+      </Text>
     </TouchableOpacity>
   );
 };
 
-const GridView: React.FC<{ data: UtilityItemProps[]; columns: number }> = ({
-  data,
-  columns,
-}) => {
+const GridView: React.FC<{
+  data: UtilityItemProps[];
+  columns: number;
+}> = ({ data, columns }) => {
   const rows = Array.from({ length: columns }, (_, rowIndex) =>
     data.filter((_, index) => index % columns === rowIndex)
   );
@@ -212,15 +216,16 @@ const HorizontalScrollGrid: React.FC<{
 );
 
 const ExtensionsUI: React.FC = () => {
+  const { translation } = useLanguage();
   return (
     <View style={styles.container}>
-      <ThemedText type="subtitle">Tiện ích</ThemedText>
+      <ThemedText type="subtitle"></ThemedText>
       <HorizontalScrollGrid
         data={UTILITIES_LIST}
         columns={GRID_COLUMNS.UTILITIES}
       />
 
-      <ThemedText type="subtitle">Dịch vụ</ThemedText>
+      <ThemedText type="subtitle">{translation.service}</ThemedText>
       <HorizontalScrollGrid
         data={SERVICES_LIST}
         columns={GRID_COLUMNS.SERVICES}

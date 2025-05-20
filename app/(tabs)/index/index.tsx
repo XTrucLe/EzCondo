@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,6 +18,7 @@ import {
 import { FAB } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { homeHeaderImage, userDefaultImage } from "@/constants/ImageLink";
+import IncidentListScreen from "@/components/ui/IncidentListHistory";
 
 const MAX_HEADER_HEIGHT = 200;
 const MIN_HEADER_HEIGHT = 100;
@@ -111,28 +113,35 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bgColor }}>
-      <View style={styles.headerContainer}>
-        <Header
-          onImagePress={() => navigation.navigate("me", { screen: "profile" })}
-          scrollY={scrollY}
-        />
-      </View>
+      <ScrollView style={{ flex: 1 }}>
+        <View style={styles.headerContainer}>
+          <Header
+            onImagePress={() =>
+              navigation.navigate("me", { screen: "profile" })
+            }
+            scrollY={scrollY}
+          />
+        </View>
 
-      <Animated.ScrollView
-        contentContainerStyle={{
-          paddingTop: MAX_HEADER_HEIGHT,
-          position: "relative",
-        }}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={16}
-      >
-        <ExtensionsUI />
-        <SlideShow item={[]} />
-      </Animated.ScrollView>
-      {/* Nút FAB để mở màn hình "incident" */}
+        <Animated.ScrollView
+          contentContainerStyle={{
+            paddingTop: MAX_HEADER_HEIGHT,
+            position: "relative",
+          }}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          scrollEventThrottle={16}
+        >
+          <ExtensionsUI />
+          <SlideShow item={[]} />
+        </Animated.ScrollView>
+        {/* Nút FAB để mở màn hình "incident" */}
+
+        <IncidentListScreen />
+        <View style={{ height: 50 }}></View>
+      </ScrollView>
       <FAB
         icon="plus"
         label="Chat"

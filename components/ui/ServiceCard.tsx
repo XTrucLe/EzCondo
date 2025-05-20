@@ -10,161 +10,180 @@ type Props = {
   service: ServiceDetailType;
 };
 
-const ServiceCard = ({ service }: Props) => {
+export default function ServiceCard({ service }: Props) {
   const navigation = useNavigation<any>();
   const { translation } = useLanguage();
 
   const handleRegister = () => {
-    navigation.navigate("subscription", { service });
+    navigation.navigate("service_detail", { data: service });
   };
 
   const firstImage = service.images?.[0]?.imgPath;
 
   return (
-    <View style={styles.card}>
-      {firstImage && (
-        <Image
-          source={{ uri: firstImage }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      )}
-
-      <Text style={styles.title}>{service.serviceName}</Text>
-
-      <Text style={styles.label}>{translation.serviceDescription}</Text>
-      <Text style={styles.text} numberOfLines={3} ellipsizeMode="tail">
-        {service.description}
-      </Text>
-
-      <View style={styles.statusContainer}>
-        <Text style={styles.label}>{translation.status}</Text>
-        <View style={styles.statusRow}>
-          <Icon
-            name={
-              service.status === "active"
-                ? "checkbox-marked-circle"
-                : "close-circle"
-            }
-            size={18}
-            color={service.status === "active" ? "#28a745" : "#dc3545"}
-            style={{ marginRight: 6 }}
+    <TouchableOpacity
+      style={styles.card}
+      onPress={handleRegister}
+      activeOpacity={0.8}
+    >
+      <View style={styles.row}>
+        {firstImage && (
+          <Image
+            source={{ uri: firstImage }}
+            style={styles.image}
+            resizeMode="cover"
           />
+        )}
+
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+              {service.serviceName}
+            </Text>
+
+            <View
+              style={[
+                styles.statusBadge,
+                service.status === "active"
+                  ? styles.activeBadge
+                  : styles.inactiveBadge,
+              ]}
+            >
+              <Icon
+                name={service.status === "active" ? "check" : "close"}
+                size={14}
+                color="#fff"
+              />
+              <Text style={styles.statusText}>
+                {service.status === "active"
+                  ? translation.statusActive
+                  : translation.statusInactive}
+              </Text>
+            </View>
+          </View>
+
           <Text
-            style={[
-              styles.statusText,
-              service.status === "active" ? styles.active : styles.inactive,
-            ]}
+            style={styles.description}
+            numberOfLines={2}
+            ellipsizeMode="tail"
           >
-            {service.status === "active"
-              ? translation.statusActive
-              : translation.statusInactive}
+            {service.description}
           </Text>
+
+          <View style={styles.priceContainer}>
+            {service.typeOfMonth && (
+              <Text style={styles.price}>
+                {formatVND(service.priceOfMonth)}/{translation.month}
+              </Text>
+            )}
+            {service.typeOfYear && (
+              <Text style={styles.price}>
+                {formatVND(service.priceOfYear)}/{translation.year}
+              </Text>
+            )}
+          </View>
+
+          <TouchableOpacity
+            style={[
+              styles.button,
+              service.status !== "active" && styles.buttonDisabled,
+            ]}
+            onPress={handleRegister}
+            disabled={service.status !== "active"}
+          >
+            <Text style={styles.buttonText}>
+              {service.status === "active"
+                ? translation.regis
+                : translation.notAvailable}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      <View style={styles.priceRow}>
-        {service.typeOfMonth && (
-          <Text style={styles.price}>
-            {translation.month}: {formatVND(service.priceOfMonth)}
-          </Text>
-        )}
-        {service.typeOfYear && (
-          <Text style={styles.price}>
-            {translation.year}: {formatVND(service.priceOfYear)}
-          </Text>
-        )}
-      </View>
-
-      <TouchableOpacity
-        style={[
-          styles.button,
-          service.status !== "active" && styles.buttonDisabled,
-        ]}
-        onPress={handleRegister}
-        disabled={service.status !== "active"}
-      >
-        <Text style={styles.buttonText}>
-          {service.status === "active"
-            ? translation.regis
-            : translation.notAvailable}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
-};
-
+}
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
-    margin: 10,
+    margin: 8,
     padding: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    width: "100%", // hoặc "100%" nếu full chiều ngang
+  },
+  row: {
+    flexDirection: "row",
   },
   image: {
-    width: "100%",
-    height: 180,
-    borderRadius: 12,
-    marginBottom: 10,
+    width: "40%",
+    height: 140,
+    borderRadius: 8,
+    marginRight: 12,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
+  content: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4,
   },
-  text: {
-    fontSize: 14,
-    color: "#333",
+  title: {
+    fontSize: 15,
+    fontWeight: "600",
+    flex: 1,
+    marginRight: 8,
   },
-  statusContainer: {
-    marginTop: 12,
+  description: {
+    fontSize: 13,
+    color: "#666",
+    marginBottom: 8,
+    lineHeight: 18,
   },
-  statusRow: {
+  statusBadge: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 12,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#555",
+  activeBadge: {
+    backgroundColor: "#28a745",
+  },
+  inactiveBadge: {
+    backgroundColor: "#dc3545",
   },
   statusText: {
-    fontWeight: "700",
-    fontSize: 14,
+    color: "#fff",
+    fontSize: 12,
+    marginLeft: 2,
+    fontWeight: "500",
   },
-  active: {
-    color: "#28a745", // xanh lá (green)
-  },
-  inactive: {
-    color: "#dc3545", // đỏ (red)
-  },
-
-  priceRow: {
-    marginTop: 8,
+  priceContainer: {
+    marginVertical: 6,
   },
   price: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#333",
+    marginBottom: 2,
   },
   button: {
-    marginTop: 12,
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 8,
+    borderRadius: 6,
     alignItems: "center",
+    backgroundColor: "#007bff",
   },
   buttonDisabled: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#e9ecef",
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "600",
+    fontSize: 13,
+    fontWeight: "500",
   },
 });
-
-export default ServiceCard;

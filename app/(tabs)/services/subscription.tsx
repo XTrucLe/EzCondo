@@ -1,9 +1,9 @@
-import { Service } from "@/components/ui/ServiceCard";
 import useDateUtils from "@/hooks/useDateUtils";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useLoading } from "@/hooks/useLoading";
 import { createBooking } from "@/services/bookingService";
 import { paymentService } from "@/services/paymentService";
+import { ServiceDetailType } from "@/utils/type/serviceDetailType";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from "@react-navigation/native";
@@ -46,7 +46,7 @@ const ServiceSubscriptionScreen = () => {
   const { translation } = useLanguage();
   const navigation = useNavigation<any>();
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { service } = useRoute().params as { service: Service };
+  const { service } = useRoute().params as { service: ServiceDetailType };
   const [selectedDuration, setSelectedDuration] = useState(1);
   const selectedPlan = "month"; // or "year", depending on your logic
   const { formatDate, addMonths } = useDateUtils();

@@ -15,6 +15,7 @@ import { useNavigation } from "expo-router";
 import { getPaymentNeed, paymentService } from "@/services/paymentService";
 import { PaymentWaitingType } from "@/utils/type/paymentType";
 import { useLoading } from "@/hooks/useLoading";
+import { StatusScreen } from "@/components/ui/screen/StatusScreen";
 
 export default function DetailPaymentFee() {
   const navigation = useNavigation<any>();
@@ -94,13 +95,11 @@ export default function DetailPaymentFee() {
   return (
     <View style={styles.container}>
       {data.length === 0 ? (
-        <View style={styles.emptyState}>
-          <FontAwesome5 name="receipt" size={48} color="#A0AEC0" />
-          <Text style={styles.emptyTitle}>Không có phí nào</Text>
-          <Text style={styles.emptyText}>
-            Hiện không có khoản phí nào cần thanh toán
-          </Text>
-        </View>
+        <StatusScreen
+          type="empty"
+          title="Không có"
+          description="không có dữ liệu phí"
+        />
       ) : (
         <View style={styles.content}>
           <FlatList

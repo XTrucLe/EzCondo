@@ -9,13 +9,14 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 import { useNavigation } from "expo-router";
-import { request } from "@/services/apiService";
 import useAuthStore from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
+import { forgotPassword } from "./../../services/authService";
 
 const ForgotPasswordScreen = () => {
   const navigation = useNavigation<any>();
+  const { translation } = useLanguage();
   const { forgotPassword } = useAuthStore();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -26,11 +27,11 @@ const ForgotPasswordScreen = () => {
   const handleForgotPassword = async () => {
     setError("");
     if (!email.trim()) {
-      setError("Vui lòng nhập email!");
+      setError(translation.inputEmail);
       return;
     }
     if (!validateEmail(email)) {
-      setError("Email không hợp lệ!");
+      setError(translation.invalidEmail);
       return;
     }
 
@@ -59,16 +60,14 @@ const ForgotPasswordScreen = () => {
         color="#007AFF"
         style={styles.icon}
       />
-      <Text style={styles.title}>Quên mật khẩu?</Text>
-      <Text style={styles.subtitle}>
-        Nhập email của bạn để nhận mã xác minh
-      </Text>
+      <Text style={styles.title}>{translation.forgotPassword}</Text>
+      <Text style={styles.subtitle}>{translation.inputEmail}</Text>
 
       <View style={styles.inputContainer}>
         <Ionicons name="mail-outline" size={24} color="gray" />
         <TextInput
           style={styles.input}
-          placeholder="Nhập email của bạn"
+          placeholder={translation.email}
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
@@ -85,7 +84,7 @@ const ForgotPasswordScreen = () => {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Gửi mã</Text>
+          <Text style={styles.buttonText}>{translation.sendCode}</Text>
         )}
       </TouchableOpacity>
     </View>
