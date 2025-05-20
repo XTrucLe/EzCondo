@@ -4,7 +4,7 @@
     "slug": "EzCondo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/iconBlue.png",
+    "icon": "./assets/images/appIcon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "androidStatusBar": {
@@ -24,7 +24,7 @@
     "android": {
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/appLogo.png",
+        "foregroundImage": "./assets/images/appIcon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.trucle0505.EzCondo",
@@ -40,7 +40,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/EzCondoIcon.png",
+          "image": "./assets/images/appIcon.png",
           "imageWidth": 300,
           "enableFullScreenImage_legacy": true,
           "resizeMode": "cover",

@@ -54,6 +54,14 @@ export default function MeLayout() {
         name="paymentQR"
         options={{ headerShown: true, title: "" }}
       />
+      <Stack.Screen
+        name="feedback"
+        options={{
+          headerShown: true,
+          title: translation.feedback,
+          headerTitleAlign: "center",
+        }}
+      />
     </Stack>
   );
 }

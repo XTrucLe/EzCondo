@@ -44,24 +44,65 @@ const TabViewScreen = ({
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      {data
-        .filter((n) => n.type.toLowerCase().includes(filterKey || ""))
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
-        .map((item) => (
-          <NotificationBox
-            key={item.id}
-            {...item}
-            onReadLocalUpdate={onReadLocalUpdate}
-            onPress={handlePress}
-          />
-        ))}
+      {filterAndSortNotifications(data, filterKey).map((item) => (
+        <NotificationBox
+          key={item.id}
+          {...item}
+          onReadLocalUpdate={onReadLocalUpdate}
+          onPress={handlePress}
+        />
+      ))}
     </ScrollView>
   );
 };
 
+const filterAndSortNotifications = (
+  notifications: NotificationBoxType[],
+  filterKey?: string
+) => {
+  return notifications
+    .filter((n) => n.type.toLowerCase().includes(filterKey || ""))
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+};
+
+const getRenderScene = (
+  notifications: NotificationBoxType[],
+  refreshing: boolean,
+  onRefresh: () => void,
+  onReadLocalUpdate: (id: string) => void
+) =>
+  SceneMap({
+    notifications: () => (
+      <TabViewScreen
+        data={notifications}
+        filterKey="noti"
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        onReadLocalUpdate={onReadLocalUpdate}
+      />
+    ),
+    fees: () => (
+      <TabViewScreen
+        data={notifications}
+        filterKey="fee"
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        onReadLocalUpdate={onReadLocalUpdate}
+      />
+    ),
+    news: () => (
+      <TabViewScreen
+        data={notifications}
+        filterKey="new"
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        onReadLocalUpdate={onReadLocalUpdate}
+      />
+    ),
+  });
 const NotificationTabs = () => {
   const layout = useWindowDimensions();
   const { translation } = useLanguage();
@@ -79,7 +120,7 @@ const NotificationTabs = () => {
       { key: "fees", title: translation.fees },
       { key: "news", title: translation.news },
     ],
-    []
+    [translation]
   );
 
   const fetchNotifications = useCallback(async () => {
@@ -128,38 +169,12 @@ const NotificationTabs = () => {
 
   const renderScene = useMemo(
     () =>
-      SceneMap({
-        notifications: () => (
-          <TabViewScreen
-            data={notifications.filter((n) =>
-              n.type.toLowerCase().includes("noti")
-            )}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            onReadLocalUpdate={handleReadLocalUpdate}
-          />
-        ),
-        fees: () => (
-          <TabViewScreen
-            data={notifications.filter((n) =>
-              n.type.toLowerCase().includes("fee")
-            )}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            onReadLocalUpdate={handleReadLocalUpdate}
-          />
-        ),
-        news: () => (
-          <TabViewScreen
-            data={notifications.filter((n) =>
-              n.type.toLowerCase().includes("new")
-            )}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            onReadLocalUpdate={handleReadLocalUpdate}
-          />
-        ),
-      }),
+      getRenderScene(
+        notifications,
+        refreshing,
+        onRefresh,
+        handleReadLocalUpdate
+      ),
     [notifications, refreshing, onRefresh]
   );
 
@@ -205,7 +220,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingTop: 12,
-    paddingHorizontal: 16,
   },
 });
 

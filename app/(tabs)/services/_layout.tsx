@@ -32,6 +32,13 @@ export default function ServiceLayout() {
           headerTitle: "",
         }}
       />
+      <Stack.Screen
+        name="using_detail"
+        options={{
+          headerShown: true,
+          headerTitle: "",
+        }}
+      />
     </Stack>
   );
 }

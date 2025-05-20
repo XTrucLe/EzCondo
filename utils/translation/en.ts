@@ -92,6 +92,8 @@ export default {
   year: "Year",
   month: "Month",
   day: "Day",
+  yearly: "Yearly",
+  monthly: "Monthly",
   address: "Address",
   emergencyContact: "Emergency contact",
 
@@ -212,6 +214,7 @@ export default {
 
   // ============ Fees ============
   fee: "Fee",
+  totalCost: "Total cost",
   feeCard: "Fee card",
   dueDate: "Due date",
   unpaid: "Unpaid",
@@ -236,6 +239,18 @@ export default {
   privacySetting: "Privacy settings",
 
   // ============ Statuses ============
+  active: "Active",
+  inactive: "Inactive",
+  pending: "Pending",
+  inUse: "In use",
+  inUseStatus: "In use",
+  notInUse: "Not in use",
+  notInUseStatus: "Not in use",
+  inProgress: "In progress",
+  inProgressStatus: "In progress",
+  completedStatus: "Completed",
+  completedInUse: "Completed",
+  completedNotInUse: "Completed",
   statusActive: "Active",
   statusInactive: "Inactive",
   statusPending: "Pending",
@@ -349,4 +364,15 @@ export default {
   paidDate: "Paid date",
   modifiedAt: "Modified at",
   approvedBy: "Approved by",
+
+  // ============ Time ============
+  time: "Time",
+  timeUsing: "Time used",
+  timeRemaining: "Time remaining",
+  timeStart: "Start time",
+  timeEnd: "End time",
+  timeDuration: "Duration",
+  timeInterval: "Interval",
+  renewalPeriod: "Renewal period",
+  timeUnit: "Time unit",
 };

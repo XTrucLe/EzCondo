@@ -6,19 +6,16 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import ModalCustome from "../custome/ModalCustome";
 import { getMyBooking } from "@/services/bookingService";
 import { RegisteredService } from "@/utils/type/bookingType";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useNavigation } from "expo-router";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function ServicePaymentHistory() {
   const { translation } = useLanguage.getState();
-
+  const navigation = useNavigation<any>();
   const [bookings, setBookings] = useState<RegisteredService[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedBooking, setSelectedBooking] =
-    useState<RegisteredService | null>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -34,42 +31,78 @@ export default function ServicePaymentHistory() {
   }, []);
 
   const handleCardPress = (item: RegisteredService) => {
-    setSelectedBooking(item);
-    setIsModalVisible(true);
+    navigation.navigate("using_detail", {
+      data: item,
+    });
   };
 
   const renderBookingCard = ({ item }: { item: RegisteredService }) => {
     const progress = calculateProgress(item.startDate, item.endDate);
     const statusConfig = getStatusConfig(item.status);
-
+    const DateRow = ({
+      icon,
+      date,
+      lable,
+    }: {
+      icon: keyof typeof Icon.glyphMap;
+      date: string;
+      lable: string;
+    }) => (
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}
+      >
+        <Icon
+          name={icon}
+          size={20}
+          color="#6B7280"
+          style={{ marginRight: 6 }}
+        />
+        <Text style={{ fontSize: 13, color: "#6B7280" }}>{lable}:</Text>
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: "500",
+            marginLeft: 4,
+            color: "#1F2937",
+          }}
+        >
+          {formatDate(date)}
+        </Text>
+      </View>
+    );
     return (
       <TouchableOpacity
         style={styles.card}
         onPress={() => handleCardPress(item)}
-        activeOpacity={0.8}
+        activeOpacity={0.85}
       >
+        {/* Header: Tên + trạng thái */}
         <View style={styles.headerRow}>
           <Text style={styles.serviceName} numberOfLines={1}>
             {item.serviceName}
           </Text>
           <View style={[styles.statusBadge, statusConfig.bgColor]}>
-            <Text style={styles.statusText}>{statusConfig.label}</Text>
+            <Text style={styles.statusText}>
+              {translation[statusConfig.label]}
+            </Text>
           </View>
         </View>
 
+        {/* Ngày bắt đầu / kết thúc */}
         <View style={styles.dateContainer}>
           <DateRow
-            icon="play-circle-fill"
+            icon="calendar-outline"
             date={item.startDate}
             lable={translation.startDate}
           />
           <DateRow
-            icon="stop-circle"
+            icon="calendar"
             date={item.endDate}
             lable={translation.endDate}
           />
         </View>
 
+        {/* Progress */}
         <ProgressBar
           progress={progress}
           duration={calculateDuration(item.startDate, item.endDate)}
@@ -86,32 +119,9 @@ export default function ServicePaymentHistory() {
         renderItem={renderBookingCard}
         contentContainerStyle={styles.listContent}
       />
-
-      <ModalCustome
-        visible={isModalVisible}
-        setVisible={setIsModalVisible}
-        data={selectedBooking ?? undefined}
-      />
     </View>
   );
 }
-
-// Helper Components
-const DateRow = ({
-  icon,
-  date,
-  lable,
-}: {
-  icon: keyof typeof MaterialIcons.glyphMap;
-  date: string;
-  lable?: string;
-}) => (
-  <View style={styles.dateRow}>
-    <MaterialIcons name={icon} size={16} color="#4b5563" />
-    {lable && <Text style={styles.dateText}>{lable} :</Text>}
-    <Text style={styles.dateText}>{formatDate(date)}</Text>
-  </View>
-);
 
 const ProgressBar = ({
   progress,
@@ -161,7 +171,7 @@ const getStatusConfig = (status: string) => {
     case "completed":
       return { label: "Completed", bgColor: styles.statusCompleted };
     case "in_use":
-      return { label: "In Use", bgColor: styles.statusInUse };
+      return { label: "inUse", bgColor: styles.statusInUse };
     case "pending":
       return { label: "Pending", bgColor: styles.statusPending };
     case "cancelled":
@@ -183,14 +193,14 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#ffffff",
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
+    marginVertical: 8,
+    marginHorizontal: 12,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
   headerRow: {
     flexDirection: "row",
@@ -201,33 +211,38 @@ const styles = StyleSheet.create({
   serviceName: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#111827",
+    color: "#1F2937",
     flex: 1,
-    marginRight: 8,
+    marginRight: 10,
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
     borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    minWidth: 80,
+    alignItems: "center",
+    justifyContent: "center",
   },
   statusText: {
-    fontSize: 12,
-    fontWeight: "500",
+    fontSize: 14,
+    color: "#fff",
+    fontWeight: "700",
+  },
+  dateContainer: {
+    flexDirection: "column",
+    marginBottom: 12,
   },
   statusCompleted: {
     backgroundColor: "#ecfdf5",
   },
   statusInUse: {
-    backgroundColor: "#e0f2fe",
+    backgroundColor: "#0294f5",
   },
   statusPending: {
     backgroundColor: "#fffbeb",
   },
   statusCancelled: {
     backgroundColor: "#fee2e2",
-  },
-  dateContainer: {
-    marginBottom: 12,
   },
   dateRow: {
     flexDirection: "row",
@@ -254,7 +269,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#10b981",
   },
   durationText: {
-    fontSize: 12,
+    fontSize: 14,
     color: "#6b7280",
     textAlign: "right",
   },

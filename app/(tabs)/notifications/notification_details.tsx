@@ -4,37 +4,42 @@ import { useRoute } from "@react-navigation/native";
 import { NotificationBoxType } from "@/utils/type/notificationBoxType";
 import useDateUtils from "@/hooks/useDateUtils";
 import { Ionicons } from "@expo/vector-icons";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const notification_details = () => {
   const { formatDate } = useDateUtils();
-  const { notice } = useRoute().params as { notice: NotificationBoxType };
-  console.log("notice", notice);
+  const { translation } = useLanguage();
+  const route = useRoute();
+  const { notice } = route.params as { notice?: NotificationBoxType };
+
+  const MetaRow = ({
+    icon,
+    text,
+  }: {
+    icon: keyof typeof Ionicons.glyphMap;
+    text: string;
+  }) => (
+    <View style={styles.metaContainer}>
+      <Ionicons name={icon} size={16} color="#666" />
+      <Text style={styles.metaText}>{text}</Text>
+    </View>
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>{notice.title}</Text>
+      <Text style={styles.title}>{notice?.title}</Text>
 
-      <View style={styles.metaContainer}>
-        <Ionicons name="time-outline" size={16} color="#666" />
-        <Text style={styles.metaText}>
-          {formatDate(new Date(notice.createdAt))}
-        </Text>
-      </View>
-
-      <View style={styles.metaContainer}>
-        <Ionicons name="pricetag-outline" size={16} color="#666" />
-        <Text style={styles.metaText}>{notice.type}</Text>
-      </View>
-
-      <View style={styles.metaContainer}>
-        <Ionicons name="person-outline" size={16} color="#666" />
-        <Text style={styles.metaText}>
-          Tạo bởi: {notice.createdBy || "Hệ thống"}
-        </Text>
-      </View>
-
-      <Text style={styles.content}>{notice.content}</Text>
-      {notice.images && notice.images.length > 0 && (
+      <MetaRow
+        icon="time-outline"
+        text={notice?.createdAt ? formatDate(new Date(notice.createdAt)) : ""}
+      />
+      <MetaRow icon="pricetag-outline" text={notice?.type ?? ""} />
+      <MetaRow
+        icon="person-outline"
+        text={`Tạo bởi: ${notice?.createdBy || "Hệ thống"}`}
+      />
+      <Text style={styles.content}>{notice?.content}</Text>
+      {notice?.images && notice.images.length > 0 && (
         <View style={styles.imageContainer}>
           {notice.images.map((img, index) => (
             <Image

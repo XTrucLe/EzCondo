@@ -91,6 +91,8 @@ export default {
   year: "Năm",
   month: "Tháng",
   day: "Ngày",
+  yearly: "Hàng năm",
+  monthly: "Hàng tháng",
   address: "Địa chỉ", // Added user info term
   emergencyContact: "Liên hệ khẩn cấp", // Added user info term
 
@@ -211,6 +213,7 @@ export default {
 
   // ============ Fees ============
   fee: "Phí",
+  totalCost: "Tổng chi phí",
   feeCard: "Thẻ phí",
   dueDate: "Ngày đến hạn",
   unpaid: "Chưa thanh toán",
@@ -235,6 +238,18 @@ export default {
   privacySetting: "Cài đặt bảo mật", // Added setting term
 
   // ============ Statuses ============
+  active: "Đang hoạt động",
+  inactive: "Ngừng hoạt động",
+  pending: "Đang chờ",
+  inUse: "Đang sử dụng",
+  inUseStatus: "Đang sử dụng",
+  notInUse: "Chưa sử dụng",
+  notInUseStatus: "Chưa sử dụng",
+  inProgress: "Đang tiến hành",
+  inProgressStatus: "Đang tiến hành",
+  completedStatus: "Đã hoàn thành",
+  completedInUse: "Đã hoàn thành",
+  completedNotInUse: "Đã hoàn thành",
   statusActive: "Đang hoạt động",
   statusInactive: "Ngừng hoạt động",
   statusPending: "Đang chờ duyệt",
@@ -348,4 +363,15 @@ export default {
   paidDate: "Ngày thanh toán",
   modifiedAt: "Ngày chỉnh sửa", // Added metadata term
   approvedBy: "Người phê duyệt", // Added metadata term
+
+  // ============ Time ============
+  time: "Thời gian",
+  timeUsing: "Thời gian sử dụng",
+  timeRemaining: "Thời gian còn lại",
+  timeStart: "Thời gian bắt đầu",
+  timeEnd: "Thời gian kết thúc",
+  timeDuration: "Thời gian sử dụng",
+  timeInterval: "Khoảng thời gian",
+  renewalPeriod: "Thời gian gia hạn",
+  timeUnit: "Đơn vị thời gian",
 };

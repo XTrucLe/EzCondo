@@ -14,7 +14,7 @@ const ServiceOverview = () => {
   const fetchData = async () => {
     try {
       const response = await getServiceDetailAndImage();
-      console.log("response", response);
+
       setData(response);
     } catch (error) {
       console.error("Error fetching data:", error);

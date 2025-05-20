@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Button, Card, Title } from "react-native-paper";
@@ -96,7 +97,7 @@ const ReportIssueScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <Title style={styles.screenTitle}>🛠 {translation.sendIncident}</Title>
 
       <Text style={styles.label}>{translation.incidentTitle}</Text>
@@ -177,7 +178,7 @@ const ReportIssueScreen = () => {
         {translation.sendIncident}
       </Button>
       <StatusScreen type={statusNow} title={translation.success} />
-    </ScrollView>
+    </View>
   );
 };
 

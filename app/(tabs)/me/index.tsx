@@ -147,7 +147,7 @@ const ProfileScreen = () => {
       id: "helpCenter",
       title: "Trung tâm trợ giúp",
       icon: "help-circle",
-      action: () => navigation.navigate("support" as never),
+      action: () => navigation.navigate("feedback" as never),
     },
     {
       id: "accountSettings",
