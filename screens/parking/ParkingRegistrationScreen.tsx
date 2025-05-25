@@ -22,7 +22,7 @@ import useAuthStore from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
 import { UserInfoFormProps } from "@/utils/type/userInfoType";
 
-const VehicleCardForm = () => {
+export function ParkingRegistrationScreen() {
   const navigation = useNavigation<any>();
   const { translation } = useLanguage();
   const { user } = useAuthStore();
@@ -267,4 +267,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VehicleCardForm;

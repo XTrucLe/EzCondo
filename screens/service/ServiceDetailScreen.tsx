@@ -1,6 +1,5 @@
 import {
   Dimensions,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,46 +14,55 @@ import { formatVND } from "@/hooks/useFormat";
 import { SlideShow } from "@/components/ui/SlideShow";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useNavigation } from "expo-router";
+import { useAppNavigator } from "@/navigation/useAppNavigate";
 
 const { width } = Dimensions.get("window");
 
 export default function DetailScreen() {
-  const { data } = useRoute().params as {
-    data: ServiceDetailType;
+  const { serviceDetail } = useRoute().params as {
+    serviceDetail: ServiceDetailType;
   };
-  const navigation = useNavigation<any>();
+  const { navigate } = useAppNavigator();
   const { translation } = useLanguage.getState();
 
   const onRegister = () => {
-    navigation.navigate("subscription", {
-      service: data,
+    navigate("ServiceRegistration", {
+      serviceInfo: serviceDetail,
     });
   };
   return (
     <ScrollView style={styles.container}>
-      {data.images && data.images.length > 0 && (
-        <SlideShow item={data.images} key={data.id} time={6000} />
+      {serviceDetail.images && serviceDetail.images.length > 0 && (
+        <SlideShow
+          item={serviceDetail.images}
+          key={serviceDetail.id}
+          time={6000}
+        />
       )}
 
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>{data.serviceName}</Text>
+          <Text style={styles.title}>{serviceDetail.serviceName}</Text>
           <View
             style={[
               styles.statusBadge,
-              data.status === "active"
+              serviceDetail.status === "active"
                 ? styles.activeBadge
                 : styles.inactiveBadge,
             ]}
           >
             <Icon
-              name={data.status === "active" ? "check-circle" : "close-circle"}
+              name={
+                serviceDetail.status === "active"
+                  ? "check-circle"
+                  : "close-circle"
+              }
               size={16}
               color="#fff"
             />
             <Text style={styles.statusText}>
-              {data.status === "active"
+              {serviceDetail.status === "active"
                 ? translation.statusActive
                 : translation.statusInactive}
             </Text>
@@ -64,26 +72,26 @@ export default function DetailScreen() {
         {/* Mô tả */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{translation.description}</Text>
-          <Text style={styles.description}>{data.description}</Text>
+          <Text style={styles.description}>{serviceDetail.description}</Text>
         </View>
 
         {/* Giá dịch vụ */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{translation.servicePrice}</Text>
-          {data.typeOfMonth && (
+          {serviceDetail.typeOfMonth && (
             <Text style={styles.price}>
-              {formatVND(data.priceOfMonth)} / {translation.month}
+              {formatVND(serviceDetail.priceOfMonth)} / {translation.month}
             </Text>
           )}
-          {data.typeOfYear && (
+          {serviceDetail.typeOfYear && (
             <Text style={styles.price}>
-              {formatVND(data.priceOfYear)} / {translation.year}
+              {formatVND(serviceDetail.priceOfYear)} / {translation.year}
             </Text>
           )}
         </View>
 
         {/* Nút đăng ký */}
-        {data.status === "active" && (
+        {serviceDetail.status === "active" && (
           <TouchableOpacity style={styles.button} onPress={onRegister}>
             <Text style={styles.buttonText}>{translation.regis}</Text>
           </TouchableOpacity>

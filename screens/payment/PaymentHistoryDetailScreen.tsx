@@ -6,64 +6,58 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useRoute, RouteProp } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { PaymentHistoryType } from "@/utils/type/paymentType";
 import useDateUtils from "@/hooks/useDateUtils";
 
-type RouteParams = {
-  params: {
-    payment: PaymentHistoryType;
-  };
+const getStatusLabel = (status: string) => {
+  switch (status) {
+    case "completed":
+      return "Đã thanh toán";
+    case "pending":
+      return "Chờ xử lý";
+    case "failed":
+      return "Thất bại";
+    default:
+      return "Không xác định";
+  }
 };
 
-const PaymentDetailScreen = () => {
-  const route = useRoute<RouteProp<RouteParams, "params">>();
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "completed":
+      return "#28a745";
+    case "pending":
+      return "#ffc107";
+    case "failed":
+      return "#dc3545";
+    default:
+      return "#6c757d";
+  }
+};
+
+const formatCurrency = (amount: number) =>
+  amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+
+const DetailRow = ({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value?: string;
+  color?: string;
+}) => (
+  <View style={styles.itemRow}>
+    <Text style={styles.itemLabel}>{label}</Text>
+    <Text style={[styles.itemValue, color && { color }]}>{value || "-"}</Text>
+  </View>
+);
+
+export default function PaymentDetailScreen() {
+  const { params } = useRoute() as { params: { payment: PaymentHistoryType } };
   const { formatDate } = useDateUtils();
-  const payment = route.params?.payment;
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "Đã thanh toán";
-      case "pending":
-        return "Chờ xử lý";
-      case "failed":
-        return "Thất bại";
-      default:
-        return "Không xác định";
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "#28a745";
-      case "pending":
-        return "#ffc107";
-      case "failed":
-        return "#dc3545";
-      default:
-        return "#6c757d";
-    }
-  };
-
-  const formatCurrency = (amount: number) =>
-    amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
-
-  const DetailRow = ({
-    label,
-    value,
-    color,
-  }: {
-    label: string;
-    value?: string;
-    color?: string;
-  }) => (
-    <View style={styles.itemRow}>
-      <Text style={styles.itemLabel}>{label}</Text>
-      <Text style={[styles.itemValue, color && { color }]}>{value || "-"}</Text>
-    </View>
-  );
+  const payment = params.payment;
 
   if (!payment) {
     return (
@@ -83,15 +77,15 @@ const PaymentDetailScreen = () => {
 
           <DetailRow
             label="Mã giao dịch"
-            value={
-              payment.paymentId.slice(-5) ||
-              `HĐ #${payment.paymentId.slice(-5)}`
-            }
+            value={`HĐ #${payment.paymentId.slice(-5)}`}
           />
-          <DetailRow label="Ngày tạo" value={payment.createDate} />
+          <DetailRow
+            label="Ngày tạo"
+            value={formatDate(new Date(payment.createDate))}
+          />
           <DetailRow label="Căn hộ" value={payment.apartmentNumber} />
           <DetailRow label="Người thanh toán" value={payment.fullName} />
-          <DetailRow label="Hình thức" value={"QR code"} />
+          <DetailRow label="Hình thức" value="QR code" />
           <DetailRow
             label="Trạng thái"
             value={getStatusLabel(payment.status)}
@@ -102,7 +96,7 @@ const PaymentDetailScreen = () => {
       </ScrollView>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -182,5 +176,3 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
 });
-
-export default PaymentDetailScreen;

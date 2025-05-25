@@ -162,6 +162,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
     backgroundColor: "#f5f5f5",
+    elevation: 10,
+    zIndex: 1000,
   },
   icon: {
     marginBottom: 20,

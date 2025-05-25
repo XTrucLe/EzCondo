@@ -17,15 +17,17 @@ const handleNotificationListener = async (
   image?: string
 ) => {
   try {
+    if (!title && !message) {
+      console.warn("⚠️ Không có tiêu đề hoặc nội dung thông báo");
+      return;
+    }
     const content: Notifications.NotificationContentInput = {
       title: title || "📩 Thông báo từ EzCondo",
-
       body: message || "Chào mừng bạn đến với Ứng dụng!",
       data: {
         image: image || "",
       },
       sound: "default",
-      priority: Notifications.AndroidNotificationPriority.HIGH,
     };
 
     await Notifications.scheduleNotificationAsync({

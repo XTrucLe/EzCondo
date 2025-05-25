@@ -8,7 +8,7 @@ import { validateChangePassword } from "@/utils/validate/validateRules";
 import React from "react";
 import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
 
-const ChangePassword = () => {
+export default function ChangePasswordScreen() {
   const { startLoading, stopLoading } = useLoading();
 
   const [form, setForm] = React.useState({
@@ -109,7 +109,7 @@ const ChangePassword = () => {
       <View style={{ flex: 1 }}></View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -144,5 +144,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
-export default ChangePassword;

@@ -6,11 +6,13 @@ import useDateUtils from "@/hooks/useDateUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { useLanguage } from "@/hooks/useLanguage";
 
-const notification_details = () => {
+export default function NotificationDetailScreen() {
   const { formatDate } = useDateUtils();
   const { translation } = useLanguage();
   const route = useRoute();
-  const { notice } = route.params as { notice?: NotificationBoxType };
+  const { selectedNotification } = route.params as {
+    selectedNotification?: NotificationBoxType;
+  };
 
   const MetaRow = ({
     icon,
@@ -27,33 +29,48 @@ const notification_details = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>{notice?.title}</Text>
+      <Text style={styles.title}>{selectedNotification?.title}</Text>
 
       <MetaRow
         icon="time-outline"
-        text={notice?.createdAt ? formatDate(new Date(notice.createdAt)) : ""}
+        text={
+          selectedNotification?.createdAt
+            ? formatDate(new Date(selectedNotification.createdAt))
+            : ""
+        }
       />
-      <MetaRow icon="pricetag-outline" text={notice?.type ?? ""} />
+      <MetaRow
+        icon="pricetag-outline"
+        text={
+          selectedNotification?.type
+            ? selectedNotification.type.charAt(0).toUpperCase() +
+              selectedNotification.type.slice(1)
+            : ""
+        }
+      />
       <MetaRow
         icon="person-outline"
-        text={`Tạo bởi: ${notice?.createdBy || "Hệ thống"}`}
+        text={`${translation.createBy}: ${
+          selectedNotification?.createdBy || "Hệ thống"
+        }`}
       />
-      <Text style={styles.content}>{notice?.content}</Text>
-      {notice?.images && notice.images.length > 0 && (
-        <View style={styles.imageContainer}>
-          {notice.images.map((img, index) => (
-            <Image
-              key={index}
-              source={{ uri: img }}
-              style={styles.image}
-              resizeMode="contain"
-            />
-          ))}
-        </View>
-      )}
+      <Text style={styles.content}>{selectedNotification?.content}</Text>
+      {selectedNotification?.images &&
+        selectedNotification.images.length > 0 && (
+          <View style={styles.imageContainer}>
+            {selectedNotification.images.map((img, index) => (
+              <Image
+                key={index}
+                source={{ uri: img }}
+                style={styles.image}
+                resizeMode="contain"
+              />
+            ))}
+          </View>
+        )}
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -64,6 +81,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "bold",
+    alignSelf: "center",
     color: "#333",
     marginBottom: 10,
   },
@@ -94,5 +112,3 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
-
-export default notification_details;

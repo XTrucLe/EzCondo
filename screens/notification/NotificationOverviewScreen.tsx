@@ -12,8 +12,20 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { getNotification } from "@/services/notificationService";
 import { NotificationBoxType } from "@/utils/type/notificationBoxType";
 import CustomTabBar from "@/components/ui/custome/CustomTabBar";
-import { useNavigation } from "expo-router";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useAppNavigator } from "@/navigation/useAppNavigate";
+
+const filterAndSortNotifications = (
+  notifications: NotificationBoxType[],
+  filterKey?: string
+) => {
+  return notifications
+    .filter((n) => n.type.toLowerCase().includes(filterKey || ""))
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+};
 
 type TabScreenProps = {
   data: NotificationBoxType[];
@@ -30,13 +42,17 @@ const TabViewScreen = ({
   onRefresh,
   onReadLocalUpdate,
 }: TabScreenProps) => {
-  const navigation = useNavigation<any>();
+  const { navigate } = useAppNavigator();
 
-  const handlePress = (itemId: String) => {
-    navigation.navigate("notification_details", {
-      notice: data.find((item) => item.id === itemId),
-    });
+  const navigateToNotificationDetails = (itemId: string) => {
+    console.log("itemId", itemId);
+
+    var selectedNotification = data.find((item) => item.id === itemId);
+    console.log("selectedNotification", selectedNotification);
+
+    navigate("NotificationDetail", { selectedNotification });
   };
+
   return (
     <ScrollView
       style={styles.screen}
@@ -49,23 +65,11 @@ const TabViewScreen = ({
           key={item.id}
           {...item}
           onReadLocalUpdate={onReadLocalUpdate}
-          onPress={handlePress}
+          onPress={navigateToNotificationDetails}
         />
       ))}
     </ScrollView>
   );
-};
-
-const filterAndSortNotifications = (
-  notifications: NotificationBoxType[],
-  filterKey?: string
-) => {
-  return notifications
-    .filter((n) => n.type.toLowerCase().includes(filterKey || ""))
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
 };
 
 const getRenderScene = (
@@ -103,7 +107,7 @@ const getRenderScene = (
       />
     ),
   });
-const NotificationTabs = () => {
+export default function NotificationOverviewScreen() {
   const layout = useWindowDimensions();
   const { translation } = useLanguage();
   const [index, setIndex] = useState(0);
@@ -197,7 +201,7 @@ const NotificationTabs = () => {
       style={[styles.container, { backgroundColor }]}
     />
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -222,5 +226,3 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
 });
-
-export default NotificationTabs;

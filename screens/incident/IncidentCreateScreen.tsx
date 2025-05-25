@@ -28,7 +28,7 @@ import {
 const MAX_MEDIA = 6;
 const NUM_COLUMNS = 3;
 
-const ReportIssueScreen = () => {
+export default function IncidentCreateScreen() {
   const { startLoading, stopLoading } = useLoading();
   const { translation } = useLanguage();
   const [statusNow, setStatus] = useState<StatusType>("null");
@@ -244,4 +244,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReportIssueScreen;

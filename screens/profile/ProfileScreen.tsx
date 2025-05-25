@@ -5,15 +5,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { formFields, UserInfoProps } from "@/utils/type/userInfoType";
 import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Modal,
-  Button,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Card } from "react-native-paper";
 
 const ProfileScreen = () => {

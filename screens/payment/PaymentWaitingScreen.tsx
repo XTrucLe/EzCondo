@@ -28,7 +28,7 @@ const apiMap: { [key: string]: (id: string) => void } = {
   parking: createParkingPayment,
 };
 
-const PendingPaymentsScreen = () => {
+export default function PaymentWaitingScreen() {
   const theme = {
     background: useThemeColor({}, "background"),
     card: useThemeColor({}, "cardBackground"),
@@ -188,7 +188,7 @@ const PendingPaymentsScreen = () => {
       />
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -275,5 +275,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 });
-
-export default PendingPaymentsScreen;

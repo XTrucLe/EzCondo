@@ -1,6 +1,7 @@
+import { getMyParkingDetails } from "@/services/parkingService";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import { Text, TouchableOpacity } from "react-native";
+import { Alert, Text, TouchableOpacity } from "react-native";
 
 type HeaderRightIconProps = {
   text?: string;
@@ -35,9 +36,7 @@ const HeaderRightIcon = ({
 
   return (
     <TouchableOpacity
-      onPress={() => {
-        navigation.navigate(navigationScreen as never);
-      }}
+      onPress={() => navigation.navigate(navigationScreen as never)}
       style={{ marginRight: 16 }}
     >
       {text && <Text style={{ marginRight: 8 }}>{text}</Text>}

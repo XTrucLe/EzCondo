@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,17 +7,18 @@ import {
   Switch,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { Avatar, Button, Card, List } from "react-native-paper";
-import { useNavigation } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 
 // Custom hooks and utilities
 import useAuthStore from "@/hooks/useAuth";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useLanguage } from "@/hooks/useLanguage";
 import { userDefaultImage } from "@/constants/ImageLink";
-import { ScrollView } from "react-native";
+import { useAppNavigator } from "@/navigation/useAppNavigate";
 
 // Types
 type SettingItem = {
@@ -29,9 +30,9 @@ type SettingItem = {
   description?: string;
 };
 
-const ProfileScreen = () => {
+export default function SettingScreen() {
   // Hooks and state
-  const navigation = useNavigation();
+  const { navigate } = useAppNavigator();
   const { logout, user: userInfo } = useAuthStore();
   const [darkMode, setDarkMode] = useState(false);
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
@@ -49,37 +50,41 @@ const ProfileScreen = () => {
   // Load settings from secure storage
   useEffect(() => {
     const loadSettings = async () => {
-      const [storedDarkMode, stored2FA] = await Promise.all([
-        SecureStore.getItem("darkMode"),
-        SecureStore.getItem("twoFactorAuth"),
-      ]);
+      try {
+        const [storedDarkMode, stored2FA] = await Promise.all([
+          SecureStore.getItemAsync("darkMode"),
+          SecureStore.getItemAsync("twoFactorAuth"),
+        ]);
 
-      setDarkMode(storedDarkMode === "true");
-      setTwoFactorAuth(stored2FA === "true");
+        setDarkMode(storedDarkMode === "true");
+        setTwoFactorAuth(stored2FA === "true");
+      } catch (error) {
+        console.error("Failed to load settings:", error);
+      }
     };
 
     loadSettings();
   }, []);
 
   // Toggle handlers
-  const toggleDarkMode = async () => {
+  const toggleDarkMode = useCallback(async () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    await SecureStore.setItem("darkMode", newDarkMode.toString());
-  };
+    await SecureStore.setItemAsync("darkMode", newDarkMode.toString());
+  }, [darkMode]);
 
-  const toggleTwoFactorAuth = async () => {
+  const toggleTwoFactorAuth = useCallback(async () => {
     const new2FA = !twoFactorAuth;
     setTwoFactorAuth(new2FA);
-    await SecureStore.setItem("twoFactorAuth", new2FA.toString());
-  };
+    await SecureStore.setItemAsync("twoFactorAuth", new2FA.toString());
+  }, [twoFactorAuth]);
 
-  const handleLanguageChange = () => {
+  const handleLanguageChange = useCallback(() => {
     setLanguage(currentLang === "en" ? "vi" : "en");
-  };
+  }, [currentLang, setLanguage]);
 
   // Logout handler
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     Alert.alert(
       `${translation.confirm} ${translation.logout}`,
       translation.confirmLogout,
@@ -88,34 +93,31 @@ const ProfileScreen = () => {
         {
           text: translation.logout,
           onPress: async () => {
-            logout();
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "auth" as never }],
-            });
+            await logout();
+            navigate("login");
           },
           style: "destructive",
         },
       ]
     );
-  };
+  }, [logout, navigate, translation]);
 
+  // Settings sections
   const paymentSettings: SettingItem[] = [
     {
       id: "paymentHistory",
       title: translation.paymentHistory,
       icon: "history",
-      action: () => navigation.navigate("payment_history" as never),
+      action: () => navigate("Payment", { screen: "PaymentHistory" }),
     },
     {
       id: "pendingPayments",
       title: translation.paymentPending,
       icon: "clock-outline",
-      action: () => navigation.navigate("payment_waiting" as never),
+      action: () => navigate("Payment", { screen: "PaymentWaiting" }),
     },
   ];
 
-  // Settings sections
   const generalSettings: SettingItem[] = [
     {
       id: "darkMode",
@@ -145,45 +147,48 @@ const ProfileScreen = () => {
   const supportSettings: SettingItem[] = [
     {
       id: "helpCenter",
-      title: "Trung tâm trợ giúp",
+      title: "Feedback",
       icon: "help-circle",
-      action: () => navigation.navigate("feedback" as never),
+      action: () => navigate("Feedback"),
     },
     {
       id: "accountSettings",
       title: translation.accountSetting,
       icon: "account-cog",
-      action: () => navigation.navigate("profile_edit" as never),
+      action: () => {},
     },
     {
       id: "changePassword",
       title: translation.changePassword,
       icon: "lock-reset",
-      action: () => navigation.navigate("changePassword" as never),
+      action: () => navigate("ChangePassword"),
     },
   ];
 
-  // Render function for settings items
-  const renderSettingItem = (item: SettingItem) => (
-    <List.Item
-      key={item.id}
-      title={item.title}
-      description={item.description}
-      left={() => <List.Icon icon={item.icon as any} color={theme.icon} />}
-      right={() => item.rightComponent}
-      onPress={item.action}
-      style={styles.listItem}
-    />
+  // Memoized render function for settings items
+  const renderSettingItem = useCallback(
+    (item: SettingItem) => (
+      <List.Item
+        key={item.id}
+        title={item.title}
+        description={item.description}
+        left={() => <List.Icon icon={item.icon} color={theme.icon} />}
+        right={() => item.rightComponent}
+        onPress={item.action}
+        style={styles.listItem}
+      />
+    ),
+    [theme.icon]
   );
 
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
     >
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Profile Card */}
         <TouchableOpacity
-          onPress={() => navigation.navigate("profile" as never)}
+          onPress={() => navigate("Profile", { screen: "ProfileOverview" })}
         >
           <Card
             style={[
@@ -198,7 +203,7 @@ const ProfileScreen = () => {
                   userInfo?.avatar ? { uri: userInfo.avatar } : userDefaultImage
                 }
               />
-              <View style={{ marginLeft: 15 }}>
+              <View style={styles.profileTextContainer}>
                 <Text style={[styles.name, { color: theme.text }]}>
                   {userInfo?.fullName}
                 </Text>
@@ -209,7 +214,7 @@ const ProfileScreen = () => {
               <List.Icon
                 icon="chevron-right"
                 color={theme.icon}
-                style={{ position: "absolute", right: 10 }}
+                style={styles.profileChevron}
               />
             </View>
           </Card>
@@ -218,12 +223,12 @@ const ProfileScreen = () => {
         {/* Payment Settings Section */}
         <List.Section>
           <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
-            {translation.paymentHistory}
+            {translation.payment}
           </List.Subheader>
           {paymentSettings.map(renderSettingItem)}
         </List.Section>
 
-        {/* Settings Sections */}
+        {/* General Settings Section */}
         <List.Section>
           <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
             {translation.generalSetting}
@@ -231,6 +236,7 @@ const ProfileScreen = () => {
           {generalSettings.map(renderSettingItem)}
         </List.Section>
 
+        {/* Support Settings Section */}
         <List.Section>
           <List.Subheader style={[styles.subHeader, { color: theme.text }]}>
             {translation.support}
@@ -243,46 +249,65 @@ const ProfileScreen = () => {
           mode="contained"
           onPress={handleLogout}
           style={[styles.logoutButton, { backgroundColor: theme.error }]}
+          labelStyle={styles.logoutButtonText}
         >
           {translation.logout}
         </Button>
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
-    marginTop: 20,
+    paddingTop: 16,
+  },
+  scrollContainer: {
+    paddingTop: 16,
+    paddingBottom: 24,
   },
   profileCard: {
-    width: "96%",
-    alignSelf: "center",
-    padding: 15,
-    borderRadius: 10,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    padding: 16,
+    borderRadius: 12,
+    elevation: 2,
   },
   profileInfo: {
     flexDirection: "row",
     alignItems: "center",
   },
+  profileTextContainer: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  profileChevron: {
+    marginLeft: 8,
+  },
   name: {
     fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 4,
   },
   subHeader: {
-    marginTop: 10,
+    paddingHorizontal: 24,
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  listItem: {
+    paddingLeft: 24,
+  },
+  logoutButton: {
+    marginHorizontal: 24,
+    marginTop: 32,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  logoutButtonText: {
     fontSize: 16,
     fontWeight: "bold",
   },
-  listItem: {
-    paddingLeft: 15,
-  },
-  logoutButton: {
-    marginTop: 20,
-    marginHorizontal: 20,
-  },
 });
-
-export default ProfileScreen;

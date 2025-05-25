@@ -74,7 +74,11 @@ const Header = ({
 
   return (
     <Animated.View style={[styles.header, { height: headerHeight }]}>
-      <Image source={homeHeaderImage} style={styles.headerImageBg}></Image>
+      <Image
+        source={homeHeaderImage}
+        style={styles.headerImageBg}
+        resizeMode="cover"
+      />
       <Text style={[styles.wellcomeText, { color: wellcomeTextColor }]}>
         {textTime}
       </Text>
@@ -177,7 +181,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     objectFit: "fill",
     top: 0,
-    left: 0,
+    left: 1,
     right: 0,
     zIndex: -1,
   },

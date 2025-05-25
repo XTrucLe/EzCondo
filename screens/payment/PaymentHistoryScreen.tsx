@@ -68,7 +68,9 @@ const PaymentHistoryScreen = () => {
   const renderPaymentItem = ({ item }: { item: PaymentHistoryType }) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation.navigate("payment_detail", { payment: item })}
+      onPress={() =>
+        navigation.navigate("PaymentHistoryDetail", { payment: item })
+      }
     >
       <View style={styles.left}>
         <Text style={styles.title}>

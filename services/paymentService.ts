@@ -9,6 +9,8 @@ export const paymentService = {
         url: `${endpoints.payment.createPayment}?bookingId=${bookingId}`,
       });
 
+      console.log("Payment response:", response.data);
+
       return response.data;
     } catch (error) {
       console.error("Error creating payment:", error);
@@ -63,7 +65,7 @@ export const createParkingPayment = async (parkingBillId: string) => {
   try {
     const response = await request({
       method: "post",
-      url: `${endpoints.payment.createpParkingPayment}?parkingId=${parkingBillId}`,
+      url: `${endpoints.payment.createpParkingPayment}?paymentId=${parkingBillId}`,
     });
 
     return response.data;

@@ -17,10 +17,13 @@ import { useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { StatusScreen, StatusType } from "@/components/ui/screen/StatusScreen";
+import { useAppNavigator } from "@/navigation/useAppNavigate";
 
-export default function QRScreen() {
-  const { data } = useRoute().params as { data: PaymentType };
-  const navigation = useNavigation<any>();
+export default function QRCodeScreen() {
+  const { serviceData: data } = useRoute().params as {
+    serviceData: PaymentType;
+  };
+  const { navigate } = useAppNavigator();
 
   const { width } = Dimensions.get("window");
   const { translation } = useLanguage.getState();
@@ -28,7 +31,8 @@ export default function QRScreen() {
   const [paymentData, setPaymentData] = useState<PaymentType>();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isPolling, setIsPolling] = useState(false);
-  const [isSuccess, setIsSuccess] = useState<StatusType>("null");
+  const [status, setStatus] = useState<StatusType>("null");
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -46,8 +50,7 @@ export default function QRScreen() {
           if (response) {
             setIsPolling(false);
             clearInterval(interval);
-            setIsSuccess("success");
-            showToast("Payment successful!");
+            setStatus("success");
           }
         } catch (error) {
           console.error("Payment check error:", error);
@@ -152,12 +155,8 @@ export default function QRScreen() {
           <Text style={styles.toastText}>{toastMessage}</Text>
         </Animated.View>
       )}
-      <StatusScreen
-        type={isSuccess}
-        onRetry={() =>
-          navigation.reset({ index: 0, routes: [{ name: "(tabs)" }] })
-        }
-      />
+
+      {status && <StatusScreen type={status} />}
     </View>
   );
 }

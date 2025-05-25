@@ -14,10 +14,13 @@ const FeedbackScreen = () => {
   const [feedback, setFeedback] = useState("");
 
   const handleSendFeedback = () => {
-    console.log("Title:", title);
-    console.log("Rating:", rating);
-    console.log("Feedback:", feedback);
-    // Xử lý gửi dữ liệu đến backend tại đây
+    const feedbackData = {
+      title,
+      feedback,
+      type: "feedback",
+      reciver: "manager",
+    };
+    console.log("Feedback data:", feedbackData);
   };
 
   return (

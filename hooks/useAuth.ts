@@ -134,7 +134,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     set({ loading: true });
     try {
-      await logoutAPI();
       await regisFCMToken(
         get().fcm?.data ?? "",
         get().fcm?.type ?? "expo",

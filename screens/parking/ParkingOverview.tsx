@@ -77,7 +77,7 @@ const ParkingPassDesign: React.FC<ParkingCardProps> = React.memo(
   }
 );
 
-const ParkingScreen = () => {
+export const ParkingOverview: React.FC = () => {
   const [parkingData, setParkingData] = useState<ParkingType>({
     parkingId: "",
     apartment: "",
@@ -264,5 +264,3 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
-
-export default ParkingScreen;

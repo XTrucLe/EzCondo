@@ -1,23 +1,5 @@
-import React from "react";
-import { Stack } from "expo-router";
+import NotificationNavigation from "@/navigation/NotificationNavigation";
 
-export default function NotificationsLayout() {
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown: false,
-          title: "",
-        }}
-      />
-      <Stack.Screen
-        name="notification_details"
-        options={{
-          headerShown: true,
-          title: "",
-        }}
-      />
-    </Stack>
-  );
+export default function NotificationLayout() {
+  return <NotificationNavigation />;
 }

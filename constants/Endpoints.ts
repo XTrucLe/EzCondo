@@ -41,6 +41,7 @@ export const endpoints = {
     getNotification: `${API_BASE}/Notification/user-get-notifications`,
     readNotification: `${API_BASE}/Notification/notifications/mark-as-read`,
     getNoticeImages: `${API_BASE}/Notification/get-notification-images-by-id`,
+    sendFeedback: `${API_BASE}/Notification/resident-send-feedback`,
   },
 
   fee: {

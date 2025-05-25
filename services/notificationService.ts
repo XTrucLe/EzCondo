@@ -57,3 +57,18 @@ export const getNoticeImages = async (id: string) => {
     return null;
   }
 };
+
+export const sendFeedback = async (data: any) => {
+  try {
+    const response = await request({
+      method: "post",
+      url: endpoints.notification.sendFeedback,
+      data: data,
+    });
+    console.log("sendFeedback", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error sending feedback:", error);
+    throw error;
+  }
+};

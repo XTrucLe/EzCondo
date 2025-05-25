@@ -1,11 +1,11 @@
 import { RefreshControl, ScrollView, StyleSheet, Text } from "react-native";
 import React, { useEffect } from "react";
-import ServiceCard from "../ServiceCard";
 import { getServiceDetailAndImage } from "@/services/servicesService";
 import { ServiceDetailType } from "@/utils/type/serviceDetailType";
-import { StatusScreen } from "./StatusScreen";
+import ServiceCard from "@/components/ui/ServiceCard";
+import { StatusScreen } from "./../../components/ui/screen/StatusScreen";
 
-const ServiceOverview = () => {
+export default function ServiceOverviewScreen(){
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [data, setData] = React.useState<ServiceDetailType[]>([]);
 
@@ -48,8 +48,6 @@ const ServiceOverview = () => {
     </ScrollView>
   );
 };
-
-export default ServiceOverview;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 10, backgroundColor: "#F5F5F5" },

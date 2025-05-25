@@ -28,8 +28,10 @@ export default function DetailPaymentFee() {
       try {
         startLoading();
         const paymentNeed = await getPaymentNeed();
-        let otherPayment = paymentNeed.find(
-          (item: PaymentWaitingType) => item.type.toLowerCase() === "other"
+        console.log("paymentNeed", paymentNeed);
+
+        let otherPayment = paymentNeed.find((item: PaymentWaitingType) =>
+          item.type.toLowerCase().includes("general")
         );
 
         if (otherPayment) {
@@ -111,16 +113,18 @@ export default function DetailPaymentFee() {
             showsVerticalScrollIndicator={false}
           />
 
-          <View style={styles.totalContainer}>
-            <Text style={styles.totalLabel}>Tổng Cộng:</Text>
-            <Text style={styles.totalPrice}>{formatVND(total)} </Text>
+          <View style={styles.footerContainer}>
+            <View style={styles.totalContainer}>
+              <Text style={styles.totalLabel}>Tổng Cộng:</Text>
+              <Text style={styles.totalPrice}>{formatVND(total)} </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.paymentButton}
+              onPress={handlePayment}
+            >
+              <Text style={{ color: "white", fontSize: 16 }}>Thanh toán</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.paymentButton}
-            onPress={handlePayment}
-          >
-            <Text style={{ color: "white", fontSize: 16 }}>Thanh toán</Text>
-          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -154,11 +158,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
     paddingTop: 24,
   },
   listContent: {
     paddingBottom: 16,
+    paddingHorizontal: 16,
   },
   itemContainer: {
     flexDirection: "row",
@@ -212,15 +216,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 20,
     borderRadius: 16,
+    padding: 8,
     backgroundColor: "white",
-    marginTop: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
   },
   totalLabel: {
     fontSize: 18,
@@ -261,6 +259,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
     lineHeight: 20,
+  },
+  footerContainer: {
+    padding: 16,
+    backgroundColor: "white",
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+    marginTop: 16,
   },
   paymentButton: {
     backgroundColor: "#4A6CF7",

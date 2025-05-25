@@ -9,13 +9,10 @@ export type UserInfoProps = {
   avatar?: string;
   role?: string;
   apartmentNumber?: string;
-  status?: string;
 };
 
 export type UserInfoFormProps = {
   fullName: string;
-  no?: string;
-  email: string;
   apartmentNumber?: string;
 };
 
@@ -62,3 +59,17 @@ export const formFields = {
     isEdit: false,
   },
 };
+
+[
+  {
+    createDate: "2025-05-17T05:46:49.813",
+    endDate: "2025-06-17T05:46:36.677",
+    id: "7f793f62-6545-4c6b-ad68-5161007357be",
+    method: "VietQR",
+    price: 5000,
+    serviceId: "48fe711b-aad3-4406-9e90-94231c7efb33",
+    serviceName: "Pool",
+    startDate: "2025-05-17T05:46:49.26",
+    status: "in_use",
+  },
+];

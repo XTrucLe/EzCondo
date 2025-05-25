@@ -10,16 +10,16 @@ import useDateUtils from "@/hooks/useDateUtils";
 import { formatVND } from "@/hooks/useFormat";
 import { useLanguage } from "@/hooks/useLanguage";
 
-export default function UsingDetailScreen() {
+export default function ServiceUsingDetailScreen() {
   const route = useRoute();
+  const { serviceData } = route.params as { serviceData: RegisteredService };
   const { formatDate } = useDateUtils();
   const { translation } = useLanguage();
-  const { data } = route.params as { data: RegisteredService };
   const [serviceDetail, setServiceDetail] = React.useState<ServiceDetailType>();
 
   const getService = async () => {
     try {
-      const response = await getServiceDetail(data.serviceName);
+      const response = await getServiceDetail(serviceData.serviceName);
       const detail = response[0];
       if (detail && detail.id) {
         const images = await getServiceImages(detail.id);
@@ -97,7 +97,10 @@ export default function UsingDetailScreen() {
             <View style={styles.metricItem}>
               <Text style={styles.metricLabel}>{translation.timeUsing}</Text>
               <Text style={styles.metricValue}>
-                {calculateMonthsUsed(data.startDate, data.endDate)}{" "}
+                {calculateMonthsUsed(
+                  serviceData.startDate,
+                  serviceData.endDate
+                )}{" "}
                 {translation.month}
               </Text>
             </View>
@@ -108,7 +111,11 @@ export default function UsingDetailScreen() {
                 {formatVND(
                   (serviceDetail?.priceOfMonth ||
                     serviceDetail?.priceOfYear ||
-                    0) * calculateMonthsUsed(data.startDate, data.endDate)
+                    0) *
+                    calculateMonthsUsed(
+                      serviceData.startDate,
+                      serviceData.endDate
+                    )
                 )}
               </Text>
             </View>
@@ -119,12 +126,12 @@ export default function UsingDetailScreen() {
             <InfoBox
               icon="calendar"
               label={translation.startDate}
-              value={formatDate(new Date(data.startDate))}
+              value={formatDate(new Date(serviceData.startDate))}
             />
             <InfoBox
               icon="calendar-check"
               label={translation.endDate}
-              value={formatDate(new Date(data.endDate))}
+              value={formatDate(new Date(serviceData.endDate))}
             />
             <InfoBox
               icon="cash"

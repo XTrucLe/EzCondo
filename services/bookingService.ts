@@ -22,6 +22,8 @@ export const getMyBooking = async () => {
       method: "get",
       url: endpoints.booking.getMyBooking,
     });
+    console.log("getMyBooking", response.data);
+
     return response.data;
   } catch (error) {
     console.error("Error fetching booking:", error);

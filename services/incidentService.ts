@@ -26,7 +26,7 @@ export const sendIncidentImage = async (form: FormData) => {
     console.log(error);
   }
 };
-export const getIncident = async () => {
+export const getIncidentHistory = async () => {
   try {
     const response = await request({
       method: "get",

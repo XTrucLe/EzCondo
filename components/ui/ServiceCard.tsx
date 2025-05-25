@@ -5,17 +5,18 @@ import { useNavigation } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import { useAppNavigator } from "@/navigation/useAppNavigate";
 
 type Props = {
   service: ServiceDetailType;
 };
 
 export default function ServiceCard({ service }: Props) {
-  const navigation = useNavigation<any>();
+  const { navigate } = useAppNavigator();
   const { translation } = useLanguage();
 
   const handleRegister = () => {
-    navigation.navigate("service_detail", { data: service });
+    navigate("ServiceDetail", { serviceDetail: service });
   };
 
   const firstImage = service.images?.[0]?.imgPath;
@@ -93,7 +94,7 @@ export default function ServiceCard({ service }: Props) {
           >
             <Text style={styles.buttonText}>
               {service.status === "active"
-                ? translation.regis
+                ? "Xem chi tiết"
                 : translation.notAvailable}
             </Text>
           </TouchableOpacity>

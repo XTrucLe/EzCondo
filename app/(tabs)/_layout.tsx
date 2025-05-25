@@ -15,6 +15,8 @@ import { Ionicons } from "@expo/vector-icons";
 import useAuthStore from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
 import { getFCMToken } from "@/services/firebaseService";
+import { requestUserPermission } from "@/utils/permision/PushNotification";
+import { useNotificationListener } from "@/services/notificationHandler";
 
 export default function TabLayout() {
   const theme = useColorScheme();
@@ -25,8 +27,13 @@ export default function TabLayout() {
   const { translation } = useLanguage();
 
   useEffect(() => {
+    requestUserPermission();
+
     getFCMToken();
   }, []);
+
+  useNotificationListener();
+
   useEffect(() => {
     if (!navigationState?.key || loading) return;
 
@@ -35,11 +42,21 @@ export default function TabLayout() {
     }
   }, [verified, loading, navigationState]);
 
-  const dispalyScreens = ["(tabs)", "index", "services", "notifications", "me"];
+  const dispalyScreens = [
+    "(tabs)",
+    "index",
+    "services",
+    "notifications",
+    "me",
+    "NotificationOverview",
+    "ResidentServices",
+    "Setting",
+  ];
 
   const isTabDisplay =
     !navigationState?.key ||
     dispalyScreens.includes(segment[segment.length - 1]);
+
   return (
     <Tabs
       screenOptions={{
