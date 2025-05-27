@@ -4,6 +4,7 @@ import { createNavigationContainerRef } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { useEffect } from "react";
 
+// Thiết lập cấu hình Notification
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -11,91 +12,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
-
-// ✅ Hàm xử lý hiển thị thông báo (Foreground & Background)
-const handleNotificationListener = async (
-  title?: string,
-  message?: string,
-  image?: string
-) => {
-  try {
-    if (!title && !message) {
-      console.warn("⚠️ Không có tiêu đề hoặc nội dung thông báo");
-      return;
-    }
-    const content: Notifications.NotificationContentInput = {
-      title: title || "📩 Thông báo từ EzCondo",
-      body: message || "Chào mừng bạn đến với Ứng dụng!",
-      data: {
-        image: image || "",
-      },
-      sound: "default",
-    };
-
-    await Notifications.scheduleNotificationAsync({
-      content,
-      trigger: null, // Hiển thị ngay lập tức
-    });
-    console.log("📬 Đã hiển thị thông báo:", title, message, image);
-  } catch (error) {
-    console.error("❌ Lỗi khi hiển thị thông báo:", error);
-  }
-};
-
-// ✅ Lắng nghe thông báo khi app đang mở (Foreground)
-export const listenForForegroundMessages = () => {
-  messaging().onMessage(async (remoteMessage) => {
-    console.log("📩 Tin nhắn nhận khi app đang mở:", remoteMessage);
-    if (remoteMessage.notification) {
-      handleNotificationListener(
-        remoteMessage.notification.title,
-        remoteMessage.notification.body,
-        remoteMessage.notification.image
-      );
-    }
-  });
-};
-
-// ✅ Lắng nghe thông báo khi app ở background hoặc bị đóng
-export const listenForBackgroundMessages = () => {
-  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-    console.log("🔄 Tin nhắn nhận khi app chạy ngầm:", remoteMessage);
-    if (remoteMessage.notification) {
-      handleNotificationListener(
-        remoteMessage.notification.title,
-        remoteMessage.notification.body
-      );
-    }
-  });
-
-  messaging().onNotificationOpenedApp((remoteMessage) => {
-    if (remoteMessage?.notification) {
-      console.log("📲 Người dùng nhấn vào thông báo:", remoteMessage);
-      handleNotificationListener(
-        remoteMessage.notification.title,
-        remoteMessage.notification.body
-      );
-    }
-  });
-
-  messaging()
-    .getInitialNotification()
-    .then((remoteMessage) => {
-      if (remoteMessage?.notification) {
-        console.log(
-          "🚀 App mở do người dùng nhấn vào thông báo:",
-          remoteMessage
-        );
-        handleNotificationListener(
-          remoteMessage.notification.title,
-          remoteMessage.notification.body
-        );
-      }
-    })
-    .catch((error) =>
-      console.error("❌ Lỗi khi lấy thông báo ban đầu:", error)
-    );
-};
 
 Notifications.setNotificationChannelAsync("default", {
   name: "default",
@@ -106,26 +22,134 @@ Notifications.setNotificationChannelAsync("default", {
 });
 
 const navigationRef = createNavigationContainerRef();
-// ✅ Custom Hook để tự động kích hoạt lắng nghe thông báo trong App.js
+
+// Dùng để lưu các messageId đã xử lý
+const handledMessages = new Set<string>();
+
+const handleNotificationListener = async (
+  title?: string,
+  message?: string,
+  image?: string,
+  messageId?: string
+) => {
+  try {
+    // Tránh xử lý lặp lại
+    if (messageId && handledMessages.has(messageId)) {
+      console.log("⛔️ Đã xử lý thông báo:", messageId);
+      return;
+    }
+    if (messageId) {
+      handledMessages.add(messageId);
+    }
+
+    if (!title && !message) {
+      console.warn("⚠️ Không có tiêu đề hoặc nội dung thông báo");
+      return;
+    }
+
+    const content: Notifications.NotificationContentInput = {
+      title: title || "📩 Thông báo từ EzCondo",
+      body: message || "Chào mừng bạn đến với Ứng dụng!",
+      data: { image: image || "" },
+      sound: "default",
+    };
+
+    await Notifications.scheduleNotificationAsync({
+      content,
+      trigger: null,
+    });
+
+    console.log("📬 Đã hiển thị thông báo:", title, message, image);
+  } catch (error) {
+    console.error("❌ Lỗi khi hiển thị thông báo:", error);
+  }
+};
+
 export const useNotificationListener = () => {
   const { navigate } = useAppNavigator();
+
   useEffect(() => {
-    listenForForegroundMessages();
-    listenForBackgroundMessages();
+    let isSubscribed = true;
+
+    // 1️⃣ Foreground
+    const unsubscribeForeground = messaging().onMessage(
+      async (remoteMessage) => {
+        if (!isSubscribed) return;
+        console.log("📩 Tin nhắn Foreground:", remoteMessage);
+        if (remoteMessage.notification) {
+          handleNotificationListener(
+            remoteMessage.notification.title,
+            remoteMessage.notification.body,
+            remoteMessage.notification.image,
+            remoteMessage.messageId
+          );
+        }
+      }
+    );
+
+    // 2️⃣ Background
+    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+      console.log("🔄 Tin nhắn Background:", remoteMessage);
+      if (remoteMessage.notification) {
+        handleNotificationListener(
+          remoteMessage.notification.title,
+          remoteMessage.notification.body,
+          remoteMessage.notification.image,
+          remoteMessage.messageId
+        );
+      }
+    });
+
+    // 3️⃣ Mở từ thông báo khi app đang chạy
+    const unsubscribeOpened = messaging().onNotificationOpenedApp(
+      (remoteMessage) => {
+        console.log("📲 App mở từ thông báo:", remoteMessage);
+        // if (remoteMessage.notification) {
+        // handleNotificationListener(
+        //   remoteMessage.notification.title,
+        //   remoteMessage.notification.body,
+        //   remoteMessage.notification.image,
+        //   remoteMessage.messageId
+        // );
+        // }
+      }
+    );
+
+    // 4️⃣ Mở từ thông báo khi app bị tắt
+    messaging()
+      .getInitialNotification()
+      .then((remoteMessage) => {
+        // if (remoteMessage?.notification) {
+        //   console.log("🚀 App mở từ thông báo khi bị tắt:", remoteMessage);
+        // handleNotificationListener(
+        //   remoteMessage.notification.title,
+        //   remoteMessage.notification.body,
+        //   remoteMessage.notification.image,
+        //   remoteMessage.messageId
+        // );
+        // }
+      });
+
+    return () => {
+      isSubscribed = false;
+      unsubscribeForeground();
+      unsubscribeOpened();
+    };
   }, []);
 
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log("📲 Người dùng nhấn vào thông báo:", response);
+        console.log("📲 Người dùng nhấn vào thông báo (local):", response);
 
         if (navigationRef.isReady()) {
           navigationRef.navigate("NotificationOverview" as never);
         } else {
-          console.warn("Navigation chưa sẵn sàng");
+          console.warn("⚠️ Navigation chưa sẵn sàng");
         }
       }
     );
+
     return () => subscription.remove();
   }, []);
 };

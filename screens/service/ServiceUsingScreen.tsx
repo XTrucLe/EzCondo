@@ -15,13 +15,21 @@ import { useAppNavigator } from "@/navigation/useAppNavigate";
 export default function ServiceUsingScreen() {
   const { translation } = useLanguage.getState();
   const { navigate } = useAppNavigator();
-  const [bookings, setBookings] = useState<RegisteredService[]>([]);
+  const [bookings, setBookings] = useState<RegisteredService[]>([
+    {
+      id: "1",
+      serviceName: "Gói tập gym cao cấp",
+      startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 ngày trước
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 ngày tới
+      status: "pending",
+    },
+  ]);
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await getMyBooking();
-        setBookings(response);
+        // const response = await getMyBooking();
+        // setBookings(response);
       } catch (error) {
         console.error("Failed to fetch bookings:", error);
       }
@@ -34,6 +42,13 @@ export default function ServiceUsingScreen() {
     navigate("ServiceUsingDetail", {
       serviceData: item,
     });
+  };
+
+  const calculateRemainingDays = (endDate: string): number => {
+    const today = new Date();
+    const end = new Date(endDate);
+    const diffTime = end.getTime() - today.getTime();
+    return Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0); // Không âm
   };
 
   const renderBookingCard = ({ item }: { item: RegisteredService }) => {
@@ -102,6 +117,35 @@ export default function ServiceUsingScreen() {
           />
         </View>
 
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 8,
+          }}
+        >
+          <Icon
+            name="clock"
+            size={20}
+            color="#6B7280"
+            style={{ marginRight: 6 }}
+          />
+          <Text style={{ fontSize: 13, color: "#6B7280" }}>
+            {translation.timeRemaining}:
+          </Text>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: "500",
+              marginLeft: 4,
+              color: "#DC2626",
+            }}
+          >
+            {calculateRemainingDays(item.endDate)}{" "}
+            {translation.day.toLowerCase()}
+          </Text>
+        </View>
+
         {/* Progress */}
         <ProgressBar
           progress={progress}
@@ -118,6 +162,13 @@ export default function ServiceUsingScreen() {
         keyExtractor={(item) => item.id}
         renderItem={renderBookingCard}
         contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <View style={{ padding: 20, alignItems: "center" }}>
+            <Text style={{ fontSize: 16, color: "#6B7280" }}>
+              {translation.noBookings}
+            </Text>
+          </View>
+        }
       />
     </View>
   );
@@ -156,14 +207,16 @@ const calculateProgress = (start: string, end: string) => {
 };
 
 const calculateDuration = (start: string, end: string) => {
+  const { translation } = useLanguage.getState();
   const diffDays = Math.round(
     (new Date(end).getTime() - new Date(start).getTime()) /
       (1000 * 60 * 60 * 24)
   );
 
-  if (diffDays < 7) return `${diffDays} days`;
-  if (diffDays < 30) return `${Math.round(diffDays / 7)} weeks`;
-  return `${Math.round(diffDays / 30)} months`;
+  if (diffDays < 7) return `${diffDays} ${translation.day.toLowerCase()}`;
+  if (diffDays < 30)
+    return `${Math.round(diffDays / 7)} ${translation.week.toLowerCase()}`;
+  return `${Math.round(diffDays / 30)} ${translation.month.toLowerCase()}`;
 };
 
 const getStatusConfig = (status: string) => {
@@ -225,7 +278,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 14,
-    color: "#fff",
+    color: "#ffffff",
     fontWeight: "700",
   },
   dateContainer: {
@@ -233,17 +286,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   statusCompleted: {
-    backgroundColor: "#ecfdf5",
+    backgroundColor: "#d1fae5", // xanh ngọc đậm hơn
+    color: "#065f46", // xanh đậm
   },
   statusInUse: {
-    backgroundColor: "#0294f5",
+    backgroundColor: "#0284c7", // xanh dương đậm hơn
+    color: "#ffffff", // trắng
   },
   statusPending: {
-    backgroundColor: "#fffbeb",
+    backgroundColor: "#fde68a", // vàng đậm hơn
+    color: "#92400e", // cam nâu đậm
   },
   statusCancelled: {
-    backgroundColor: "#fee2e2",
+    backgroundColor: "#fecaca", // đỏ hồng đậm hơn
+    color: "#991b1b", // đỏ đậm
   },
+
   dateRow: {
     flexDirection: "row",
     alignItems: "center",

@@ -29,6 +29,9 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress, translation }) => (
       <Text style={styles.dob}>
         🎂 {translation.dateOfBirth}: {user.dateOfBirth}
       </Text>
+      <Text style={styles.dob}>
+        {translation.relationship}: {translation[user.relationship]}
+      </Text>
     </View>
   </TouchableOpacity>
 );

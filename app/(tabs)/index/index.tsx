@@ -19,8 +19,7 @@ import {
 import { FAB } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { homeHeaderImage, userDefaultImage } from "@/constants/ImageLink";
-
-const MAX_HEADER_HEIGHT = 180;
+import NewsSection from "@/components/ui/fotter";
 
 type UserHomeProps = {
   fullName: string;
@@ -33,9 +32,19 @@ const Header = ({ onImagePress }: { onImagePress: () => void }) => {
   const { user } = useAuthStore();
   const { translation } = useLanguage();
 
-  const textTime = isLightTime(new Date().getHours())
-    ? `${translation.goodMorning}! 🌅`
-    : `${translation.goodEvening}! 🌙`;
+  const getGreetingText = (hour: number) => {
+    if (hour >= 5 && hour < 11) {
+      return `${translation.goodMorning}! ☀️`;
+    } else if (hour >= 11 && hour < 17) {
+      return `${translation.goodAfternoon}! 🌤️`;
+    } else if (hour >= 17 && hour < 21) {
+      return `${translation.goodEvening}! 🌇`;
+    } else {
+      return `${translation.goodNight}! 🌙`;
+    }
+  };
+
+  const textTime = getGreetingText(new Date().getHours());
 
   const [userInfo, setUserInfo] = useState<UserHomeProps>({
     fullName: "Người dùng",
@@ -78,7 +87,8 @@ const Header = ({ onImagePress }: { onImagePress: () => void }) => {
           <View style={styles.infoCard}>
             <Text style={styles.fullName}>{userInfo.fullName}</Text>
             <Text style={styles.apartment}>
-              {translation.apartment}: {userInfo.apartmentNumber}
+              <Text style={{ fontWeight: 600 }}>{translation.apartment}</Text>:{" "}
+              {userInfo.apartmentNumber}
             </Text>
           </View>
         </View>
@@ -109,9 +119,9 @@ export default function HomeScreen() {
           ]}
         >
           <ExtensionsUI />
-          <SlideShow item={[]} />
         </View>
-
+        <SlideShow item={[]} />
+        <NewsSection />
         <View style={{ height: 50 }}></View>
       </ScrollView>
       <FAB
@@ -123,8 +133,6 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-const isLightTime = (hour: number) => hour >= 6 && hour < 18;
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -139,23 +147,32 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     justifyContent: "flex-start",
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     paddingTop: 24,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: "rgba(0, 0, 0, 0.15)",
   },
   greeting: {
-    fontSize: 18,
+    fontSize: 15,
+    top: -10,
     alignSelf: "flex-end",
     fontWeight: "600",
     color: "#fff",
     marginBottom: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.34)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   profileContainer: {
-    flexDirection: "column",
-    alignItems: "flex-start",
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
   avatar: {
     width: 64,
@@ -168,11 +185,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 8,
     backgroundColor: "#eee",
+    marginRight: 4,
   },
   infoCard: {
+    marginTop: 10,
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    paddingVertical: 4,
+    backgroundColor: "rgba(0, 0, 0, 0.32)",
     borderRadius: 16,
     backdropFilter: "blur(10px)", // Sẽ bị bỏ qua trên Android nhưng giữ lại cảm giác glass.
     borderWidth: 1,

@@ -8,7 +8,6 @@ import {
   Text,
   Animated,
   Clipboard,
-  Alert,
   TouchableOpacity,
   Image,
 } from "react-native";
@@ -138,12 +137,12 @@ export default function QRScreen() {
         <Text style={styles.statusText}>
           {isPolling ? translation.waitingPayment : "Payment verified"}
         </Text>
-        <Text style={styles.countdownText}>
-          {`${Math.floor(countdown / 60)
-            .toString()
-            .padStart(2, "0")}:${(countdown % 60).toString().padStart(2, "0")}`}
-        </Text>
       </View>
+      <Text style={styles.countdownText}>
+        {`${Math.floor(countdown / 60)
+          .toString()
+          .padStart(2, "0")}:${(countdown % 60).toString().padStart(2, "0")}`}
+      </Text>
       {/* QR Code with subtle decoration */}
       <View style={styles.qrCard}>
         <View style={styles.logoContainer}>
@@ -211,10 +210,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   countdownText: {
-    fontSize: 14,
-    color: "#EF4444",
-    fontWeight: "500",
-    marginLeft: 12,
+    fontSize: 21,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 16,
+    color: "red",
   },
 
   qrCard: {

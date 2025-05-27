@@ -5,11 +5,12 @@ import { getElectricFees } from "@/services/feeServices";
 import { useRoute } from "@react-navigation/native";
 import { getWaterFee } from "@/services/feeService";
 import { ElectricFee, WaterFee } from "@/utils/type/FeeType";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function BillListScreen() {
   const route = useRoute<any>();
   const mode = route.params?.mode || "electric";
-
+  const { translation } = useLanguage.getState();
   const [data, setData] = React.useState<(ElectricFee | WaterFee)[]>([]);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function BillListScreen() {
   return (
     <View style={styles.container}>
       {!data || data.length === 0 ? (
-        <Text style={styles.emptyText}>Không có dữ liệu hóa đơn</Text>
+        <Text style={styles.emptyText}>{translation.hadPay}</Text>
       ) : (
         <FlatList
           data={data}

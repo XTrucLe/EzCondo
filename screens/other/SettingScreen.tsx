@@ -105,16 +105,16 @@ export default function SettingScreen() {
   // Settings sections
   const paymentSettings: SettingItem[] = [
     {
-      id: "paymentHistory",
-      title: translation.paymentHistory,
-      icon: "history",
-      action: () => navigate("Payment", { screen: "PaymentHistory" }),
-    },
-    {
       id: "pendingPayments",
       title: translation.paymentPending,
       icon: "clock-outline",
       action: () => navigate("Payment", { screen: "PaymentWaiting" }),
+    },
+    {
+      id: "paymentHistory",
+      title: translation.paymentHistory,
+      icon: "history",
+      action: () => navigate("Payment", { screen: "PaymentHistory" }),
     },
     {
       id: "incidentHistory",

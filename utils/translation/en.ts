@@ -86,8 +86,8 @@ export default {
   dateOfBirth: "Date of birth",
   gender: "Gender",
   selectGender: "Select gender",
-  Male: "Male",
-  Female: "Female",
+  male: "Male",
+  female: "Female",
   Other: "Other",
   year: "Year",
   month: "Month",
@@ -96,6 +96,21 @@ export default {
   monthly: "Monthly",
   address: "Address",
   emergencyContact: "Emergency contact",
+  relationship: "Relationship",
+  grandfather: "Grandfather",
+  grandmother: "Grandmother",
+  father: "Father",
+  mother: "Mother",
+  brother: "Brother",
+  sister: "Sister",
+  son: "son",
+  daughter: "daughter",
+  husband: "husband",
+  wife: "wife",
+  friend: "friend",
+  relative: "relative",
+  grandChild: "Grandchild",
+  tenant: "Tenant",
 
   // ============ Apartment Related ============
   apartment: "Apartment",
@@ -172,6 +187,11 @@ export default {
   incidentTitle: "Incident title",
   sendIncident: "Send incident",
   incidentType: "Incident type",
+  sercurity: "Security",
+  technical: "Technical",
+  complaint: "Complaint",
+  infrastructure: "Infrastructure",
+  other: "Other",
   incidentHistory: "Incident history",
   report: "Report",
   reportIncident: "Report incident",
@@ -194,6 +214,7 @@ export default {
   bookingCode: "Booking code",
   bookingStatus: "Booking status",
   bookingHistory: "Booking history",
+  noBookings: "No bookings found",
 
   // ============ Payments ============
   payment: "Payment",
@@ -203,6 +224,7 @@ export default {
   paymentDate: "Payment date",
   paymentHistory: "Payment history",
   paymentDetail: "Payment details",
+  hadPay: "Paid this month's bill",
   accountNumber: "Account number",
   accountOwner: "Account owner",
   bankName: "Bank name",
@@ -270,11 +292,16 @@ export default {
   waitingPayment: "Waiting for payment",
   statusExpired: "Expired",
   statusVerified: "Verified",
+  Completed: "Completed", // Added status term
+  Cancelled: "Cancelled", // Added status term
+  Pending: "Pending", // Added status term
+  Waiting: "Waiting", // Added status term
 
   // ============ Time Greetings ============
   goodMorning: "Good morning",
   goodAfternoon: "Good afternoon",
   goodEvening: "Good evening",
+  goodNight: "Good night",
   justNow: "Just now",
   yesterday: "Yesterday",
   minutesAgo: "minutes ago",

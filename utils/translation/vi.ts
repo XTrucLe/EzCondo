@@ -85,8 +85,8 @@ export default {
   dateOfBirth: "Ngày sinh",
   gender: "Giới tính",
   selectGender: "Chọn giới tính",
-  Male: "Nam",
-  Female: "Nữ",
+  male: "Nam",
+  female: "Nữ",
   Other: "Khác",
   year: "Năm",
   month: "Tháng",
@@ -95,6 +95,21 @@ export default {
   monthly: "Hàng tháng",
   address: "Địa chỉ", // Added user info term
   emergencyContact: "Liên hệ khẩn cấp", // Added user info term
+  relationship: "Mối quan hệ", // Added user info term
+  grandfather: "Ông",
+  grandmother: "Bà",
+  father: "Cha",
+  mother: "Mẹ",
+  brother: "Anh trai",
+  sister: "Chị gái",
+  son: "Con trai",
+  daughter: "Con gái",
+  husband: "Chồng",
+  wife: "Vợ",
+  friend: "Bạn bè",
+  relative: "Người thân",
+  grandChild: "Cháu",
+  tenant: "Người thuê nhà",
 
   // ============ Apartment Related ============
   apartment: "Căn hộ",
@@ -171,6 +186,11 @@ export default {
   incidentTitle: "Tiêu đề sự cố",
   sendIncident: "Gửi sự cố",
   incidentType: "Loại sự cố",
+  sercurity: "An ninh",
+  technical: "Kỹ thuật",
+  complaint: "Khiếu nại",
+  infrastructure: "Cơ sở hạ tầng",
+  other: "Khác",
   incidentHistory: "Lịch sử báo cáo sự cố",
   report: "Báo cáo",
   reportIncident: "Báo cáo sự cố",
@@ -193,6 +213,7 @@ export default {
   bookingCode: "Mã đặt chỗ", // Added booking term
   bookingStatus: "Trạng thái đặt chỗ", // Added booking term
   bookingHistory: "Lịch sử đặt chỗ", // Added booking term
+  noBookings: "Không có đặt chỗ nào", // Added booking term
 
   // ============ Payments ============
   payment: "Thanh toán",
@@ -202,6 +223,7 @@ export default {
   paymentDate: "Ngày thanh toán",
   paymentHistory: "Lịch sử thanh toán",
   paymentDetail: "Chi tiết thanh toán",
+  hadPay: "Đã thanh toán hóa đơn tháng này",
   accountNumber: "STK",
   accountOwner: "Chủ tài khoản",
   bankName: "Ngân hàng",
@@ -269,11 +291,16 @@ export default {
   waitingPayment: "Đang chờ thanh toán",
   statusExpired: "Đã hết hạn", // Added status term
   statusVerified: "Đã xác minh", // Added status term
+  Completed: "Hoàn thành", // Added status term
+  Cancelled: "Đã hủy", // Added status term
+  Pending: "Đang chờ", // Added status term
+  Waiting: "Đang chờ", // Added status term
 
   // ============ Time Greetings ============
   goodMorning: "Chào buổi sáng",
   goodAfternoon: "Chào buổi chiều",
   goodEvening: "Chào buổi tối",
+  goodNight: "Chúc ngủ ngon",
   justNow: "Vừa xong",
   yesterday: "Hôm qua",
   minutesAgo: "phút trước",

@@ -10,6 +10,7 @@ import {
   Clipboard,
   Alert,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { checkStatusPayment } from "@/services/paymentService";
@@ -18,6 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { StatusScreen, StatusType } from "@/components/ui/screen/StatusScreen";
 import { useAppNavigator } from "@/navigation/useAppNavigate";
+import { logoMB, logoNapas, logoVietQR } from "@/constants/ImageLink";
 
 export default function QRCodeScreen() {
   const { serviceData: data } = useRoute().params as {
@@ -27,14 +29,31 @@ export default function QRCodeScreen() {
 
   const { width } = Dimensions.get("window");
   const { translation } = useLanguage.getState();
-
+  const navigation = useNavigation<any>();
   const [paymentData, setPaymentData] = useState<PaymentType>();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const [status, setStatus] = useState<StatusType>("null");
+  const [countdown, setCountdown] = useState(5 * 60); // 5 minutes countdown
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsPolling(false);
+          Alert.alert("Timeout", "Payment verification timed out.");
+          navigation.navigate("index");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
   useEffect(() => {
     setPaymentData(data);
   }, [data]);
@@ -124,17 +143,34 @@ export default function QRCodeScreen() {
         </Text>
       </View>
 
+      <Text
+        style={{
+          fontSize: 21,
+          fontWeight: "600",
+          textAlign: "center",
+          marginBottom: 16,
+          color: "red",
+        }}
+      >
+        {`${Math.floor(countdown / 60)
+          .toString()
+          .padStart(2, "0")}:${(countdown % 60).toString().padStart(2, "0")}`}
+      </Text>
+
       {/* QR Code with subtle decoration */}
-      <View style={styles.qrCodeContainer}>
+      <View style={styles.qrCard}>
+        <View style={styles.logoContainer}>
+          <Image source={logoMB} style={styles.logo} resizeMode="contain" />
+          <Image source={logoVietQR} style={styles.logo} resizeMode="contain" />
+          <Image source={logoNapas} style={styles.logo} resizeMode="contain" />
+        </View>
         <View style={styles.qrCodeWrapper}>
-          {paymentData?.qrCode && (
-            <QRCode
-              value={paymentData.qrCode}
-              size={width / 2.5}
-              color="#1F2937"
-              backgroundColor="transparent"
-            />
-          )}
+          <QRCode
+            value={paymentData?.qrCode}
+            size={width * 0.45}
+            color="#111827"
+            backgroundColor="white"
+          />
         </View>
         <Text style={styles.qrInstruction}>{translation.scanQRCode}</Text>
       </View>
@@ -171,7 +207,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 4,
   },
   statusDot: {
     width: 8,
@@ -188,11 +224,33 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     fontWeight: "500",
   },
-  qrCodeContainer: {
-    alignItems: "center",
+  qrCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    marginHorizontal: 24,
     marginBottom: 24,
-    paddingHorizontal: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
+    alignItems: "center",
   },
+  logoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 24,
+    marginBottom: 16,
+  },
+  logo: {
+    width: 80, // hoặc width: '30%' nếu muốn linh hoạt theo màn hình
+    height: 32,
+  },
+
   qrCodeWrapper: {
     backgroundColor: "white",
     borderRadius: 16,

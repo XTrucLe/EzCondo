@@ -78,8 +78,8 @@ export default function PaymentWaitingScreen() {
           const func = apiMap[key.replace("Id", "")];
 
           const response = await func(value as string);
-          navigation.navigate("paymentQR", {
-            data: response,
+          navigation.navigate("QRCode", {
+            serviceData: response,
           });
         }
     } catch (error) {

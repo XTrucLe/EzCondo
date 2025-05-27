@@ -8,14 +8,15 @@ const renderScene = SceneMap({
   overview: ServiceOverview,
   serviceUsing: ServiceUsingScreen,
 });
+
 export default function ResidentServicesScreen() {
   const { translation } = useLanguage();
   const [index, setIndex] = React.useState(0);
 
-  const [routes] = React.useState([
+  const routes = [
     { key: "overview", title: translation.serviceAvailable },
     { key: "serviceUsing", title: translation.serviceInUse },
-  ]);
+  ];
   const handleIndexChange = (newIndex: number) => {
     setIndex(newIndex);
   };

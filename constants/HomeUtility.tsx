@@ -82,7 +82,7 @@ export const SERVICES_LIST = [
     page: "detail_fee",
   },
   {
-    id: "support",
+    id: "9",
     name: "support",
     icon: <Ionicons name="help-circle" size={ICON_SIZE} color="white" />,
     page: "support",

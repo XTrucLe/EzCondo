@@ -108,6 +108,10 @@ export default function HomeLayout() {
         name="bookingDetail"
         options={{ headerShown: true, headerTitle: "" }}
       />
+      <Stack.Screen
+        name="support"
+        options={{ headerShown: true, headerTitle: translation.support }}
+      />
     </Stack>
   );
 }

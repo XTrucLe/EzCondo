@@ -128,7 +128,7 @@ const BookingScreen = () => {
     try {
       console.log("Booking data:", bookingData);
       const response = await createBooking(bookingData);
-      const { data } = await paymentService.createPayment(response);
+      const data = await paymentService.createPayment(response);
 
       console.log("Payment data:", data);
       if (!data) {
