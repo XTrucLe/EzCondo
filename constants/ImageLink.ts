@@ -7,4 +7,17 @@ const applicationImages = require("./../assets/images/EzCondoIcon.png");
 
 const homeHeaderImage = require("../assets/images/header_img.png");
 
-export { applicationImages, userDefaultImage, viImg, enImg, homeHeaderImage };
+const logoMB = require("../assets/images/logoMB.png");
+const logoVietQR = require("../assets/images/logoVietQR.png");
+const logoNapas = require("../assets/images/logoNapas.png");
+
+export {
+  applicationImages,
+  userDefaultImage,
+  viImg,
+  enImg,
+  homeHeaderImage,
+  logoMB,
+  logoVietQR,
+  logoNapas,
+};

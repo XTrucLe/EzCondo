@@ -37,15 +37,16 @@ export const checkHadBooking = async (serviceName: string) => {
     if (!regisService || regisService.length === 0) return false;
 
     // Tìm booking trùng tên service (nếu có nhiều booking khác nhau)
-    const matchedBooking = regisService.find(
-      (item: any) => item.serviceName === serviceName
+    const matchedBooking = regisService.find((item: any) =>
+      item.serviceName.includes(serviceName)
     );
+    console.log("matchedBooking", matchedBooking);
 
     const data = {
       id: matchedBooking?.id ?? null,
       hasBooking: Boolean(matchedBooking),
       paid: matchedBooking?.status ?? null,
-      date: matchedBooking?.createdAt ?? null,
+      date: matchedBooking?.createDate ?? null,
     };
 
     console.log("data", data);

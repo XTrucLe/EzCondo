@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   image: {
-    width: "80%",
+    width: "95%",
     minHeight: 400,
     borderRadius: 10,
     alignSelf: "center",

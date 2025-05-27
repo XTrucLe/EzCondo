@@ -1,3 +1,4 @@
+import { IncidentType } from "@/components/ui/IncidentBox";
 import { RegisteredService } from "@/utils/type/bookingType";
 import { NotificationBoxType } from "@/utils/type/notificationBoxType";
 import { PaymentType } from "@/utils/type/paymentType";
@@ -36,15 +37,24 @@ export type RootStackParamList = {
   ChangePassword: undefined;
 
   // ==================Home Screen==================
+  Home: undefined;
+
   // ==================Parking Screen==================
   ParkingOverview: undefined;
   ParkingRegistration: undefined;
+
+  // ==================Chatbot Screen==================
+  Chatbot: undefined;
+  ChatbotHome: undefined;
+  Chatting: undefined;
+  ChatbotDetail: { chatId: string; name: string };
 
   // ==================Booking Screen==================
   // ==================Incident Screen==================
   Incident: { screem: string; params?: any };
   IncidentCreate: undefined;
   IncidentHistory: undefined;
+  IncidentHistoryDetail: { incidentDetail: IncidentType };
   // ==================Other Screen==================
   Setting: undefined;
   NotFound: undefined;

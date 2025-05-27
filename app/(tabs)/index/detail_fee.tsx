@@ -12,7 +12,11 @@ import { OtherServiceType } from "@/utils/type/serviceDetailType";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { formatVND } from "@/hooks/useFormat";
 import { useNavigation } from "expo-router";
-import { getPaymentNeed, paymentService } from "@/services/paymentService";
+import {
+  createParkingPayment,
+  getPaymentNeed,
+  paymentService,
+} from "@/services/paymentService";
 import { PaymentWaitingType } from "@/utils/type/paymentType";
 import { useLoading } from "@/hooks/useLoading";
 import { StatusScreen } from "@/components/ui/screen/StatusScreen";
@@ -34,8 +38,10 @@ export default function DetailPaymentFee() {
           item.type.toLowerCase().includes("general")
         );
 
+        console.log("otherPayment", otherPayment);
+
         if (otherPayment) {
-          setPaymentId(otherPayment.bookingId);
+          setPaymentId(otherPayment.paymentId);
           const response = await getAllOtherService();
           setData(response || []);
         } else {
@@ -55,7 +61,7 @@ export default function DetailPaymentFee() {
   const handlePayment = async () => {
     try {
       startLoading();
-      const response = await paymentService.createPayment(paymentId);
+      const response = await createParkingPayment(paymentId);
       navigation.navigate("paymentQR", {
         data: response,
       });

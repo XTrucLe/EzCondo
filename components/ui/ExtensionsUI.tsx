@@ -1,10 +1,11 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  FlatList,
 } from "react-native";
 import { Ionicons, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
@@ -12,189 +13,53 @@ import { useNavigation } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
 import { useLanguage } from "@/hooks/useLanguage";
+import {
+  ICON_SIZE,
+  COLORS,
+  UTILITIES_LIST,
+  SERVICES_LIST,
+} from "@/constants/HomeUtility";
 
-const SERVICE_COLORS = [
-  "#75B4F3", // Mid Blue
-  "#FF8888", // Mid Coral
-  "#72DAD4", // Mid Turquoise
-  "#FFC04D", // Mid Orange
-  "#BB8FCE", // Mid Purple
-  "#EF736B", // Mid Red
-  "#7DDC84", // Mid Green
-  "#7FBCE9", // Mid Light Blue
-];
-
-// Constants
-const ICON_SIZE = 36;
-const ITEM_SIZE = 100;
-const ICON_COLOR = "#3674B5";
-const GRID_COLUMNS = {
-  UTILITIES: 1,
-  SERVICES: 2,
-};
-
-type UtilityItemProps = {
-  id: string;
-  name: string;
-  icon: ReactNode;
-  navigatePage?: string | object;
-  color?: string;
-};
-
-// Danh sách tiện ích hệ thống
-const UTILITIES_LIST: UtilityItemProps[] = [
-  {
-    id: "1",
-    name: "parking",
-    icon: <Ionicons name="car" size={ICON_SIZE} color="white" />,
-    navigatePage: "parking",
-    color: "#FFA94D", // Vibrant orange
-  },
-  {
-    id: "2",
-    name: "electricity",
-    icon: <Ionicons name="flash" size={ICON_SIZE} color="white" />,
-    navigatePage: "seviceFees",
-    color: "#FECA57", // Bright yellow
-  },
-  {
-    id: "3",
-    name: "water",
-    icon: <Ionicons name="water" size={ICON_SIZE} color="white" />,
-    navigatePage: "water",
-    color: "#54A0FF", // Sky blue
-  },
-  {
-    id: "4",
-    name: "apartmentMember",
-    icon: <Ionicons name="person" size={ICON_SIZE} color="white" />,
-    navigatePage: "apartmentMember",
-    color: "#5F27CD", // Royal purple
-  },
-];
-
-const SERVICES_LIST: UtilityItemProps[] = [
-  {
-    id: "Pool",
-    name: "swimming",
-    icon: (
-      <FontAwesome6 name="person-swimming" size={ICON_SIZE} color="white" />
-    ),
-    navigatePage: "pool",
-    color: SERVICE_COLORS[0],
-  },
-  {
-    id: "Steam room",
-    name: "sauna",
-    icon: <FontAwesome5 name="hot-tub" size={ICON_SIZE} color="white" />,
-    navigatePage: "steamRoom",
-    color: SERVICE_COLORS[1],
-  },
-  {
-    id: "Fitness",
-    name: "gym",
-    icon: <Ionicons name="barbell" size={ICON_SIZE} color="white" />,
-    navigatePage: "fitnessCenter",
-    color: SERVICE_COLORS[2],
-  },
-  {
-    id: "Children",
-    name: "childrenPlayArea",
-    icon: <FontAwesome6 name="children" size={ICON_SIZE} color="white" />,
-    navigatePage: "childrenPlayground",
-    color: SERVICE_COLORS[3],
-  },
-  {
-    id: "Laundry",
-    name: "laundry",
-    icon: <Ionicons name="shirt-outline" size={ICON_SIZE} color="white" />,
-    navigatePage: "laundry",
-    color: SERVICE_COLORS[4],
-  },
-  {
-    id: "5",
-    name: "incident",
-    icon: <Ionicons name="alert-circle" size={ICON_SIZE} color="white" />,
-    navigatePage: "incident",
-    color: SERVICE_COLORS[5],
-  },
-  {
-    id: "6",
-    name: "paymentFee",
-    icon: <Ionicons name="cash" size={ICON_SIZE} color="white" />,
-    navigatePage: "detail_fee",
-    color: SERVICE_COLORS[6],
-  },
-  {
-    id: "support",
-    name: "support",
-    icon: <Ionicons name="help-circle" size={ICON_SIZE} color="white" />,
-    navigatePage: "support",
-    color: SERVICE_COLORS[7],
-  },
-];
-
-const UtilityItem: React.FC<UtilityItemProps> = ({
-  id,
-  name,
-  icon,
-  navigatePage,
-  color,
-}) => {
+const UtilityItem = ({ id, name, icon, page, color }: any) => {
   const navigation = useNavigation<any>();
   const { translation } = useLanguage();
   const textColor = useThemeColor({}, "text");
-  const backgroundColor = useThemeColor({}, "cardBackground");
+  const bgColor = useThemeColor({}, "cardBackground");
 
   const handlePress = () => {
-    if (!navigatePage) return;
-
-    if (navigatePage === "water") {
-      navigation.navigate("seviceFees", { mode: "water" });
-      return;
-    }
-
-    if (!/\d/.test(id)) {
-      navigation.navigate("detail", { name: id });
-      return;
-    }
-
-    if (typeof navigatePage === "string") {
-      navigation.navigate(navigatePage);
-    }
+    if (!page) return;
+    if (page === "water")
+      return navigation.navigate("seviceFees", { mode: "water" });
+    if (!/\d/.test(id)) return navigation.navigate("detail", { name: id });
+    navigation.navigate(page);
   };
 
   return (
     <TouchableOpacity style={styles.item} onPress={handlePress}>
-      <View
-        style={[
-          styles.iconContainer,
-          { backgroundColor: color || backgroundColor },
-        ]}
-      >
-        {icon}
+      <View style={[styles.iconBox, { backgroundColor: color || bgColor }]}>
+        {icon || <Ionicons name={icon} size={ICON_SIZE} color="#fff" />}
       </View>
-      <Text style={[styles.text, { color: textColor }]}>
+      <Text
+        style={[styles.text, { color: textColor }]}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
         {translation[name]}
       </Text>
     </TouchableOpacity>
   );
 };
 
-const GridView: React.FC<{
-  data: UtilityItemProps[];
-  columns: number;
-}> = ({ data, columns }) => {
-  const rows = Array.from({ length: columns }, (_, rowIndex) =>
-    data.filter((_, index) => index % columns === rowIndex)
+const GridView = ({ data, columns }: { data: any[]; columns: number }) => {
+  const rows = Array.from({ length: columns }, (_, i) =>
+    data.filter((_, j) => j % columns === i)
   );
-
   return (
-    <View style={styles.gridContainer}>
-      {rows.map((row, index) => (
-        <View key={`row-${index}`} style={styles.row}>
+    <View style={styles.grid}>
+      {rows.map((row, i) => (
+        <View key={i} style={styles.row}>
           {row.map((item) => (
-            <UtilityItem key={`item-${item.id}`} {...item} />
+            <UtilityItem key={item.id} {...item} />
           ))}
         </View>
       ))}
@@ -202,54 +67,75 @@ const GridView: React.FC<{
   );
 };
 
-const HorizontalScrollGrid: React.FC<{
-  data: UtilityItemProps[];
-  columns: number;
-}> = ({ data, columns }) => (
+const HorizontalScrollGrid = ({ data, columns }: any) => (
   <ScrollView
     horizontal
     showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.scrollStyle}
+    contentContainerStyle={styles.scroll}
   >
     <GridView data={data} columns={columns} />
   </ScrollView>
 );
 
-const ExtensionsUI: React.FC = () => {
+const ExtensionsUI = () => {
   const { translation } = useLanguage();
+
+  const UtilityCard = ({ item }: { item: any }) => {
+    const navigation = useNavigation<any>();
+    const handlePress = () => {
+      if (!item.page) return;
+      if (item.page === "water")
+        return navigation.navigate("seviceFees", { mode: "water" });
+      if (!/\d/.test(item.id))
+        return navigation.navigate("detail", { name: item.id });
+      navigation.navigate(item.page);
+    };
+    return (
+      <TouchableOpacity style={styles.card} onPress={handlePress}>
+        <View style={styles.iconSmall}>{item.icon}</View>
+        <Text style={styles.label} numberOfLines={2} ellipsizeMode="tail">
+          {translation[item.name]}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <ThemedText type="subtitle"></ThemedText>
-      <HorizontalScrollGrid
-        data={UTILITIES_LIST}
-        columns={GRID_COLUMNS.UTILITIES}
+      <ThemedText type="subtitle" />
+      <FlatList
+        data={UTILITIES_LIST.map((u) => ({
+          ...u,
+          icon: (
+            <Ionicons name={u.icon as any} size={ICON_SIZE} color={u.color} />
+          ),
+        }))}
+        numColumns={4}
+        renderItem={({ item }) => <UtilityCard item={item} />}
+        keyExtractor={(item) => item.id}
+        columnWrapperStyle={styles.columnWrap}
+        contentContainerStyle={styles.flatlistContent}
       />
 
       <ThemedText type="subtitle">{translation.service}</ThemedText>
       <HorizontalScrollGrid
-        data={SERVICES_LIST}
-        columns={GRID_COLUMNS.SERVICES}
+        data={SERVICES_LIST.map((s, i) => ({
+          ...s,
+          color: COLORS.services[i],
+        }))}
+        columns={2}
       />
     </View>
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    padding: 10,
-  },
-  scrollStyle: {
+  container: { width: "100%", zIndex: 1 },
+  scroll: { minWidth: "100%", justifyContent: "center" },
+  grid: {
     flex: 1,
-    minWidth: "100%",
-    justifyContent: "center",
-  },
-  gridContainer: {
-    width: "100%",
     flexDirection: "column",
     justifyContent: "space-between",
-    paddingHorizontal: 5,
   },
   row: {
     flexDirection: "row",
@@ -264,19 +150,44 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 10,
   },
-  iconContainer: {
+  iconBox: {
     width: 70,
     height: 70,
-    borderRadius: 20,
+    borderRadius: 70,
     justifyContent: "center",
     alignItems: "center",
   },
-  text: {
-    marginTop: 6,
-    fontSize: 14,
-    fontWeight: "500",
-    textAlign: "center",
+  text: { marginTop: 6, fontSize: 14, fontWeight: "500", textAlign: "center" },
+  card: {
+    width: "24%",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 4,
+    paddingTop: 8,
+    borderRadius: 16,
+    backgroundColor: "#f0f0f0",
   },
+  iconSmall: {
+    width: 48,
+    height: 48,
+    left: 4,
+    borderRadius: 8,
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+  },
+  label: {
+    flex: 1,
+    textAlign: "center",
+    maxWidth: 100,
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#000",
+  },
+  columnWrap: { justifyContent: "space-between", marginBottom: 16 },
+  flatlistContent: { paddingTop: 8, width: "100%" },
 });
 
 export default ExtensionsUI;

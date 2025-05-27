@@ -8,7 +8,6 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
 } from "react-native";
 
 const MemberListScreen = () => {

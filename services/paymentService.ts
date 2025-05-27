@@ -115,3 +115,21 @@ export const getPaymentHistory = async () => {
     throw error;
   }
 };
+
+export const createPaymentService = async (serviceBillId: string) => {
+  try {
+    const response = await getPaymentNeed();
+
+    let hadPayment = response.find(
+      (payment: any) => payment.serviceBillId === serviceBillId
+    );
+    if (hadPayment) {
+      console.log("Service payment already exists:", hadPayment);
+      return hadPayment;
+    }
+    return response;
+  } catch (error) {
+    console.error("Error creating payment service:", error);
+    throw error;
+  }
+};

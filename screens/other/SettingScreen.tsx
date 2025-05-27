@@ -32,6 +32,7 @@ type SettingItem = {
 
 export default function SettingScreen() {
   // Hooks and state
+  const navigation = useNavigation();
   const { navigate } = useAppNavigator();
   const { logout, user: userInfo } = useAuthStore();
   const [darkMode, setDarkMode] = useState(false);
@@ -93,8 +94,7 @@ export default function SettingScreen() {
         {
           text: translation.logout,
           onPress: async () => {
-            await logout();
-            navigate("login");
+            navigation.navigate("auth" as never);
           },
           style: "destructive",
         },
@@ -115,6 +115,12 @@ export default function SettingScreen() {
       title: translation.paymentPending,
       icon: "clock-outline",
       action: () => navigate("Payment", { screen: "PaymentWaiting" }),
+    },
+    {
+      id: "incidentHistory",
+      title: translation.incidentHistory,
+      icon: "file-document-outline",
+      action: () => navigate("Incident", { screen: "IncidentHistory" }),
     },
   ];
 
@@ -265,7 +271,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingTop: 16,
-    paddingBottom: 24,
+    paddingBottom: 16,
   },
   profileCard: {
     marginHorizontal: 16,
@@ -291,10 +297,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subHeader: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 16,
     marginBottom: 8,
   },
   listItem: {

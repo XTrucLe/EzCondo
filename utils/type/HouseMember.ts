@@ -6,6 +6,7 @@ export interface User {
   dateOfBirth: string; // Có thể dùng Date nếu xử lý dạng ngày
   gender: "Male" | "Female";
   phoneNumber: string;
+  avatar: string;
 }
 
 export interface Member {

@@ -13,7 +13,6 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { formatVND } from "@/hooks/useFormat";
 import { SlideShow } from "@/components/ui/SlideShow";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useNavigation } from "expo-router";
 import { useAppNavigator } from "@/navigation/useAppNavigate";
 
 const { width } = Dimensions.get("window");

@@ -5,22 +5,46 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { sendFeedback } from "@/services/notificationService";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useNavigation } from "expo-router";
+import { useLoading } from "@/hooks/useLoading";
 
 const FeedbackScreen = () => {
+  const { startLoading, stopLoading } = useLoading();
+  const { translation } = useLanguage();
+  const navigation = useNavigation<any>();
   const [title, setTitle] = useState("");
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
 
-  const handleSendFeedback = () => {
+  const handleSendFeedback = async () => {
+    if (!title.trim() || !feedback.trim())
+      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ vào các ô.");
     const feedbackData = {
-      title,
-      feedback,
+      title: title.trim(),
+      content: feedback.trim(),
       type: "feedback",
-      reciver: "manager",
+      receiver: "manager",
     };
-    console.log("Feedback data:", feedbackData);
+    try {
+      startLoading();
+      const response = await sendFeedback(feedbackData);
+      if (response)
+        Alert.alert(translation.success, translation.reportSuccess, [
+          {
+            text: "OK",
+            onPress: () =>
+              navigation.reset({ index: 0, routes: [{ name: "me" }] }),
+          },
+        ]);
+    } catch (e) {
+    } finally {
+      stopLoading();
+    }
   };
 
   return (
@@ -32,6 +56,7 @@ const FeedbackScreen = () => {
         style={styles.input}
         placeholder="Ví dụ: Ứng dụng quá chậm"
         value={title}
+        maxLength={100}
         onChangeText={setTitle}
       />
 
@@ -56,6 +81,7 @@ const FeedbackScreen = () => {
         numberOfLines={5}
         placeholder="Nhập góp ý của bạn..."
         value={feedback}
+        maxLength={500}
         onChangeText={setFeedback}
       />
 

@@ -9,7 +9,6 @@ import {
 import { getMyBooking } from "@/services/bookingService";
 import { RegisteredService } from "@/utils/type/bookingType";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useNavigation } from "expo-router";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useAppNavigator } from "@/navigation/useAppNavigate";
 

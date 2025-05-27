@@ -12,6 +12,7 @@ import { UserWithMembers, Member } from "@/utils/type/HouseMember";
 import { userDefaultImage } from "@/constants/ImageLink";
 import { getMembers } from "@/services/memberService";
 import { useLanguage } from "@/hooks/useLanguage";
+import useAuthStore from "@/hooks/useAuth";
 
 interface UserCardProps {
   user: Member;
@@ -33,6 +34,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress, translation }) => (
 );
 
 export default function ApartmentMember() {
+  const { user } = useAuthStore();
   const { translation } = useLanguage();
   const [visible, setVisible] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState<Member>();
@@ -45,6 +47,7 @@ export default function ApartmentMember() {
       dateOfBirth: "",
       gender: "Male",
       phoneNumber: "",
+      avatar: "",
     },
     members: [],
   });
@@ -71,7 +74,10 @@ export default function ApartmentMember() {
             setVisible(true);
           }}
         >
-          <Image source={userDefaultImage} style={styles.avatar} />
+          <Image
+            source={user?.avatar ? { uri: user?.avatar } : userDefaultImage}
+            style={styles.avatar}
+          />
           <View style={styles.info}>
             <Text style={styles.name}>{data.user.fullName}</Text>
             <Text style={styles.dob}>
@@ -80,6 +86,7 @@ export default function ApartmentMember() {
             <Text style={styles.dob}>
               {translation.phoneNumber}: {data.user.phoneNumber}
             </Text>
+            <Text style={styles.dob}>Vai trò: Chủ Hộ</Text>
           </View>
         </TouchableOpacity>
       );
@@ -144,5 +151,6 @@ const styles = StyleSheet.create({
   dob: {
     fontSize: 14,
     color: "#666",
+    margin: 4,
   },
 });

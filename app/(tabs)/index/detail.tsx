@@ -7,9 +7,10 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "react-native-paper";
 import { useNavigation } from "expo-router";
 import { getServiceDetail, getServiceImages } from "@/services/servicesService";
-import { checkHadBooking } from "@/services/bookingService";
+import { checkHadBooking, getMyBooking } from "@/services/bookingService";
 import { useLoading } from "@/hooks/useLoading";
 import { formatVND } from "@/hooks/useFormat";
+import { createPaymentService } from "@/services/paymentService";
 
 const ServicesDetailScreen = () => {
   const { name } = useRoute().params as { name: string };
@@ -37,10 +38,11 @@ const ServicesDetailScreen = () => {
 
         const booking = await checkHadBooking(name);
         console.log("Booking info:", booking);
+        console.log(booking);
 
-        if (booking) {
+        if (booking && booking.paid) {
           setBookingInfo(booking);
-        }
+        } else setBookingInfo(null);
       } catch (err) {
         console.log("Không có booking hoặc lỗi khi tải dữ liệu:", err);
       } finally {
@@ -60,12 +62,22 @@ const ServicesDetailScreen = () => {
     });
   };
 
-  const handlePayment = () => {
-    navigation.navigate("payment", { bookingId: bookingInfo?.id });
+  const handlePayment = async () => {
+    try {
+      const response = await createPaymentService(bookingInfo?.id || "");
+    } catch (error) {
+      console.log("Error during payment:", error);
+    }
   };
 
-  const handleViewBooking = () => {
-    navigation.navigate("bookingDetail", { bookingId: bookingInfo?.id });
+  const handleViewBooking = async () => {
+    try {
+      const response = await getMyBooking();
+      const booking = response.find((item: any) => item.id === bookingInfo?.id);
+      navigation.navigate("bookingDetail", { serviceData: booking });
+    } catch (error) {
+      console.log("Error viewing booking:", error);
+    }
   };
 
   if (!serviceDetails) {

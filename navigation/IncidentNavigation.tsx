@@ -2,12 +2,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./NavigationType";
 import IncidentCreateScreen from "@/screens/incident/IncidentCreateScreen";
 import IncidentHistoryScreen from "@/screens/incident/IncidentHistoryScreen";
+import IncidentHistoryDetail from "@/screens/incident/IncidentHistoryDetail";
 
 const Stacks = createNativeStackNavigator<RootStackParamList>();
 
 export default function IncidentNavigation() {
   return (
-    <Stacks.Navigator>
+    <Stacks.Navigator screenOptions={{ headerShown: false }}>
       <Stacks.Screen
         name="IncidentHistory"
         component={IncidentHistoryScreen}
@@ -20,6 +21,11 @@ export default function IncidentNavigation() {
         name="IncidentCreate"
         component={IncidentCreateScreen}
         options={{ headerShown: false }}
+      />
+      <Stacks.Screen
+        name="IncidentHistoryDetail"
+        component={IncidentHistoryDetail}
+        options={{ headerShown: true, headerTitle: "" }}
       />
     </Stacks.Navigator>
   );

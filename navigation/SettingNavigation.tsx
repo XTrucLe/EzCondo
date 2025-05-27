@@ -42,7 +42,7 @@ export default function SettingNavigation() {
       <Stacks.Screen
         name="Incident"
         component={IncidentNavigation}
-        options={{ headerShown: true, headerTitle: "Sự cố" }}
+        options={{ headerShown: false }}
       />
       <Stacks.Screen
         name="ChangePassword"

@@ -131,6 +131,7 @@ export default {
   serviceProvider: "Service provider",
   serviceHours: "Service hours",
   serviceTerms: "Service terms",
+  confirmSubscription: "Confirm subscription",
 
   // Service Packages
   selectedPackage: "Selected package",
@@ -171,6 +172,7 @@ export default {
   incidentTitle: "Incident title",
   sendIncident: "Send incident",
   incidentType: "Incident type",
+  incidentHistory: "Incident history",
   report: "Report",
   reportIncident: "Report incident",
   reportSuccess: "Report successful",

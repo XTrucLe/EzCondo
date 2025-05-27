@@ -131,22 +131,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  logout: async () => {
-    set({ loading: true });
-    try {
-      await regisFCMToken(
-        get().fcm?.data ?? "",
-        get().fcm?.type ?? "expo",
-        false
-      );
-      set({ verified: false, user: null });
-      set({ fcm: null });
-    } catch (error) {
-      console.error("Logout failed:", error);
-      throw error;
-    }
-    set({ loading: false });
-  },
+  logout: async () => {},
   forgotPassword: async (email) => {
     set({ loading: true });
     try {

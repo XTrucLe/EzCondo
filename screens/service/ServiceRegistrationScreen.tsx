@@ -21,11 +21,12 @@ import {
   Image,
   ScrollView,
 } from "react-native";
+import { Checkbox } from "react-native-paper";
 
 const ServiceSubscriptionScreen = () => {
   const { startLoading, stopLoading } = useLoading();
   const { translation } = useLanguage();
-  const { formatDate, addMonths } = useDateUtils();
+  const { formatDate } = useDateUtils();
   const { navigate } = useAppNavigator();
 
   const { serviceInfo } = useRoute().params as {
@@ -33,7 +34,7 @@ const ServiceSubscriptionScreen = () => {
   };
 
   const [showDatePicker, setShowDatePicker] = useState(false);
-
+  const [agree, setAgree] = useState(false);
   const {
     durationOptions,
     selectedDuration,
@@ -42,11 +43,9 @@ const ServiceSubscriptionScreen = () => {
     handleDurationChange,
     getBookingPayload,
   } = useSubscription(serviceInfo);
-  console.log("money", subscriptionData.price);
 
-  const handleSubscription = async () => {
+  const gotoNextScreen = async () => {
     const bookingPayload = getBookingPayload();
-
     try {
       startLoading();
       const bookingId = await createBooking(bookingPayload);
@@ -62,6 +61,19 @@ const ServiceSubscriptionScreen = () => {
     } finally {
       stopLoading();
     }
+  };
+
+  const handleSubscription = async () => {
+    Alert.alert(translation.confirm, translation.confirmSubscription, [
+      {
+        text: translation.cancel,
+        style: "cancel",
+      },
+      {
+        text: translation.confirm,
+        onPress: gotoNextScreen,
+      },
+    ]);
   };
 
   return (
@@ -211,10 +223,20 @@ const ServiceSubscriptionScreen = () => {
           ({selectedDuration} tháng x {formatVND(serviceInfo.priceOfMonth)}
           /tháng)
         </Text>
+        <View style={styles.confirmRow}>
+          <Checkbox
+            status={agree ? "checked" : "unchecked"}
+            onPress={() => setAgree(!agree)}
+          />
+          <Text style={{ flex: 1 }}>
+            Tôi xác nhận thông tin đúng và đồng ý sử dụng các thẻ theo quy định.
+          </Text>
+        </View>
 
         <TouchableOpacity
-          style={styles.paymentButton}
+          style={[styles.paymentButton, !agree && { opacity: 0.5 }]}
           onPress={handleSubscription}
+          disabled={!agree}
         >
           <Text style={styles.paymentButtonText}>XÁC NHẬN THANH TOÁN</Text>
           <Ionicons name="wallet" size={20} color="white" />
@@ -520,5 +542,10 @@ const styles = StyleSheet.create({
   datePicker: {
     width: "100%",
     backgroundColor: "#fff",
+  },
+  confirmRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 16,
   },
 });

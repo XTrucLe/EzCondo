@@ -1,5 +1,5 @@
 // screens/ChatbotScreen.tsx
-import { getAnswerForChat } from "@/services/chatbotService";
+import { createChatSession, getAnswerForChat } from "@/services/chatbotService";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -24,6 +24,18 @@ const ChatbotScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string>("");
+
+  const generateSessionId = async () => {
+    try {
+      const newSessionId = await createChatSession();
+      setSessionId(newSessionId);
+    } catch (error) {
+      console.error("Error generating session ID:", error);
+      const newSessionId = Date.now().toString();
+      setSessionId(newSessionId);
+    }
+  };
 
   useEffect(() => {
     // Tin nhắn chào mừng
@@ -33,14 +45,15 @@ const ChatbotScreen = () => {
       sender: "bot",
     };
     setMessages([welcomeMessage]);
+    generateSessionId();
   }, []);
 
   const chatbotAnswer = async (question: string) => {
     setIsLoading(true);
     try {
-      const response = await getAnswerForChat(question);
-      if (!response) return "Tôi không thể trả lời câu hỏi này.";
-      return response.message;
+      const response = await getAnswerForChat(question, sessionId);
+      if (!response) return "Có lỗi xảy ra. Bạn có thể thử lại sau.";
+      return response.reply;
     } catch (error) {
       console.error("Error fetching answer:", error);
     } finally {
@@ -99,7 +112,7 @@ const ChatbotScreen = () => {
           style={styles.input}
           value={input}
           onChangeText={setInput}
-          placeholder="Nhập tin nhắn..."
+          placeholder="Nhập câu hỏi..."
           placeholderTextColor="#999"
         />
         <TouchableOpacity
@@ -136,7 +149,7 @@ const TypingIndicator = () => {
   return (
     <View style={styles.typingContainer}>
       <ActivityIndicator size="small" color="#999" />
-      <Text style={styles.typingText}>🤖 Đang nhập{dots}</Text>
+      <Text style={styles.typingText}>🤖 Đang suy nghĩ{dots}</Text>
     </View>
   );
 };

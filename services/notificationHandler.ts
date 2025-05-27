@@ -1,4 +1,6 @@
+import { useAppNavigator } from "@/navigation/useAppNavigate";
 import messaging from "@react-native-firebase/messaging";
+import { createNavigationContainerRef } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { useEffect } from "react";
 
@@ -102,10 +104,28 @@ Notifications.setNotificationChannelAsync("default", {
   lightColor: "#FF231F7C",
   sound: "default",
 });
+
+const navigationRef = createNavigationContainerRef();
 // ✅ Custom Hook để tự động kích hoạt lắng nghe thông báo trong App.js
 export const useNotificationListener = () => {
+  const { navigate } = useAppNavigator();
   useEffect(() => {
     listenForForegroundMessages();
     listenForBackgroundMessages();
+  }, []);
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log("📲 Người dùng nhấn vào thông báo:", response);
+
+        if (navigationRef.isReady()) {
+          navigationRef.navigate("NotificationOverview" as never);
+        } else {
+          console.warn("Navigation chưa sẵn sàng");
+        }
+      }
+    );
+    return () => subscription.remove();
   }, []);
 };

@@ -8,7 +8,6 @@ import {
   Alert,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { openBankApp } from "@/components/BankLinking";
 import { ElectricFee, WaterFee } from "@/utils/type/FeeType";
 import { useLoading } from "@/hooks/useLoading";
 import {
@@ -51,7 +50,13 @@ const STATUS_CONFIG = {
 const InfoRow = ({ label, value, valueStyle = {} }: InfoRowProps) => (
   <View style={styles.row}>
     <Text style={styles.label}>{label}</Text>
-    <Text style={[styles.value, valueStyle]}>{value}</Text>
+    <Text
+      style={[styles.value, valueStyle]}
+      numberOfLines={1}
+      ellipsizeMode="tail"
+    >
+      {value}
+    </Text>
   </View>
 );
 
@@ -132,7 +137,7 @@ export default function BillDetailScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>📄 Chi tiết Hóa đơn</Text>
 
@@ -161,6 +166,7 @@ export default function BillDetailScreen() {
 
         {item.status !== "paid" && <PaymentButton onPress={handlePayment} />}
       </View>
+      <View style={{ height: 24 }}></View>
     </ScrollView>
   );
 }

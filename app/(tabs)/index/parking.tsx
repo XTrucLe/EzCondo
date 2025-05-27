@@ -69,6 +69,7 @@ const ParkingPassDesign: React.FC<ParkingCardProps> = React.memo(
             <Text style={styles.label}>Căn hộ</Text>
             <Text style={styles.ownerApartment}>{owner.apartment}</Text>
           </View>
+          <View></View>
         </View>
 
         <Text style={styles.footerNote}>THẺ ĐỖ XE THÔNG MINH</Text>
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
   },
   apartmentContainer: {
     alignItems: "center",
-    marginRight: 8,
+    marginRight: 60,
   },
   ownerName: {
     fontSize: 15,

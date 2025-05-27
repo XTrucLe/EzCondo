@@ -84,6 +84,7 @@ export const SlideShow = ({ item, time }: SlideProps) => {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    width: "100%",
     marginTop: 15,
     justifyContent: "center",
     alignItems: "center",

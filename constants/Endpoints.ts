@@ -71,7 +71,9 @@ export const endpoints = {
     sendIncident: `${API_BASE}/Incident/add-incident`,
     sendIncodentImage: `${API_BASE}/Incident/add-or-update-incident-image`,
     getIncidentHistory: `${API_BASE}/Incident/get-incident-history`,
+    getIncidentImage: `${API_BASE}/Incident/get-incident-image-by-incident-id`,
   },
+
   payment: {
     createPayment: `${API_BASE}/Payment/Create-QR-Booking-Payment`,
     createWaterPayment: `${API_BASE}/Payment/Create-QR-Water-Payment`,

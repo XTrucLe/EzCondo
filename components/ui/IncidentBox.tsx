@@ -1,16 +1,32 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import useDateUtils from "@/hooks/useDateUtils";
+import { useAppNavigator } from "@/navigation/useAppNavigate";
 
-type IncidentType = {
+const width = Dimensions.get("window").width;
+
+type Images = {
   id: string;
-  user_id: string;
+  imgPath: String;
+  incidentId: String;
+};
+export type IncidentType = {
+  id: string;
+  userId: string;
   title: string;
   type: string;
   description: string;
-  reported_at: string;
+  images?: Images[];
+  reportedAt: string;
   status: "pending" | "in_progress" | "resolved" | "rejected";
-  priority: "high" | "medium" | "low";
+  priority: number;
 };
 
 const getStatusColor = (status: string) => {
@@ -43,26 +59,26 @@ const getStatusIcon = (status: string) => {
   }
 };
 
-const getPriorityLabel = (priority: string) => {
+const getPriorityLabel = (priority: number) => {
   switch (priority) {
-    case "high":
+    case 1:
       return "Cao 🔥";
-    case "medium":
+    case 2:
       return "Trung bình ⚠️";
-    case "low":
+    case 3:
       return "Thấp 💤";
     default:
       return "Không rõ";
   }
 };
 
-const getPriorityIcon = (priority: string) => {
+const getPriorityIcon = (priority: number) => {
   switch (priority) {
-    case "high":
+    case 1:
       return "alert-circle-outline";
-    case "medium":
+    case 2:
       return "alert-outline";
-    case "low":
+    case 3:
       return "bell-sleep-outline";
     default:
       return "help-circle-outline";
@@ -70,8 +86,14 @@ const getPriorityIcon = (priority: string) => {
 };
 
 const CardIncident = ({ incident }: { incident: IncidentType }) => {
+  const { formatDate } = useDateUtils();
+  const { navigate } = useAppNavigator();
+  const handleViewDetail = () => {
+    navigate("IncidentHistoryDetail", { incidentDetail: incident });
+  };
+
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={handleViewDetail}>
       {/* Tiêu đề và trạng thái */}
       <View style={styles.header}>
         <Text style={styles.title}>{incident.title}</Text>
@@ -116,9 +138,9 @@ const CardIncident = ({ incident }: { incident: IncidentType }) => {
 
       {/* Ngày báo cáo */}
       <Text style={styles.date}>
-        🕒 Báo cáo lúc: {new Date(incident.reported_at).toLocaleString()}
+        🕒 Báo cáo lúc: {formatDate(new Date(incident.reportedAt))}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -126,6 +148,8 @@ export default CardIncident;
 
 const styles = StyleSheet.create({
   card: {
+    width: width - 24, // Giảm bớt khoảng cách ngang
+    minWidth: 300,
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,

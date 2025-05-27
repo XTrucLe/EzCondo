@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
+  ImageBackground,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,10 +19,8 @@ import {
 import { FAB } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { homeHeaderImage, userDefaultImage } from "@/constants/ImageLink";
-import IncidentListScreen from "@/components/ui/IncidentListHistory";
 
-const MAX_HEADER_HEIGHT = 200;
-const MIN_HEADER_HEIGHT = 100;
+const MAX_HEADER_HEIGHT = 180;
 
 type UserHomeProps = {
   fullName: string;
@@ -29,20 +28,15 @@ type UserHomeProps = {
   image?: string;
 };
 
-const Header = ({
-  onImagePress,
-  scrollY,
-}: {
-  onImagePress: () => void;
-  scrollY: Animated.Value;
-}) => {
+const Header = ({ onImagePress }: { onImagePress: () => void }) => {
   const theme = useColorScheme();
   const { user } = useAuthStore();
   const { translation } = useLanguage();
+
   const textTime = isLightTime(new Date().getHours())
-    ? `${translation.goodMorning}! 🌞`
+    ? `${translation.goodMorning}! 🌅`
     : `${translation.goodEvening}! 🌙`;
-  const wellcomeTextColor = theme == "light" ? "#FF9800" : "#121212";
+
   const [userInfo, setUserInfo] = useState<UserHomeProps>({
     fullName: "Người dùng",
     apartmentNumber: "Chưa cập nhật",
@@ -59,62 +53,44 @@ const Header = ({
     fetchUserInfo();
   }, [user]);
 
-  // Header thu nhỏ theo scroll
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
-    outputRange: [MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT],
-    extrapolate: "clamp",
-  });
-
-  const userInfoTranslateY = scrollY.interpolate({
-    inputRange: [0, 90], // Scroll từ 0 -> 200px
-    outputRange: [0, -50], // Di chuyển tối đa 100px lên trên
-    extrapolate: "clamp",
-  });
-
   return (
-    <Animated.View style={[styles.header, { height: headerHeight }]}>
-      <Image
+    <View style={styles.header}>
+      <ImageBackground
         source={homeHeaderImage}
-        style={styles.headerImageBg}
+        style={styles.backgroundImage}
         resizeMode="cover"
-      />
-      <Text style={[styles.wellcomeText, { color: wellcomeTextColor }]}>
-        {textTime}
-      </Text>
-      <Animated.View
-        style={[
-          styles.userInfoContainer,
-          { transform: [{ translateY: userInfoTranslateY }] },
-        ]}
       >
-        <TouchableOpacity
-          onPress={onImagePress}
-          style={styles.userImageContainer}
-        >
-          <Image
-            source={userInfo.image ? { uri: userInfo.image } : userDefaultImage}
-            style={styles.userImage}
-          />
-        </TouchableOpacity>
+        {/* Gradient overlay để làm mờ nền */}
+        <View style={styles.overlay} />
 
-        <View style={styles.userInfo}>
-          <Text style={[styles.userName, { color: "#fff", fontSize: 18 }]}>
-            {userInfo?.fullName}
-          </Text>
-          <Text style={[styles.apartment, { color: "#fff" }]}>
-            {translation.apartment}: {userInfo?.apartmentNumber}
-          </Text>
+        <Text style={styles.greeting}>{textTime}</Text>
+
+        <View style={styles.profileContainer}>
+          <TouchableOpacity onPress={onImagePress}>
+            <Image
+              source={
+                userInfo.image ? { uri: userInfo.image } : userDefaultImage
+              }
+              style={styles.avatar}
+            />
+          </TouchableOpacity>
+
+          <View style={styles.infoCard}>
+            <Text style={styles.fullName}>{userInfo.fullName}</Text>
+            <Text style={styles.apartment}>
+              {translation.apartment}: {userInfo.apartmentNumber}
+            </Text>
+          </View>
         </View>
-      </Animated.View>
-    </Animated.View>
+      </ImageBackground>
+    </View>
   );
 };
 
 export default function HomeScreen() {
   const bgColor = useThemeColor({}, "background");
-  const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation<any>();
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bgColor }}>
       <ScrollView style={{ flex: 1 }}>
@@ -123,27 +99,19 @@ export default function HomeScreen() {
             onImagePress={() =>
               navigation.navigate("me", { screen: "profile" })
             }
-            scrollY={scrollY}
           />
         </View>
 
-        <Animated.ScrollView
-          contentContainerStyle={{
-            paddingTop: MAX_HEADER_HEIGHT,
-            position: "relative",
-          }}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          scrollEventThrottle={16}
+        <View
+          style={[
+            styles.content,
+            { backgroundColor: bgColor, paddingBottom: 20 },
+          ]}
         >
           <ExtensionsUI />
           <SlideShow item={[]} />
-        </Animated.ScrollView>
-        {/* Nút FAB để mở màn hình "incident" */}
+        </View>
 
-        <IncidentListScreen />
         <View style={{ height: 50 }}></View>
       </ScrollView>
       <FAB
@@ -162,94 +130,72 @@ const styles = StyleSheet.create({
   headerContainer: {
     position: "relative",
     flex: 1,
-    marginBottom: 20,
   },
   header: {
-    position: "absolute",
-
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    height: 240,
+    width: "100%",
+    overflow: "hidden",
+  },
+  backgroundImage: {
+    flex: 1,
+    justifyContent: "flex-start",
     paddingHorizontal: 20,
+    paddingTop: 24,
   },
-  headerImageBg: {
-    width: "110%",
-    height: "110%",
-    position: "absolute",
-    objectFit: "fill",
-    top: 0,
-    left: 1,
-    right: 0,
-    zIndex: -1,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
-  wellcomeText: {
-    position: "absolute",
-    top: 20,
-    right: 10,
+  greeting: {
+    fontSize: 18,
+    alignSelf: "flex-end",
+    fontWeight: "600",
+    color: "#fff",
+    marginBottom: 20,
+  },
+  profileContainer: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 40,
+    borderWidth: 3,
+    borderColor: "#fff",
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    backgroundColor: "#eee",
+  },
+  infoCard: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    borderRadius: 16,
+    backdropFilter: "blur(10px)", // Sẽ bị bỏ qua trên Android nhưng giữ lại cảm giác glass.
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  fullName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  apartment: {
     fontSize: 14,
-    fontWeight: "500",
-  },
-  userInfoContainer: {
-    position: "absolute",
-    top: 50,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  userImageContainer: {
-    position: "absolute",
-    left: 20,
-    top: 20,
-  },
-  userImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    color: "#eee",
+    marginTop: 4,
   },
   userInfo: {
     position: "absolute",
     left: 70,
     top: 20,
   },
-  userName: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  apartment: {
-    fontSize: 14,
-  },
   title: {
     fontSize: 26,
     fontWeight: "bold",
-  },
-  paymentPanel: {
-    position: "absolute",
-    bottom: -30, // Lúc đầu hơi chìa ra
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
-  panel: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 15,
-    height: 80,
-    width: "90%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
-    marginVertical: 10,
-    zIndex: 10,
   },
   section: {
     flex: 1,
@@ -277,7 +223,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingTop: 20,
   },
   slide: {
     alignItems: "center",

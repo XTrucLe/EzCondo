@@ -31,4 +31,4 @@ export const handleUpdateApiUrl = async (newUrl: string) => {
   }
 };
 
-export const chatAPI = " https://chatbott1.onrender.com/chat/ask";
+export const chatAPI = "https://natural-language-matrix.onrender.com";

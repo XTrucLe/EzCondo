@@ -12,7 +12,6 @@ import {
   TextInput,
   Button,
   Checkbox,
-  RadioButton,
   Card,
   Title,
 } from "react-native-paper";
@@ -168,24 +167,6 @@ const VehicleCardForm = () => {
                 );
               })}
             </View>
-            {/* Chọn loại thẻ */}
-            <View style={styles.section}>
-              <Text style={styles.label}>Loại thẻ xe</Text>
-              <RadioButton.Group
-                value={formData.cardType}
-                onValueChange={(value) => handleChange("cardType", value)}
-              >
-                <View style={styles.radioRow}>
-                  <RadioButton value="monthly" />
-                  <Text>Thẻ tháng</Text>
-                  <RadioButton value="quarterly" />
-                  <Text>Thẻ quý</Text>
-                  <RadioButton value="yearly" />
-                  <Text>Thẻ năm</Text>
-                </View>
-              </RadioButton.Group>
-            </View>
-
             {/* Ghi chú */}
             <View style={styles.section}>
               <Text style={styles.label}>Ghi chú (nếu có)</Text>

@@ -1,12 +1,6 @@
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 const AddMemberScreen = () => {
   const navigation = useNavigation<any>();

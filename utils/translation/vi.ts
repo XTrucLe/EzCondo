@@ -130,6 +130,7 @@ export default {
   serviceProvider: "Nhà cung cấp dịch vụ", // Added service term
   serviceHours: "Giờ hoạt động", // Added service term
   serviceTerms: "Điều khoản dịch vụ", // Added service term
+  confirmSubscription: "Xác nhận đăng ký dịch vụ", // Added service term
 
   // Service Packages
   selectedPackage: "Gói đã chọn",
@@ -170,6 +171,7 @@ export default {
   incidentTitle: "Tiêu đề sự cố",
   sendIncident: "Gửi sự cố",
   incidentType: "Loại sự cố",
+  incidentHistory: "Lịch sử báo cáo sự cố",
   report: "Báo cáo",
   reportIncident: "Báo cáo sự cố",
   reportSuccess: "Báo cáo thành công",

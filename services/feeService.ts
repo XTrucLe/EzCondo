@@ -5,7 +5,7 @@ export const getWaterFee = async () => {
   try {
     const response = await request({
       method: "get",
-      url: endpoints.water.getWaterFee,
+      url: `${endpoints.water.getWaterFee}?status=false`,
     });
     if (response.status === 200) {
       return response.data;

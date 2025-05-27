@@ -161,6 +161,7 @@ export default function IncidentCreateScreen() {
             </TouchableOpacity>
           )
         }
+        contentContainerStyle={styles.mediaContainer}
         ListEmptyComponent={
           <TouchableOpacity style={styles.mediaCard} onPress={pickMedia}>
             <AntDesign name="plus" size={30} color="#ccc" />
@@ -180,7 +181,7 @@ export default function IncidentCreateScreen() {
       <StatusScreen type={statusNow} title={translation.success} />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -208,6 +209,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fafafa",
     marginBottom: 15,
+  },
+  mediaContainer: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "space-evenly",
   },
   mediaCard: {
     position: "relative",
@@ -243,4 +249,3 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
-

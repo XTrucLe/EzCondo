@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   FlatList,
@@ -7,13 +7,12 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
-import CardIncident from "@/components/ui/IncidentBox";
-import { IncidentHistoryType } from "@/utils/type/incidentTypes";
+import CardIncident, { IncidentType } from "@/components/ui/IncidentBox";
 import { getIncidentHistory } from "@/services/incidentService";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function IncidentHistoryScreen() {
-  const [incidents, setIncidents] = useState<IncidentHistoryType[]>([]);
+  const [incidents, setIncidents] = useState<IncidentType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -21,7 +20,15 @@ export default function IncidentHistoryScreen() {
   const fetchIncidents = async () => {
     try {
       const data = await getIncidentHistory();
-      setIncidents(data);
+
+      if (Array.isArray(data)) {
+        setIncidents(data);
+      } else if (typeof data === "object" && data !== null) {
+        setIncidents([data]); // bọc object vào array
+      } else {
+        setIncidents([]); // hoặc null, tùy trường hợp bạn xử lý
+      }
+
       setError(null);
     } catch (err) {
       console.error("Failed to fetch incidents:", err);
@@ -43,7 +50,7 @@ export default function IncidentHistoryScreen() {
     fetchIncidents();
   };
 
-  const renderItem = ({ item }: { item: IncidentHistoryType }) => (
+  const renderItem = ({ item }: { item: IncidentType }) => (
     <CardIncident incident={item} />
   );
 
@@ -63,25 +70,20 @@ export default function IncidentHistoryScreen() {
         </View>
       );
     }
-
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Không có sự cố nào được báo cáo</Text>
+        <Text style={styles.emptyText}>Không có dữ liệu sự cố nào</Text>
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Lịch sử báo cáo sự cố</Text>
-
+    <View style={{ flex: 1 }}>
       <FlatList
         data={incidents}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
-        horizontal
-        showsHorizontalScrollIndicator={false}
         ListEmptyComponent={renderEmptyComponent}
         refreshControl={
           <RefreshControl
@@ -97,26 +99,16 @@ export default function IncidentHistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8f9fa",
-    paddingTop: 16,
-  },
-  header: {
-    fontSize: 22,
-    fontWeight: "bold",
-    paddingHorizontal: 16,
-    marginBottom: 16,
-    color: "#2c3e50",
-  },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
+    width: "100%",
+    alignItems: "center",
+    paddingVertical: 12,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    alignSelf: "center",
     width: 300,
     padding: 20,
   },
