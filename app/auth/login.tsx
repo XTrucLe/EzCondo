@@ -1,4 +1,4 @@
-import { loginBackgroundImage } from "@/constants/FakeDatabase";
+import { backgroundImage } from "@/constants/ImageLink";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import React, { useEffect, useReducer } from "react";
 import * as SecureStore from "expo-secure-store";
@@ -127,7 +127,7 @@ const LoginScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ImageBackground
-        source={loginBackgroundImage}
+        source={backgroundImage}
         style={[styles.container, { paddingTop: insets.top }]}
         resizeMode="cover"
       >

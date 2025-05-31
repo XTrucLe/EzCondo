@@ -15,21 +15,13 @@ import { useAppNavigator } from "@/navigation/useAppNavigate";
 export default function ServiceUsingScreen() {
   const { translation } = useLanguage.getState();
   const { navigate } = useAppNavigator();
-  const [bookings, setBookings] = useState<RegisteredService[]>([
-    {
-      id: "1",
-      serviceName: "Gói tập gym cao cấp",
-      startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 ngày trước
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 ngày tới
-      status: "pending",
-    },
-  ]);
+  const [bookings, setBookings] = useState<RegisteredService[]>([]);
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        // const response = await getMyBooking();
-        // setBookings(response);
+        const response = await getMyBooking();
+        setBookings(response);
       } catch (error) {
         console.error("Failed to fetch bookings:", error);
       }

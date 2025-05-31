@@ -14,7 +14,7 @@ const ChatbotHome = () => {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("chatbot")}
+        onPress={() => navigation.navigate("Chatting")}
       >
         <Text style={styles.buttonText}>Bắt đầu trò chuyện</Text>
       </TouchableOpacity>

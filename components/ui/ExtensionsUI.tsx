@@ -7,7 +7,7 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import { Ionicons, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -28,9 +28,26 @@ const UtilityItem = ({ id, name, icon, page, color }: any) => {
 
   const handlePress = () => {
     if (!page) return;
-    if (page === "water")
-      return navigation.navigate("seviceFees", { mode: "water" });
-    if (!/\d/.test(id)) return navigation.navigate("detail", { name: id });
+    console.log(`Navigating to ${page} with id: ${id}, name: ${name}`);
+
+    if (page === "water" || page === "electric") {
+      console.log(`Navigating to fee overview for ${page}`);
+
+      return navigation.navigate("Fee", { screen: "FeeOverview", mode: page });
+    }
+
+    const idHasNumber = /\d/.test(id);
+    if (!idHasNumber) {
+      navigation.navigate("Service", {
+        screen: "ServiceHome",
+        params: { serviceName: name },
+      });
+      return;
+    }
+
+    if (page === "DetailPaymentFee") {
+      return navigation.navigate("Payment", { screen: page });
+    }
     navigation.navigate(page);
   };
 
@@ -82,12 +99,19 @@ const ExtensionsUI = () => {
 
   const UtilityCard = ({ item }: { item: any }) => {
     const navigation = useNavigation<any>();
+
     const handlePress = () => {
       if (!item.page) return;
-      if (item.page === "water")
-        return navigation.navigate("seviceFees", { mode: "water" });
-      if (!/\d/.test(item.id))
-        return navigation.navigate("detail", { name: item.id });
+
+      if (item.page === "water" || item.page === "electric") {
+        return navigation.navigate("Fee", {
+          screen: "FeeOverview",
+          mode: item.page,
+        });
+      }
+      if (item.page === "parking") {
+        return navigation.navigate("Parking", { screen: "ParkingOverview" });
+      }
       navigation.navigate(item.page);
     };
     return (

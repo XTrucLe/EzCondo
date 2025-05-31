@@ -136,8 +136,9 @@ const BookingScreen = () => {
         Alert.alert(translation.error, translation.nodata);
         return;
       }
-      navigation.navigate("paymentQR", {
-        data,
+      navigation.navigate("Payment", {
+        screen: "QRCode",
+        params: { serviceData: data },
       });
     } catch (e) {
       console.log(e);

@@ -24,7 +24,7 @@ export const UTILITIES_LIST = [
     name: "electricity",
     icon: "flash",
     color: "#FECA57",
-    page: "seviceFees",
+    page: "electric",
   },
   { id: "3", name: "water", icon: "water", color: "#54A0FF", page: "water" },
   {
@@ -32,7 +32,7 @@ export const UTILITIES_LIST = [
     name: "apartmentMember",
     icon: "person",
     color: "#5F27CD",
-    page: "apartmentMember",
+    page: "Apartment",
   },
 ];
 
@@ -73,13 +73,13 @@ export const SERVICES_LIST = [
     id: "5",
     name: "incident",
     icon: <Ionicons name="alert-circle" size={ICON_SIZE} color="white" />,
-    page: "incident",
+    page: "Incident",
   },
   {
     id: "6",
     name: "paymentFee",
     icon: <Ionicons name="cash" size={ICON_SIZE} color="white" />,
-    page: "detail_fee",
+    page: "DetailPaymentFee",
   },
   {
     id: "9",

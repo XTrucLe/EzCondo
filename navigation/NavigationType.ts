@@ -5,9 +5,20 @@ import { PaymentType } from "@/utils/type/paymentType";
 import { ServiceDetailType } from "@/utils/type/serviceDetailType";
 
 export type RootStackParamList = {
-  // ==================Main Screen==================
+  // ==================Auth Screens==================
+  login: undefined;
+  ChangePassword: undefined;
 
-  // ==================Services Screen==================
+  // ==================Home Screens==================
+  Home: undefined;
+
+  // ==================Profile Screens==================
+  Profile: { screem: string; params?: any };
+  ProfileOverview: undefined;
+  ProfileEdit: undefined;
+
+  // ==================Services Screens==================
+  Service: { screen: string; params?: any };
   ResidentServices: undefined;
   ServiceOverview: undefined;
   ServiceUsing: undefined;
@@ -15,47 +26,59 @@ export type RootStackParamList = {
   ServiceDetail: { serviceDetail: ServiceDetailType };
   ServiceRegistration: { serviceInfo: ServiceDetailType };
   ServiceHistory: undefined;
+  ServiceHome: { serviceName: string };
 
-  // ==================Notification Screen==================
+  // ==================Notification Screens==================
   NotificationOverview: undefined;
   NotificationDetail: { selectedNotification?: NotificationBoxType };
 
-  // ==================Payment Screen==================
+  // ==================Payment Screens==================
   Payment: { screen: string; params?: any };
   QRCode: { serviceData: PaymentType };
   PaymentWaiting: undefined;
   PaymentHistory: undefined;
   PaymentHistoryDetail: undefined;
+  DetailPaymentFee: { screen: string; params?: any }; // Add or adjust as needed
 
-  // ==================Profile Screen==================
-  Profile: { screem: string; params?: any };
-  ProfileOverview: undefined;
-  ProfileEdit: undefined;
+  // ==================Fee Screens==================
+  Fee: undefined;
+  FeeOverview: undefined;
+  FeeDetail: { feeId: string }; // Add or adjust as needed
+  FeeHistory: undefined;
+  OtherFee: undefined;
+  UtilityBill: undefined;
+  UtilityBillDetail: { billId?: string; mode?: "electric" | "water" }; // Add or adjust as needed
 
-  // ==================Auth Screen==================
-  login: undefined;
-  ChangePassword: undefined;
-
-  // ==================Home Screen==================
-  Home: undefined;
-
-  // ==================Parking Screen==================
+  // ==================Parking Screens==================
+  Parking: undefined;
   ParkingOverview: undefined;
   ParkingRegistration: undefined;
 
-  // ==================Chatbot Screen==================
+  // ==================Booking Screens==================
+  Booking: undefined;
+  BookingOverview: undefined;
+  BookingDetail: { bookingId: string }; // Add or adjust as needed
+
+  // ==================Incident Screens==================
+  Incident: { screem: string; params?: any };
+  IncidentCreate: undefined;
+  IncidentHistory: undefined;
+  IncidentHistoryDetail: { incidentDetail: IncidentType };
+
+  // ==================Support Screens==================
+  Support: undefined;
+
+  // ==================Apartment Screens==================
+  Apartment: undefined;
+  ApartmentMember: undefined;
+
+  // ==================Chatbot Screens==================
   Chatbot: undefined;
   ChatbotHome: undefined;
   Chatting: undefined;
   ChatbotDetail: { chatId: string; name: string };
 
-  // ==================Booking Screen==================
-  // ==================Incident Screen==================
-  Incident: { screem: string; params?: any };
-  IncidentCreate: undefined;
-  IncidentHistory: undefined;
-  IncidentHistoryDetail: { incidentDetail: IncidentType };
-  // ==================Other Screen==================
+  // ==================Other Screens==================
   Setting: undefined;
   NotFound: undefined;
   Feedback: undefined;

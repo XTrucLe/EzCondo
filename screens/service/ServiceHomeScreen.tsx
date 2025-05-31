@@ -12,7 +12,7 @@ import { useLoading } from "@/hooks/useLoading";
 import { formatVND } from "@/hooks/useFormat";
 import { createPaymentService } from "@/services/paymentService";
 
-const ServicesDetailScreen = () => {
+const ServicesHomeScreen = () => {
   const { name } = useRoute().params as { name: string };
   const { startLoading, stopLoading } = useLoading();
   const { translation } = useLanguage();
@@ -37,8 +37,6 @@ const ServicesDetailScreen = () => {
         setServiceDetails({ ...serviceDetails[0], images: image });
 
         const booking = await checkHadBooking(name);
-        console.log("Booking info:", booking);
-        console.log(booking);
 
         if (booking && booking.paid) {
           setBookingInfo(booking);
@@ -55,10 +53,13 @@ const ServicesDetailScreen = () => {
   }, []);
 
   const handleBooking = () => {
-    navigation.navigate("booking", {
-      monthPrice: serviceDetails?.priceOfMonth,
-      yearPrice: serviceDetails?.priceOfYear,
-      serviceId: serviceDetails?.id,
+    navigation.navigate("Booking", {
+      screen: "BookingOverview",
+      params: {
+        monthPrice: serviceDetails?.priceOfMonth,
+        yearPrice: serviceDetails?.priceOfYear,
+        serviceId: serviceDetails?.id,
+      },
     });
   };
 
@@ -74,7 +75,10 @@ const ServicesDetailScreen = () => {
     try {
       const response = await getMyBooking();
       const booking = response.find((item: any) => item.id === bookingInfo?.id);
-      navigation.navigate("bookingDetail", { serviceData: booking });
+      navigation.navigate("Booking", {
+        screen: "BookingDetail",
+        params: { serviceData: booking },
+      });
     } catch (error) {
       console.log("Error viewing booking:", error);
     }
@@ -165,7 +169,7 @@ const ServicesDetailScreen = () => {
   );
 };
 
-export default ServicesDetailScreen;
+export default ServicesHomeScreen;
 
 const styles = StyleSheet.create({
   container: {

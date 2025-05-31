@@ -15,7 +15,6 @@ import { SlideShow } from "@/components/ui/SlideShow";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAppNavigator } from "@/navigation/useAppNavigate";
 
-const { width } = Dimensions.get("window");
 
 export default function DetailScreen() {
   const { serviceDetail } = useRoute().params as {

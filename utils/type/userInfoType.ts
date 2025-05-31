@@ -53,11 +53,6 @@ export const formFields = {
     type: "text",
     isEdit: false,
   },
-  status: {
-    label: "status",
-    type: "text",
-    isEdit: false,
-  },
 };
 
 [

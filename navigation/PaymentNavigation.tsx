@@ -4,6 +4,7 @@ import QRCodeScreen from "@/screens/payment/QRCode";
 import PaymentHistoryScreen from "@/screens/payment/PaymentHistoryScreen";
 import PaymentWaitingScreen from "@/screens/payment/PaymentWaitingScreen";
 import PaymentDetailScreen from "@/screens/payment/PaymentHistoryDetailScreen";
+import DetailPaymentFee from "@/screens/fee/OtherFeeScreen";
 
 const Stacks = createNativeStackNavigator<RootStackParamList>();
 
@@ -17,6 +18,7 @@ export default function PaymentNavigation() {
         name="PaymentHistoryDetail"
         component={PaymentDetailScreen}
       />
+      <Stacks.Screen name="DetailPaymentFee" component={DetailPaymentFee} />
     </Stacks.Navigator>
   );
 }

@@ -8,7 +8,7 @@ const Stacks = createNativeStackNavigator<RootStackParamList>();
 
 export default function IncidentNavigation() {
   return (
-    <Stacks.Navigator screenOptions={{ headerShown: false }}>
+    <Stacks.Navigator initialRouteName="IncidentCreate" screenOptions={{ headerShown: false }}>
       <Stacks.Screen
         name="IncidentHistory"
         component={IncidentHistoryScreen}

@@ -87,6 +87,8 @@ export default {
   selectGender: "Chọn giới tính",
   male: "Nam",
   female: "Nữ",
+  Male: "Nam",
+  Female: "Nữ",
   Other: "Khác",
   year: "Năm",
   month: "Tháng",

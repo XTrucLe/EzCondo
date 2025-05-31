@@ -88,6 +88,8 @@ export default {
   selectGender: "Select gender",
   male: "Male",
   female: "Female",
+  Male: "Male",
+  Female: "Female",
   Other: "Other",
   year: "Year",
   month: "Month",

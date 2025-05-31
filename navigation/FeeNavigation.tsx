@@ -1,25 +1,20 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./NavigationType";
-import ChatbotHome from "@/screens/chatbot/ChatbotHomeScreen";
-import ChatbotScreen from "@/screens/chatbot/ChattingScreen";
+import BillListScreen from "@/screens/fee/UlitiesBillSreen";
+import BillDetailScreen from "@/screens/fee/UlitiesBillDetailScreen";
 
 const Stacks = createNativeStackNavigator<RootStackParamList>();
-
-export default function ChatBotNavigation() {
+export default function FeeNavigation() {
   return (
-    <Stacks.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <Stacks.Navigator screenOptions={{ headerShown: false }}>
       <Stacks.Screen
-        name="ChatbotHome"
-        component={ChatbotHome}
+        name="FeeOverview"
+        component={BillListScreen}
         options={{ headerShown: true, headerTitle: "" }}
       />
       <Stacks.Screen
-        name="Chatting"
-        component={ChatbotScreen}
+        name="FeeDetail"
+        component={BillDetailScreen}
         options={{ headerShown: true, headerTitle: "" }}
       />
     </Stacks.Navigator>

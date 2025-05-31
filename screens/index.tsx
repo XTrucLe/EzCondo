@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
+  ImageBackground,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,10 +19,7 @@ import {
 import { FAB } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { homeHeaderImage, userDefaultImage } from "@/constants/ImageLink";
-import IncidentListScreen from "@/components/ui/IncidentListHistory";
-
-const MAX_HEADER_HEIGHT = 200;
-const MIN_HEADER_HEIGHT = 100;
+import NewsSection from "@/components/ui/fotter";
 
 type UserHomeProps = {
   fullName: string;
@@ -29,20 +27,25 @@ type UserHomeProps = {
   image?: string;
 };
 
-const Header = ({
-  onImagePress,
-  scrollY,
-}: {
-  onImagePress: () => void;
-  scrollY: Animated.Value;
-}) => {
+const Header = ({ onImagePress }: { onImagePress: () => void }) => {
   const theme = useColorScheme();
   const { user } = useAuthStore();
   const { translation } = useLanguage();
-  const textTime = isLightTime(new Date().getHours())
-    ? `${translation.goodMorning}! 🌞`
-    : `${translation.goodEvening}! 🌙`;
-  const wellcomeTextColor = theme == "light" ? "#FF9800" : "#121212";
+
+  const getGreetingText = (hour: number) => {
+    if (hour >= 5 && hour < 11) {
+      return `${translation.goodMorning}! ☀️`;
+    } else if (hour >= 11 && hour < 17) {
+      return `${translation.goodAfternoon}! 🌤️`;
+    } else if (hour >= 17 && hour < 21) {
+      return `${translation.goodEvening}! 🌇`;
+    } else {
+      return `${translation.goodNight}! 🌙`;
+    }
+  };
+
+  const textTime = getGreetingText(new Date().getHours());
+
   const [userInfo, setUserInfo] = useState<UserHomeProps>({
     fullName: "Người dùng",
     apartmentNumber: "Chưa cập nhật",
@@ -59,62 +62,45 @@ const Header = ({
     fetchUserInfo();
   }, [user]);
 
-  // Header thu nhỏ theo scroll
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, MAX_HEADER_HEIGHT - MIN_HEADER_HEIGHT],
-    outputRange: [MAX_HEADER_HEIGHT, MIN_HEADER_HEIGHT],
-    extrapolate: "clamp",
-  });
-
-  const userInfoTranslateY = scrollY.interpolate({
-    inputRange: [0, 90], // Scroll từ 0 -> 200px
-    outputRange: [0, -50], // Di chuyển tối đa 100px lên trên
-    extrapolate: "clamp",
-  });
-
   return (
-    <Animated.View style={[styles.header, { height: headerHeight }]}>
-      <Image
+    <View style={styles.header}>
+      <ImageBackground
         source={homeHeaderImage}
-        style={styles.headerImageBg}
+        style={styles.backgroundImage}
         resizeMode="cover"
-      />
-      <Text style={[styles.wellcomeText, { color: wellcomeTextColor }]}>
-        {textTime}
-      </Text>
-      <Animated.View
-        style={[
-          styles.userInfoContainer,
-          { transform: [{ translateY: userInfoTranslateY }] },
-        ]}
       >
-        <TouchableOpacity
-          onPress={onImagePress}
-          style={styles.userImageContainer}
-        >
-          <Image
-            source={userInfo.image ? { uri: userInfo.image } : userDefaultImage}
-            style={styles.userImage}
-          />
-        </TouchableOpacity>
+        {/* Gradient overlay để làm mờ nền */}
+        <View style={styles.overlay} />
 
-        <View style={styles.userInfo}>
-          <Text style={[styles.userName, { color: "#fff", fontSize: 18 }]}>
-            {userInfo?.fullName}
-          </Text>
-          <Text style={[styles.apartment, { color: "#fff" }]}>
-            {translation.apartment}: {userInfo?.apartmentNumber}
-          </Text>
+        <Text style={styles.greeting}>{textTime}</Text>
+
+        <View style={styles.profileContainer}>
+          <TouchableOpacity onPress={onImagePress}>
+            <Image
+              source={
+                userInfo.image ? { uri: userInfo.image } : userDefaultImage
+              }
+              style={styles.avatar}
+            />
+          </TouchableOpacity>
+
+          <View style={styles.infoCard}>
+            <Text style={styles.fullName}>{userInfo.fullName}</Text>
+            <Text style={styles.apartment}>
+              <Text style={{ fontWeight: 600 }}>{translation.apartment}</Text>:{" "}
+              {userInfo.apartmentNumber}
+            </Text>
+          </View>
         </View>
-      </Animated.View>
-    </Animated.View>
+      </ImageBackground>
+    </View>
   );
 };
 
 export default function HomeScreen() {
   const bgColor = useThemeColor({}, "background");
-  const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation<any>();
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: bgColor }}>
       <ScrollView style={{ flex: 1 }}>
@@ -123,133 +109,112 @@ export default function HomeScreen() {
             onImagePress={() =>
               navigation.navigate("me", { screen: "profile" })
             }
-            scrollY={scrollY}
           />
         </View>
 
-        <Animated.ScrollView
-          contentContainerStyle={{
-            paddingTop: MAX_HEADER_HEIGHT,
-            position: "relative",
-          }}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          scrollEventThrottle={16}
+        <View
+          style={[
+            styles.content,
+            { backgroundColor: bgColor, paddingBottom: 20 },
+          ]}
         >
           <ExtensionsUI />
-          <SlideShow item={[]} />
-        </Animated.ScrollView>
-        {/* Nút FAB để mở màn hình "incident" */}
-
-        <IncidentListScreen />
+        </View>
+        <SlideShow item={[]} />
+        <NewsSection />
         <View style={{ height: 50 }}></View>
       </ScrollView>
       <FAB
         icon="plus"
         label="Chat"
         style={styles.fab}
-        onPress={() => navigation.navigate("chatbotHome")}
+        onPress={() => navigation.navigate("Chatbot")}
       />
     </SafeAreaView>
   );
 }
 
-const isLightTime = (hour: number) => hour >= 6 && hour < 18;
-
 const styles = StyleSheet.create({
   headerContainer: {
     position: "relative",
     flex: 1,
-    marginBottom: 20,
   },
   header: {
-    position: "absolute",
-
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
+    height: 240,
+    width: "100%",
+    overflow: "hidden",
   },
-  headerImageBg: {
-    width: "110%",
-    height: "110%",
-    position: "absolute",
-    objectFit: "fill",
-    top: 0,
-    left: 1,
-    right: 0,
-    zIndex: -1,
+  backgroundImage: {
+    flex: 1,
+    justifyContent: "flex-start",
+    paddingHorizontal: 15,
+    paddingTop: 24,
   },
-  wellcomeText: {
-    position: "absolute",
-    top: 20,
-    right: 10,
-    fontSize: 14,
-    fontWeight: "500",
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.15)",
   },
-  userInfoContainer: {
+  greeting: {
+    fontSize: 15,
+    top: -10,
+    alignSelf: "flex-end",
+    fontWeight: "600",
+    color: "#fff",
+    marginBottom: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.34)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  profileContainer: {
     position: "absolute",
-    top: 50,
-    left: 0,
-    right: 0,
-    zIndex: 10,
+    bottom: 20,
+    left: 20,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
-  userImageContainer: {
-    position: "absolute",
-    left: 20,
-    top: 20,
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 40,
+    borderWidth: 3,
+    borderColor: "#fff",
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    backgroundColor: "#eee",
+    marginRight: 4,
   },
-  userImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  infoCard: {
+    marginTop: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    backgroundColor: "rgba(0, 0, 0, 0.32)",
+    borderRadius: 16,
+    backdropFilter: "blur(10px)", // Sẽ bị bỏ qua trên Android nhưng giữ lại cảm giác glass.
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  fullName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  apartment: {
+    fontSize: 14,
+    color: "#eee",
+    marginTop: 4,
   },
   userInfo: {
     position: "absolute",
     left: 70,
     top: 20,
   },
-  userName: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  apartment: {
-    fontSize: 14,
-  },
   title: {
     fontSize: 26,
     fontWeight: "bold",
-  },
-  paymentPanel: {
-    position: "absolute",
-    bottom: -30, // Lúc đầu hơi chìa ra
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
-  panel: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 15,
-    height: 80,
-    width: "90%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
-    marginVertical: 10,
-    zIndex: 10,
   },
   section: {
     flex: 1,
@@ -277,7 +242,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingTop: 20,
   },
   slide: {
     alignItems: "center",

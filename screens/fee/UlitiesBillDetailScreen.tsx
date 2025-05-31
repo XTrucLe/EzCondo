@@ -77,9 +77,6 @@ export default function BillDetailScreen() {
     mode: "water" | "electric";
   };
 
-  console.log("Item details:", item);
-  console.log("Mode:", mode);
-
   const statusInfo = STATUS_CONFIG[item.status as keyof typeof STATUS_CONFIG];
 
   const handlePayment = async () => {
@@ -97,7 +94,11 @@ export default function BillDetailScreen() {
         response = await createElectricPayment(electricItem.electricBillId);
       }
 
-      if (response) navigation.navigate("paymentQR", { data: response });
+      if (response)
+        navigation.navigate("Payment", {
+          screen: "QRCode",
+          params: { serviceData: response },
+        });
       else Alert.alert("Thông báo", "Không có dữ liệu thanh toán");
     } catch (error) {
       console.error("Error:", error);

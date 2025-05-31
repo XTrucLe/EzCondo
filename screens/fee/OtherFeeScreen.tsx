@@ -38,8 +38,6 @@ export default function DetailPaymentFee() {
           item.type.toLowerCase().includes("general")
         );
 
-        console.log("otherPayment", otherPayment);
-
         if (otherPayment) {
           setPaymentId(otherPayment.paymentId);
           const response = await getAllOtherService();
@@ -62,8 +60,8 @@ export default function DetailPaymentFee() {
     try {
       startLoading();
       const response = await createParkingPayment(paymentId);
-      navigation.navigate("paymentQR", {
-        data: response,
+      navigation.navigate("QRSCreen", {
+        serviceData: response,
       });
     } catch (error) {
       console.log("Error during payment:", error);

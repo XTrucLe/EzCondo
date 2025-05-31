@@ -45,7 +45,12 @@ export default function QRCodeScreen() {
           clearInterval(timer);
           setIsPolling(false);
           Alert.alert("Timeout", "Payment verification timed out.");
-          navigation.navigate("index");
+          navigation.reset([
+            {
+              index: 0,
+              routes: [{ name: "index" }],
+            },
+          ]);
           return 0;
         }
         return prev - 1;

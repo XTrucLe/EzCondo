@@ -45,6 +45,7 @@ export default function TabLayout() {
   const dispalyScreens = [
     "(tabs)",
     "index",
+    "Home",
     "services",
     "notifications",
     "me",
@@ -56,6 +57,7 @@ export default function TabLayout() {
   const isTabDisplay =
     !navigationState?.key ||
     dispalyScreens.includes(segment[segment.length - 1]);
+  // console.log("Current Segment:", segment);
 
   return (
     <Tabs

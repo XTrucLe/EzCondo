@@ -12,7 +12,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import useAuthStore from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
-import { forgotPassword } from "./../../services/authService";
 
 const ForgotPasswordScreen = () => {
   const navigation = useNavigation<any>();

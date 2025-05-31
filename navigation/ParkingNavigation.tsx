@@ -19,7 +19,7 @@ export default function ParkingNavigation() {
             return (
               <HeaderRightIcon
                 iconName="add-card"
-                navigationScreen="parking.regis"
+                navigationScreen="ParkingRegistration"
                 type="material"
               />
             );
@@ -30,7 +30,10 @@ export default function ParkingNavigation() {
       <Stacks.Screen
         name="ParkingRegistration"
         component={ParkingRegistrationScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: true,
+          headerTitle: translation.parkingRegistration,
+        }}
       />
     </Stacks.Navigator>
   );

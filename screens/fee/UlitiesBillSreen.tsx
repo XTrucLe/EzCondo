@@ -23,7 +23,6 @@ export default function BillListScreen() {
           setData(response);
         } else {
           const response = await getElectricFees();
-          console.log("Electric fees:", response);
           setData(response);
         }
       } catch (error) {

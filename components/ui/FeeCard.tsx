@@ -35,7 +35,7 @@ const FeeCard = ({ item, mode }: Props) => {
   return (
     <TouchableOpacity
       style={[styles.card, paid ? styles.cardPaid : styles.cardUnpaid]}
-      onPress={() => navigation.navigate("feeDetail", { item, mode })}
+      onPress={() => navigation.navigate("FeeDetail", { item, mode })}
       activeOpacity={0.85}
     >
       {/* Header: Icon + Title + Amount */}

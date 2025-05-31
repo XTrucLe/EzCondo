@@ -9,7 +9,7 @@ import ServiceUsingScreen from "@/screens/service/ServiceUsingScreen";
 import ServiceSubscriptionScreen from "@/screens/service/ServiceRegistrationScreen";
 import ServiceUsingDetailScreen from "@/screens/service/ServiceUsingDetailScreen";
 import PaymentNavigation from "./PaymentNavigation";
-import QRCodeScreen from "@/screens/payment/QRCode";
+import ServicesHomeScreen from "@/screens/service/ServiceHomeScreen";
 
 const Stacks = createNativeStackNavigator<RootStackParamList>();
 
@@ -22,8 +22,18 @@ export default function ServiceNavigation() {
       <Stacks.Screen
         name="ResidentServices"
         component={ResidentServicesScreen}
+        options={{ headerShown: true, headerTitle: "" }}
       />
-      <Stacks.Screen name="ServiceOverview" component={ServiceOverviewScreen} />
+      <Stacks.Screen
+        name="ServiceHome"
+        component={ServicesHomeScreen}
+        options={{ headerShown: true, headerTitle: "" }}
+      />
+      <Stacks.Screen
+        name="ServiceOverview"
+        component={ServiceOverviewScreen}
+        options={{ headerShown: true, headerTitle: "" }}
+      />
       <Stacks.Screen
         name="ServiceDetail"
         component={ServicesDetailScreen}
