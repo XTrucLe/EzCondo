@@ -14,7 +14,7 @@ const resetApiInstance = () => {
 
 // Khởi tạo Api instance
 const getApiInstance = async () => {
-  let baseURL = await getApiUrl(); // Lấy URL API từ Firebase Remote Config
+  let baseURL = process.env.EXPO_PUBLIC_API_HOST as string;
   if (currentBaseURL !== baseURL) {
     resetApiInstance(); // Nếu URL khác thì đặt lại apiInstance
     currentBaseURL = baseURL; // Cập nhật currentBaseURL
